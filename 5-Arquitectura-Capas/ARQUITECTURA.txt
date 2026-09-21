@@ -1,0 +1,6 @@
+TODO: dibuja aquí (ASCII, no hace falta que sea bonito) qué capa llama a cuál.
+Ejemplo de formato:
+
+  [Controller] --> [Service] --> [Repository (interfaz)] --> [Repository en memoria]
+
+Señala en qué capa vive la regla "no dos citas en el mismo horario del mismo doctor".

@@ -1,0 +1,25 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+buildCache {
+    local {
+        directory = new File(rootDir, 'build-cache')
+    }
+}
+
+rootProject.name = '16-EDA'
+
+include ':app-service'
+include ':model'
+project(':app-service').projectDir = file('./applications/app-service')
+project(':model').projectDir = file('./domain/model')
+include ':kafka-producer'
+project(':kafka-producer').projectDir = file('./infrastructure/driven-adapters/kafka-producer')
+include ':kafka-listener'
+project(':kafka-listener').projectDir = file('./infrastructure/entry-points/kafka-listener')

@@ -1,0 +1,31 @@
+apply plugin: 'org.springframework.boot'
+
+ext {
+    cucumberVersion = '7.20.1'
+}
+
+dependencies {
+    implementation project(':model')
+    implementation project(':usecase')
+    implementation 'org.springframework.boot:spring-boot-starter'
+    runtimeOnly('org.springframework.boot:spring-boot-devtools')
+    testImplementation 'com.tngtech.archunit:archunit:1.4.2'
+
+    // BDD - Cucumber
+    testImplementation "io.cucumber:cucumber-java:${cucumberVersion}"
+    testImplementation "io.cucumber:cucumber-junit-platform-engine:${cucumberVersion}"
+    testImplementation 'org.junit.platform:junit-platform-suite'
+}
+
+tasks.register('explodedJar', Copy) {
+    with jar
+    into layout.buildDirectory.dir("exploded")
+}
+
+jar {
+    enabled = false
+}
+
+bootJar {
+    archiveFileName = "${project.getParent().getName()}.${archiveExtension.get()}"
+}

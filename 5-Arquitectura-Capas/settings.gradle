@@ -1,0 +1,27 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+buildCache {
+    local {
+        directory = new File(rootDir, 'build-cache')
+    }
+}
+
+rootProject.name = '5-Arquitectura-Capas'
+
+include ':app-service'
+include ':model'
+project(':app-service').projectDir = file('./applications/app-service')
+project(':model').projectDir = file('./domain/model')
+include ':usecase'
+project(':usecase').projectDir = file('./domain/usecase')
+include ':memory-repository'
+project(':memory-repository').projectDir = file('./infrastructure/driven-adapters/memory-repository')
+include ':simple-controller'
+project(':simple-controller').projectDir = file('./infrastructure/entry-points/simple-controller')

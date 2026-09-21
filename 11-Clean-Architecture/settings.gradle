@@ -1,0 +1,27 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+buildCache {
+    local {
+        directory = new File(rootDir, 'build-cache')
+    }
+}
+
+rootProject.name = '11-Clean-Architecture'
+
+include ':app-service'
+include ':model'
+project(':app-service').projectDir = file('./applications/app-service')
+project(':model').projectDir = file('./domain/model')
+include ':usecase'
+project(':usecase').projectDir = file('./domain/usecase')
+include ':memory-adapter'
+project(':memory-adapter').projectDir = file('./infrastructure/driven-adapters/memory-adapter')
+include ':jpa-adapter'
+project(':jpa-adapter').projectDir = file('./infrastructure/driven-adapters/jpa-adapter')

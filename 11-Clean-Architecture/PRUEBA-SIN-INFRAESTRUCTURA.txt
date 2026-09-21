@@ -1,0 +1,7 @@
+TODO: como parte de la entrega, demuestra que si borraras por completo la
+carpeta infrastructure/, el resto (domain/model + domain/usecase) seguiría
+compilando solo. Puedes hacerlo literal (borra la carpeta y corre
+`./gradlew :model:compileJava :usecase:compileJava`) o, si prefieres no
+borrar nada, corre esos dos gradle tasks puntuales y confirma que no
+dependen de ningún project(':memory-adapter') ni project(':jpa-adapter').
+Anota aquí el resultado.

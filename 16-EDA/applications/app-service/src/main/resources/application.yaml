@@ -1,0 +1,23 @@
+##Spring Configuration
+server:
+  port: 8080
+spring:
+  application:
+    name: 16-EDA
+  devtools:
+    add-properties: false
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  profiles:
+    include:
+
+# TODO: si vas a correrlo contra un Kafka real (docker-compose o local),
+# ajusta bootstrap-servers. Para solo compilar y probar con pruebas unitarias
+# no necesitas un broker corriendo.
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: citas-recordatorios

@@ -1,0 +1,16 @@
+# TODO: completa los "steps" de cada job y verifica que el orden tenga sentido.
+# Deja un comentario en cada job explicando POR QUÉ va en ese orden
+# (mira el ejemplo comentado del documento de retos, tema 17, si te trabas).
+jobs:
+  seguridad-secretos:
+    # TODO steps: [ ... ]   (gitleaks u otro escaneo de secretos)
+
+  validar-iac:
+    # TODO steps: [ ... ]   (tfsec y/o checkov sobre TU propio Terraform)
+
+  escaneo-dependencias:
+    # TODO steps: [ ... ]   (dependency-check)
+
+  deploy:
+    needs: []  # TODO: qué jobs deben pasar ANTES de este
+    # TODO steps: [ ... ]   (terraform apply)
