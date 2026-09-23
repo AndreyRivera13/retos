@@ -7,11 +7,16 @@ public class ReglaHistorial implements ReglaValidacion {
 
     @Override
     public boolean aplica(Solicitud solicitud) {
-        throw new UnsupportedOperationException("TODO: implementar ReglaHistorial.aplica");
+        return true;
     }
 
     @Override
     public ResultadoValidacion validar(Solicitud solicitud) {
-        throw new UnsupportedOperationException("TODO: implementar ReglaHistorial.validar");
+        if (solicitud.isHistorialCrediticioOk()){
+            return new ResultadoValidacion(true, "OK");
+        }
+        else {
+            return new ResultadoValidacion(false, "El historial crediticio debe estar OK");
+        }
     }
 }

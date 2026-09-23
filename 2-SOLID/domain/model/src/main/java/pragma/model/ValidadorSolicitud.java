@@ -20,6 +20,14 @@ public class ValidadorSolicitud {
      * ResultadoValidacion inmediatamente. Si todas pasan, retorna aprobado=true.
      */
     public ResultadoValidacion validar(Solicitud solicitud) {
-        throw new UnsupportedOperationException("TODO: implementar ValidadorSolicitud.validar");
+        for (ReglaValidacion regla : reglas) {
+            if (regla.aplica(solicitud)) {
+                ResultadoValidacion resultado = regla.validar(solicitud);
+                if (!resultado.isAprobada()) {
+                    return resultado;
+                }
+            }
+        }
+        return new ResultadoValidacion(true, "OK");
     }
 }

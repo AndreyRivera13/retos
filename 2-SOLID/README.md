@@ -2,24 +2,11 @@
 
 **Nivel que evalúa:** Trainer
 
-**Prioridad con tu evaluador (Rudyard):** 🔴 Alta
-
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — `ReglaEdad`, `ReglaIngresos`, `ReglaHistorial` y `ValidadorSolicitud` implementados y revisados (se corrigieron dos bugs de la primera versión: `ReglaHistorial` no leía `isHistorialCrediticioOk()`, y `ReglaEdad` usaba `>` en vez de `>=`). Verificado 2026-09-23.
 
 ## Para qué te sirve este reto
 
 Cierra el concepto de SRP y OCP: una clase con una sola razón para cambiar, y abierta a extensión sin modificar lo que ya funciona. Es la misma pregunta que te hacés cuando un método de un servicio Spring Boot termina validando, llamando al repositorio y armando la respuesta HTTP todo junto — eso es una violación de SRP en tu propio código, no solo en el reto.
-
-## Cómo trabajar este reto (paso a paso)
-
-1. **Abrí este proyecto en tu IDE.** Es un Gradle independiente, con su propio `gradlew` — se compila y corre desde esta misma carpeta (`./gradlew build`).
-2. **Buscá los `// TODO`** en las clases de este módulo. Ahí está la pista, nunca la solución. Todo lo que NO tiene `// TODO` (DTOs simples, `MainApplication`, config) ya está completo a propósito — es plomería de framework, no lo que te están evaluando.
-3. **No mires el "Ejemplo (dominio distinto)"** de este reto en `Retos_Assessment_Andrey.md` todavía. Intentá primero tu propia solución desde cero, como si fuera la prueba real.
-4. **Implementá.** Corré `./gradlew test` (o `./gradlew build`) para validar que compila y que tus pruebas (si el reto pide alguna) pasan.
-5. **Autoevaluate antes de dar el reto por cerrado:** respondé en menos de 2 minutos, en voz alta o por escrito, la pregunta de "¿Cómo sabés que lo dominás?" de abajo. Si te cuesta responderla más que escribir el código, el hueco está en el concepto, no en la implementación — volvé a la guía de estudio antes de seguir.
-6. **Marcá este reto como ✅ en `README_RETOS.md`** (en la raíz de `retos/`) y pasá al siguiente según el orden sugerido ahí.
-
----
 
 ## Enunciado
 
@@ -33,7 +20,22 @@ Código antes/después (aunque sea el "antes" resumido) + tabla de 3 columnas: p
 
 ¿Podés agregar una regla de validación nueva creando solo una clase, sin tocar ninguna de las existentes?
 
-## 🎯 Con tu evaluador (Rudyard)
+## Explicación técnica del concepto
+
+SRP establece que una clase debe tener una sola razón para cambiar. Un método que valida, loguea y notifica en un solo bloque tiene tres razones para cambiar, no una — por eso se separa en una regla por responsabilidad (`ReglaEdad`, `ReglaIngresos`, `ReglaHistorial`). OCP se cumple porque el punto de extensión es la lista de reglas: agregar una regla nueva es agregar una clase, no modificar `ValidadorSolicitud`. El riesgo típico en la entrevista es quedarse en la definición del principio sin poder señalar, en código real, cuál se rompió y por qué el rediseño lo corrige.
+
+## Cómo cerré esta brecha (mi implementación)
+
+Ya implementé el patrón completo. Mi `ValidadorSolicitud.validar()` recorre la lista de `ReglaValidacion` que recibe por constructor, corta apenas encuentra una regla que no aprueba (`if (!resultado.isAprobada()) return resultado;`) y solo si todas pasan devuelve el resultado aprobado. La regla de negocio nunca vive en el orquestador — cada `ReglaXxx` valida un solo dato de `Solicitud` (edad, ingresos o historial) y no sabe nada de las otras dos.
+
+Con esto cerré los dos principios que pedía el reto, en mi propio código:
+
+- **SRP**: `ReglaEdad`, `ReglaIngresos` y `ReglaHistorial` tienen cada una una sola razón para cambiar. Si mañana el umbral de ingresos sube a 2.000.000, toco solo `ReglaIngresos` — nada más se ve afectado. `ValidadorSolicitud` tiene su propia única razón para cambiar: cómo se orquesta el recorrido (por ejemplo, si algún día necesito acumular todos los errores en vez de cortar en el primero), no qué reglas existen.
+- **OCP**: para agregar una regla nueva —por ejemplo `ReglaMontoMaximo`— creo una clase que implemente `ReglaValidacion` y la agrego a la lista que le paso al constructor. No toco `ValidadorSolicitud` ni ninguna regla existente. El punto de extensión es exactamente ese `List<ReglaValidacion> reglas` recibido por constructor.
+
+Vale la pena que recuerde los dos bugs que tuve en la primera versión, porque son el mismo tipo de error y probablemente me los vuelva a encontrar: `ReglaHistorial` devolvía `true` sin leer `isHistorialCrediticioOk()` — una regla que "aprobaba" sin validar nada — y `ReglaEdad` usaba `>` en vez de `>=`, rechazando a alguien de exactamente 18 años que el enunciado sí aprueba. La interfaz `ReglaValidacion` me obliga a implementar los métodos, pero no garantiza que la lógica de adentro sea correcta — eso solo lo valida una prueba con el caso borde real, no que el código compile.
+
+## 🎯 Con tu evaluador
 
 SOLID + Patrones de Diseño está en el stack técnico de sus dos roles como Technical Leader — no lo va a dejar en "sabe qué significa la S de SRP". Prepárate para que te pida nombrar, EN TU CÓDIGO, cuál principio rompiste primero (antes de refactorizar) y por qué el Strategy es mejor que solo dividir el método en 3 sin cambiar el diseño.
 
@@ -42,6 +44,3 @@ SOLID + Patrones de Diseño está en el stack técnico de sus dos roles como Tec
 Antes de tocar código en este reto, escribí (alcanza con 3-5 líneas, en un comentario o en un README aparte) la especificación de lo que vas a construir: qué clases/métodos necesitás, el contrato de cada uno (entradas, salidas, casos borde) y la regla de negocio que cubre — el "qué" antes del "cómo". Es la misma disciplina que separa TDD (diseñás guiado por tests que escribís vos) de SDD (diseñás guiado por una spec escrita, para vos mismo o para que una IA la ejecute): la decisión de diseño se toma **antes** de escribir la primera línea, no se descubre a medida que tecleás. Encaja directo con el feedback de tus evaluadores: podés usar la IA para redactar o pulir esa spec, pero la decisión de qué debe hacer cada pieza es tuya, no de la IA — spec en mano, después sí generás o escribís el código.
 
 ---
-
-
-*Enunciado completo, entrega esperada y ejemplo de la técnica en un dominio distinto: `Retos_Assessment_Andrey.md` en la raíz de `retos/`. No copies el ejemplo — el dominio es distinto a propósito, para que entiendas la técnica y no el código.*

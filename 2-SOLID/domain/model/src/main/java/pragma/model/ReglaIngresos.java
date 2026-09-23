@@ -8,11 +8,16 @@ public class ReglaIngresos implements ReglaValidacion {
 
     @Override
     public boolean aplica(Solicitud solicitud) {
-        throw new UnsupportedOperationException("TODO: implementar ReglaIngresos.aplica");
+        return true;
     }
 
     @Override
     public ResultadoValidacion validar(Solicitud solicitud) {
-        throw new UnsupportedOperationException("TODO: implementar ReglaIngresos.validar");
+        if (solicitud.getIngresosMensuales() >= 1500000){
+            return new ResultadoValidacion(true, "OK");
+        }
+        else {
+            return new ResultadoValidacion(false, "El solicitante debe tener ingresos mensuales mayores o iguales a 1.500.000");
+        }
     }
 }

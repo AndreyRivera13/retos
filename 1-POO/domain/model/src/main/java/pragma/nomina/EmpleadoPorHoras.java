@@ -1,11 +1,10 @@
 package pragma.nomina;
 
 /**
- * TODO: salario = horasTrabajadas * tarifaPorHora.
+ * salario = horasTrabajadas * tarifaPorHora.
  * OJO: a propósito NO implementa Bonificable (ese tipo de empleado no tiene bono).
  */
 public class EmpleadoPorHoras extends Empleado {
-    // TODO: atributos horasTrabajadas, tarifaPorHora
     private double horasTrabajadas;
     private double tarifaPorHora;
 

@@ -5,7 +5,6 @@ package pragma.nomina;
  * Implementa Bonificable — este tipo sí tiene bono, EmpleadoPorHoras no.
  */
 public class EmpleadoFijo extends Empleado implements Bonificable {
-    // TODO: atributo salarioBase
     private final double salarioBase;
 
     public EmpleadoFijo(String nombre, String documento,double salarioBase ) {

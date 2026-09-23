@@ -6,7 +6,6 @@ package pragma.nomina;
  * se calcula el suyo, sin que Nomina<T> necesite saber cuál es cuál.
  */
 public abstract class Empleado {
-    // TODO: atributos comunes (nombre, documento, etc.)
     private String nombre;
     private String documento;
 
