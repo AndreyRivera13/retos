@@ -18,7 +18,7 @@ evaluador" — no hace falta volver a esta tabla para consultarlo. Marcá el
 
 | # | Carpeta | Módulos | Estado |
 |---|---|---|---|
-| 1 | `1-POO` | model + app-service | 🟡 En progreso — scaffold de `nomina/` armado, pero `Empleado`, `EmpleadoFijo`, `EmpleadoPorHoras` y `Nomina` todavía tienen `// TODO` sin implementar (verificado el 2026-09-23) |
+| 1 | `1-POO` | model + app-service | ✅ Cerrado — verificado el 2026-09-23 |
 | 2 | `2-SOLID` | model + app-service | ✅ Cerrado — verificado el 2026-09-23 |
 | 3 | `3-Excepciones` | model + app-service | 🔲 TODO |
 | 4 | `4-Estructuras-Datos` | model + app-service | 🔲 TODO |
