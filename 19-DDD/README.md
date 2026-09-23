@@ -1,8 +1,14 @@
 # Reto 19 — DDD — Diseño guiado por el dominio
 
+**Nivel que evalúa:** Senior
+
 **Prioridad con tu evaluador (Rudyard):** 🟢 Baja
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de modelar el dominio con sus propias reglas (agregados, value objects, bounded context), no solo con tablas y getters/setters. Le pone vocabulario formal a la arquitectura que ya trabajaste en Clean Architecture y a los modelos de permisos/roles que ya manejás en Entitlement.
 
 ## Cómo trabajar este reto (paso a paso)
 

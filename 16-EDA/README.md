@@ -1,8 +1,14 @@
 # Reto 16 — EDA — Arquitectura orientada a eventos (Kafka/RabbitMQ/etc)
 
+**Nivel que evalúa:** Senior
+
 **Prioridad con tu evaluador (Rudyard):** 🟡 Media
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de desacoplar servicios con eventos en vez de llamadas directas, y la idempotencia que eso obliga (un mensaje puede llegar duplicado). Si tus integraciones hoy son llamada síncrona directa, este reto te mueve al extremo opuesto y te hace resolver el problema que aparece ahí: qué pasa si el mismo evento llega dos veces.
 
 ## Cómo trabajar este reto (paso a paso)
 

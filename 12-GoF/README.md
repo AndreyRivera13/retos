@@ -1,8 +1,14 @@
 # Reto 12 — Patrones GoF (6 de cada tipo)
 
+**Nivel que evalúa:** Senior
+
 **Prioridad con tu evaluador (Rudyard):** 🔴 Alta
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de reconocer un patrón de diseño frente a un problema concreto, no de memorizar su definición. En tus integraciones entre servicios seguro ya aplicaste algo como Strategy (distintos tipos de validación según el caso) sin ponerle el nombre — acá te toca identificarlo en código real.
 
 ## Cómo trabajar este reto (paso a paso)
 

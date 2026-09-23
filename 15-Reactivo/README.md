@@ -1,8 +1,14 @@
 # Reto 15 — Paradigmas reactivo/funcional
 
+**Nivel que evalúa:** Senior
+
 **Prioridad con tu evaluador (Rudyard):** 🔴🔴 La más alta de todas
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de programación reactiva frente a imperativa: no bloquear un hilo esperando una respuesta, sino declarar qué pasa cuando el dato llegue (`Mono`/`Flux`). Si tus APIs hoy son bloqueantes con Spring MVC, el reto te exige justificar cuándo migrar a WebFlux vale la pena y cuándo no — no es "reactivo porque sí".
 
 ## Cómo trabajar este reto (paso a paso)
 

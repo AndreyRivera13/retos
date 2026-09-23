@@ -1,8 +1,14 @@
 # Reto 4 — Estructuras de datos
 
+**Nivel que evalúa:** Trainer
+
 **Prioridad con tu evaluador (Rudyard):** 🟢 Baja
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de elegir la estructura de datos según lo que necesitás hacer con los datos, no por costumbre — `Map` para buscar por clave en O(1), `List` para recorrer en orden. Es la misma decisión que tomás cuando filtrás o buscás permisos por documento en Entitlement: `Map` indexado vs recorrer una `List` con `.filter()`.
 
 ## Cómo trabajar este reto (paso a paso)
 

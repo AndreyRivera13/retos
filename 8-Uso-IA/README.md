@@ -1,8 +1,14 @@
 # Reto 8 — Uso consciente de IA en el desarrollo
 
+**Nivel que evalúa:** Junior
+
 **Prioridad con tu evaluador (Rudyard):** 🟡 Media
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de qué decisión es tuya y cuál delegás a la IA: la IA ejecuta, vos decidís el diseño. Es directamente tu forma de trabajar hoy con Python y automatización — el reto te pide dejarlo explícito con una tarea real, no en abstracto.
 
 ## Cómo trabajar este reto (paso a paso)
 

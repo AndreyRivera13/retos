@@ -1,8 +1,14 @@
 # Reto 1 — POO
 
+**Nivel que evalúa:** Trainer
+
 **Prioridad con tu evaluador (Rudyard):** —
 
 **Estado:** 🟡 En progreso — scaffold de `nomina/` armado, pero `Empleado`, `EmpleadoFijo`, `EmpleadoPorHoras` y `Nomina` todavía tienen `// TODO` sin implementar (verificado 2026-09-23).
+
+## Para qué te sirve este reto
+
+Cierra el concepto de polimorfismo y herencia: que cada subtipo resuelva su propio comportamiento sin que el código que los usa necesite preguntar "qué tipo sos" (`instanceof`). En tus servicios Spring de Entitlement es lo mismo que evitar un `if (tipo.equals(...))` cada vez que aparece un nuevo tipo de rol o solicitante.
 
 ## Cómo trabajar este reto (paso a paso)
 

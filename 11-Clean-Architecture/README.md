@@ -1,8 +1,14 @@
 # Reto 11 — Clean Architecture (Cebolla / Hexagonal)
 
+**Nivel que evalúa:** Senior
+
 **Prioridad con tu evaluador (Rudyard):** 🔴 Alta
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de independencia del dominio frente a la infraestructura: el dominio no sabe que existe Spring, JPA o una base de datos concreta. Es la arquitectura que ya usás en Entitlement — acá te toca explicar por qué domain no depende de infraestructura, no solo copiar la carpeta.
 
 ## Cómo trabajar este reto (paso a paso)
 

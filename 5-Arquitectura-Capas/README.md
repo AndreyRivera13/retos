@@ -1,8 +1,14 @@
 # Reto 5 — Arquitectura de capas
 
+**Nivel que evalúa:** Trainer
+
 **Prioridad con tu evaluador (Rudyard):** 🟡 Media
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de separación de responsabilidades por capa: Controller no valida reglas de negocio, Repository no decide nada, Service es el único lugar donde vive la regla. Es literalmente la estructura de cualquier microservicio Spring Boot que ya armás en Bancolombia — acá te toca explicar por qué existe esa separación, no solo replicarla.
 
 ## Cómo trabajar este reto (paso a paso)
 

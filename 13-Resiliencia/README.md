@@ -1,8 +1,14 @@
 # Reto 13 — Resiliencia (mínimo 2: CircuitBreaker, Retry, Fallback, RateLimit, Bulkhead)
 
+**Nivel que evalúa:** Senior
+
 **Prioridad con tu evaluador (Rudyard):** 🟡 Media
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de qué hacer cuando una dependencia externa falla: reintentar, cortar el circuito, degradar la respuesta, limitar la concurrencia. Cualquier llamada externa de un microservicio tuyo en Bancolombia puede fallar así — este reto es la respuesta técnica formal a algo que probablemente ya resolviste de forma manual.
 
 ## Cómo trabajar este reto (paso a paso)
 

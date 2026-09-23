@@ -1,8 +1,14 @@
 # Reto 3 — Excepciones y depuración
 
+**Nivel que evalúa:** Trainer
+
 **Prioridad con tu evaluador (Rudyard):** 🟢 Baja
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de manejo de excepciones: distinguir cuándo una falla es esperable (checked) de cuándo es un error de programación (unchecked), y no perder el recurso ni la causa original al propagarla. Es el mismo concepto detrás del `@ControllerAdvice`/`@ExceptionHandler` que mapea excepciones de dominio a códigos HTTP en tus APIs.
 
 ## Cómo trabajar este reto (paso a paso)
 

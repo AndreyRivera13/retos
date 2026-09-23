@@ -1,8 +1,14 @@
 # Reto 2 — Código limpio (SOLID/KISS/YAGNI/DRY)
 
+**Nivel que evalúa:** Trainer
+
 **Prioridad con tu evaluador (Rudyard):** 🔴 Alta
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de SRP y OCP: una clase con una sola razón para cambiar, y abierta a extensión sin modificar lo que ya funciona. Es la misma pregunta que te hacés cuando un método de un servicio Spring Boot termina validando, llamando al repositorio y armando la respuesta HTTP todo junto — eso es una violación de SRP en tu propio código, no solo en el reto.
 
 ## Cómo trabajar este reto (paso a paso)
 

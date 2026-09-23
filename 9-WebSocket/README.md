@@ -1,8 +1,14 @@
 # Reto 9 — Protocolo adicional a REST
 
+**Nivel que evalúa:** Advanced
+
 **Prioridad con tu evaluador (Rudyard):** 🔴 Alta
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de comunicación con estado y bidireccional, la otra cara de REST: acá el servidor le habla al cliente sin que este pregunte primero, y hay que manejar conexión/desconexión. Si tus integraciones hoy son solo REST síncrono, este reto te obliga a pensar en el caso que más se aleja de tu día a día.
 
 ## Cómo trabajar este reto (paso a paso)
 

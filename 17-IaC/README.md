@@ -1,8 +1,14 @@
 # Reto 17 — IaC (Terraform/CloudFormation/CDK/SAM) + escaneo de seguridad
 
+**Nivel que evalúa:** Senior
+
 **Prioridad con tu evaluador (Rudyard):** 🟢 Baja
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de infraestructura como código con seguridad incorporada al pipeline (menor privilegio, escaneo antes de desplegar), no infraestructura creada a mano. Conecta directo con lo que ya hacés en AWS (EC2, S3, despliegues) — acá lo formalizás en código versionado.
 
 ## Cómo trabajar este reto (paso a paso)
 

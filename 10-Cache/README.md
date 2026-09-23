@@ -1,8 +1,14 @@
 # Reto 10 — Caché — Redis/Memcached y estrategias
 
+**Nivel que evalúa:** Advanced
+
 **Prioridad con tu evaluador (Rudyard):** 🔴 Alta
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de estrategias de caché e invalidación: cuándo el cache se llena en la lectura (Cache-Aside) y cuándo se llena en la escritura (Write-Through), y qué pasa si el dato de origen cambia sin pasar por tu método. Ya lo tenés cerca en Entitlement con la invalidación de permisos — acá lo formalizás con las 4 estrategias, no solo la que ya usás.
 
 ## Cómo trabajar este reto (paso a paso)
 

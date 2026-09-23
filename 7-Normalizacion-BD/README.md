@@ -1,8 +1,14 @@
 # Reto 7 — Normalización BD / modelo E-R
 
+**Nivel que evalúa:** Trainer
+
 **Prioridad con tu evaluador (Rudyard):** 🟡 Media
 
 **Estado:** 🔲 Sin empezar
+
+## Para qué te sirve este reto
+
+Cierra el concepto de dependencias funcionales y formas normales: qué dato depende de qué clave, y qué inconsistencia aparece si no lo separás. El modelo de roles/permisos/usuarios detrás de Entitlement vive de este mismo análisis, aunque ya no lo hagas conscientemente.
 
 ## Cómo trabajar este reto (paso a paso)
 
