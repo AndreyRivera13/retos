@@ -1,4 +1,4 @@
-package pragma.model;
+package pragma.garage;
 
 import java.util.ArrayList;
 import java.util.List;

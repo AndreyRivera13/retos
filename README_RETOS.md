@@ -13,7 +13,7 @@ ahí hasta haber intentado tu propia solución.
 
 | # | Carpeta | Módulos | Estado |
 |---|---|---|---|
-| 1 | `1-POO` | model + app-service | ✅ Ya lo hiciste |
+| 1 | `1-POO` | model + app-service | ✅ Ya lo hice|
 | 2 | `2-SOLID` | model + app-service | 🔲 TODO |
 | 3 | `3-Excepciones` | model + app-service | 🔲 TODO |
 | 4 | `4-Estructuras-Datos` | model + app-service | 🔲 TODO |

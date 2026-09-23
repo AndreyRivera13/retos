@@ -1,6 +1,8 @@
-# Reto 18 — Seguridad — OWASP Top 10 / CWE
+# Reto 14 — Pruebas BDD (Cucumber/Karate)
 
-**Prioridad con tu evaluador (Rudyard):** 🔴 Alta
+**Prioridad con tu evaluador (Rudyard):** 🟢 Baja
+
+**Estado:** 🔲 Sin empezar
 
 ## Cómo trabajar este reto (paso a paso)
 
@@ -15,21 +17,21 @@
 
 ## Enunciado
 
-Te dan un endpoint `GET /usuarios/{id}/documentos` sin ninguna verificación de que el usuario autenticado sea el dueño del `id` solicitado. Identificá la vulnerabilidad (categoría OWASP + CWE), explicá el vector de ataque, y corregila.
+Escribí un `.feature` con 3 escenarios para "Reservar una cita" (reto 5/11): reserva exitosa, horario ya ocupado, doctor inexistente. Implementá los step definitions conectados al `GestionarCitasUseCase` real.
 
 ## Qué debés entregar
 
-Código corregido + identificación de categoría/CWE.
+`.feature` + step definitions + los 3 escenarios pasando.
 
 ## Cómo sabés que lo dominás
 
-¿Podés explicar la diferencia entre este fallo (control de acceso roto, CWE-284/A01) y una autenticación rota? — muchos los confunden.
+¿Un compañero no técnico puede leer tu `.feature` y decirte qué se está probando sin que le expliques nada del código?
 
-## 🎯 Con tu evaluador (Rudyard)
+## SDD — Spec-Driven Development
 
-JWT aparece explícito en el stack de sus dos trabajos como Technical Leader, así que conoce bien el terreno de autenticación — justo por eso es más probable que te tienda la trampa de confundir autenticación (JWT válido) con autorización (dueño del recurso), que es exactamente la distinción que pide este reto. No te quedes en "faltaba validar el JWT": el JWT SÍ es válido, el problema es otro.
-
+Antes de tocar código en este reto, escribí (alcanza con 3-5 líneas, en un comentario o en un README aparte) la especificación de lo que vas a construir: qué clases/métodos necesitás, el contrato de cada uno (entradas, salidas, casos borde) y la regla de negocio que cubre — el "qué" antes del "cómo". Es la misma disciplina que separa TDD (diseñás guiado por tests que escribís vos) de SDD (diseñás guiado por una spec escrita, para vos mismo o para que una IA la ejecute): la decisión de diseño se toma **antes** de escribir la primera línea, no se descubre a medida que tecleás. Encaja directo con el feedback de tus evaluadores: podés usar la IA para redactar o pulir esa spec, pero la decisión de qué debe hacer cada pieza es tuya, no de la IA — spec en mano, después sí generás o escribís el código.
 
 ---
+
 
 *Enunciado completo, entrega esperada y ejemplo de la técnica en un dominio distinto: `Retos_Assessment_Andrey.md` en la raíz de `retos/`. No copies el ejemplo — el dominio es distinto a propósito, para que entiendas la técnica y no el código.*

@@ -5,7 +5,7 @@
  * - define qué comportamiento debe tener una clase,
  * - pero cada clase decide cómo implementarlo.
  */
-package pragma.model;
+package pragma.garage;
 
 public interface Mantenible {
     /**

@@ -1,6 +1,8 @@
-# Reto 6 — Patrones GRASP
+# Reto 13 — Resiliencia (mínimo 2: CircuitBreaker, Retry, Fallback, RateLimit, Bulkhead)
 
 **Prioridad con tu evaluador (Rudyard):** 🟡 Media
+
+**Estado:** 🔲 Sin empezar
 
 ## Cómo trabajar este reto (paso a paso)
 
@@ -15,17 +17,21 @@
 
 ## Enunciado
 
-Sobre el sistema de citas del reto 5, identificá y ajustá si hace falta: ¿quién calcula la duración total de las citas del día de un doctor (Experto en Información)? ¿quién crea las instancias de `Cita` — el Service directamente con `new`, o debería haber un método `crear()` en el propio agregado/clase relacionada (Creador)?
+Simulá una pasarela de pagos externa que falla 40% de las veces. Envolvela con Resilience4j: `@Retry` (3 intentos, backoff exponencial), `@CircuitBreaker` (se abre con >50% de fallos en ventana de 10), `@Bulkhead` (máximo 5 llamadas concurrentes), y `@Fallback` que responda "pago en proceso, se confirmará luego" en vez de error crudo.
 
 ## Qué debés entregar
 
-El código ajustado + comentarios señalando exactamente la línea donde aplicaste cada patrón.
+Código + log de una corrida donde se vea el circuito pasando por los 3 estados.
 
 ## Cómo sabés que lo dominás
 
-¿Podés nombrar una clase candidata alternativa para cada responsabilidad y explicar por qué la descartaste?
+¿Podés explicar por qué combinaste Bulkhead con CircuitBreaker en vez de solo uno de los dos — qué problema distinto resuelve cada uno en este caso?
 
+## SDD — Spec-Driven Development
+
+Antes de tocar código en este reto, escribí (alcanza con 3-5 líneas, en un comentario o en un README aparte) la especificación de lo que vas a construir: qué clases/métodos necesitás, el contrato de cada uno (entradas, salidas, casos borde) y la regla de negocio que cubre — el "qué" antes del "cómo". Es la misma disciplina que separa TDD (diseñás guiado por tests que escribís vos) de SDD (diseñás guiado por una spec escrita, para vos mismo o para que una IA la ejecute): la decisión de diseño se toma **antes** de escribir la primera línea, no se descubre a medida que tecleás. Encaja directo con el feedback de tus evaluadores: podés usar la IA para redactar o pulir esa spec, pero la decisión de qué debe hacer cada pieza es tuya, no de la IA — spec en mano, después sí generás o escribís el código.
 
 ---
+
 
 *Enunciado completo, entrega esperada y ejemplo de la técnica en un dominio distinto: `Retos_Assessment_Andrey.md` en la raíz de `retos/`. No copies el ejemplo — el dominio es distinto a propósito, para que entiendas la técnica y no el código.*

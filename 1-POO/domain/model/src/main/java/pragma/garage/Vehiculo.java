@@ -1,4 +1,4 @@
-package pragma.model;
+package pragma.garage;
 
 /**
  * Clase base que representa a cualquier tipo de vehículo.

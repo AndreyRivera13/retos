@@ -1,4 +1,4 @@
-package pragma.model;
+package pragma.garage;
 
 /**
  * Clase concreta que representa una moto.

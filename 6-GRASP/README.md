@@ -1,6 +1,8 @@
-# Reto 9 — Protocolo adicional a REST
+# Reto 6 — Patrones GRASP
 
-**Prioridad con tu evaluador (Rudyard):** 🔴 Alta
+**Prioridad con tu evaluador (Rudyard):** 🟡 Media
+
+**Estado:** 🔲 Sin empezar
 
 ## Cómo trabajar este reto (paso a paso)
 
@@ -15,21 +17,21 @@
 
 ## Enunciado
 
-Implementá un servidor WebSocket de notificaciones: cuando un cliente se conecta, recibe un mensaje de bienvenida; cuando cualquier cliente manda un mensaje tipo `{"tipo":"alerta","texto":"..."}`, todos los demás clientes conectados lo reciben, pero si el tipo es `{"tipo":"privado","destino":"id","texto":"..."}` solo le llega al cliente con ese id de sesión.
+Sobre el sistema de citas del reto 5, identificá y ajustá si hace falta: ¿quién calcula la duración total de las citas del día de un doctor (Experto en Información)? ¿quién crea las instancias de `Cita` — el Service directamente con `new`, o debería haber un método `crear()` en el propio agregado/clase relacionada (Creador)?
 
 ## Qué debés entregar
 
-Código del servidor + captura o log mostrando el broadcast y el mensaje privado funcionando con al menos 3 clientes.
+El código ajustado + comentarios señalando exactamente la línea donde aplicaste cada patrón.
 
 ## Cómo sabés que lo dominás
 
-¿Podés explicar cómo garantizás que la lista de sesiones conectadas es segura ante acceso concurrente, y qué pasa si un cliente se desconecta abruptamente sin `onClose`?
+¿Podés nombrar una clase candidata alternativa para cada responsabilidad y explicar por qué la descartaste?
 
-## 🎯 Con tu evaluador (Rudyard)
+## SDD — Spec-Driven Development
 
-Su experiencia fuerte en protocolos es SOAP (core bancario legado) + REST/APIs para integraciones B2B, no WebSocket puntualmente. Probablemente no se quede en el WebSocket en sí — es más probable que te compare: "¿por qué aquí SÍ necesitás algo con estado/bidireccional y en tu integración B2B no?" (esa es la pregunta que él mismo se hizo migrando SOAP legado hacia APIs modernas).
-
+Antes de tocar código en este reto, escribí (alcanza con 3-5 líneas, en un comentario o en un README aparte) la especificación de lo que vas a construir: qué clases/métodos necesitás, el contrato de cada uno (entradas, salidas, casos borde) y la regla de negocio que cubre — el "qué" antes del "cómo". Es la misma disciplina que separa TDD (diseñás guiado por tests que escribís vos) de SDD (diseñás guiado por una spec escrita, para vos mismo o para que una IA la ejecute): la decisión de diseño se toma **antes** de escribir la primera línea, no se descubre a medida que tecleás. Encaja directo con el feedback de tus evaluadores: podés usar la IA para redactar o pulir esa spec, pero la decisión de qué debe hacer cada pieza es tuya, no de la IA — spec en mano, después sí generás o escribís el código.
 
 ---
+
 
 *Enunciado completo, entrega esperada y ejemplo de la técnica en un dominio distinto: `Retos_Assessment_Andrey.md` en la raíz de `retos/`. No copies el ejemplo — el dominio es distinto a propósito, para que entiendas la técnica y no el código.*

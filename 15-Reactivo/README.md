@@ -1,6 +1,6 @@
-# Reto 7 — Normalización BD / modelo E-R
+# Reto 15 — Paradigmas reactivo/funcional
 
-**Prioridad con tu evaluador (Rudyard):** 🟡 Media
+**Prioridad con tu evaluador (Rudyard):** 🔴🔴 La más alta de todas
 
 **Estado:** 🔲 Sin empezar
 
@@ -17,15 +17,19 @@
 
 ## Enunciado
 
-Normalizá hasta 3FN esta tabla: `Matriculas(id_matricula, estudiante_nombre, estudiante_documento, curso1_nombre, curso1_profesor, curso2_nombre, curso2_profesor)`.
+Convertí `GestionarCitasUseCase` a reactivo: `Mono<Cita> reservar(...)`, `Flux<Cita> citasDelDia(LocalDate fecha)`. Agregá un operador que, si `citasDelDia` no emite nada en 2 segundos (simulando latencia), devuelva un valor por defecto (`Mono.empty()` transformado con `.switchIfEmpty` o `.timeout` + fallback).
 
 ## Qué debés entregar
 
-Tablas finales con PK/FK marcadas + una frase por cada paso (1FN, 2FN, 3FN) diciendo qué dependencia resolviste.
+Código + explicación de qué pasa con la suscripción si nadie llama `.subscribe()`.
 
 ## Cómo sabés que lo dominás
 
-¿Podés explicar qué problema de inconsistencia real evitás al separar `curso_profesor` en su propia tabla? (pista: ¿qué pasa si el mismo profesor aparece con dos nombres distintos en filas distintas antes de normalizar?)
+¿Podés explicar la diferencia entre que tu método retorne `Mono<Cita>` vacío por diseño vs que lance una excepción, y cuándo usarías cada uno?
+
+## 🎯 Con tu evaluador (Rudyard)
+
+Este es EL tema donde tiene más autoridad de todo tu assessment — lideró personalmente la migración de POO a programación funcional con Spring WebFlux. No te va a preguntar "qué es un Mono" — te va a preguntar por los dolores reales de esa migración: qué se vuelve difícil de leer/debuggear en reactivo, y cómo decidiste (o decidirías) qué sí migrar a reactivo y qué no. Tené una opinión propia, no solo la teoría.
 
 ## SDD — Spec-Driven Development
 

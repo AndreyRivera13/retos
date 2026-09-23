@@ -18,10 +18,14 @@ public class Nomina<T extends Empleado> {
     private final List<T> empleados = new ArrayList<>();
 
     public void agregar(T empleado) {
-        throw new UnsupportedOperationException("TODO: implementar Nomina.agregar");
+        empleados.add(empleado);
     }
 
     public double totalAPagar() {
-        throw new UnsupportedOperationException("TODO: implementar Nomina.totalAPagar (sin instanceof)");
+        double total = 0;
+        for (T empleado : empleados) {
+            total += empleado.calcularSalario();
+        }
+        return total;
     }
 }

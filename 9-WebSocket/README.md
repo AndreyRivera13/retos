@@ -1,6 +1,6 @@
-# Reto 7 — Normalización BD / modelo E-R
+# Reto 9 — Protocolo adicional a REST
 
-**Prioridad con tu evaluador (Rudyard):** 🟡 Media
+**Prioridad con tu evaluador (Rudyard):** 🔴 Alta
 
 **Estado:** 🔲 Sin empezar
 
@@ -17,15 +17,19 @@
 
 ## Enunciado
 
-Normalizá hasta 3FN esta tabla: `Matriculas(id_matricula, estudiante_nombre, estudiante_documento, curso1_nombre, curso1_profesor, curso2_nombre, curso2_profesor)`.
+Implementá un servidor WebSocket de notificaciones: cuando un cliente se conecta, recibe un mensaje de bienvenida; cuando cualquier cliente manda un mensaje tipo `{"tipo":"alerta","texto":"..."}`, todos los demás clientes conectados lo reciben, pero si el tipo es `{"tipo":"privado","destino":"id","texto":"..."}` solo le llega al cliente con ese id de sesión.
 
 ## Qué debés entregar
 
-Tablas finales con PK/FK marcadas + una frase por cada paso (1FN, 2FN, 3FN) diciendo qué dependencia resolviste.
+Código del servidor + captura o log mostrando el broadcast y el mensaje privado funcionando con al menos 3 clientes.
 
 ## Cómo sabés que lo dominás
 
-¿Podés explicar qué problema de inconsistencia real evitás al separar `curso_profesor` en su propia tabla? (pista: ¿qué pasa si el mismo profesor aparece con dos nombres distintos en filas distintas antes de normalizar?)
+¿Podés explicar cómo garantizás que la lista de sesiones conectadas es segura ante acceso concurrente, y qué pasa si un cliente se desconecta abruptamente sin `onClose`?
+
+## 🎯 Con tu evaluador (Rudyard)
+
+Su experiencia fuerte en protocolos es SOAP (core bancario legado) + REST/APIs para integraciones B2B, no WebSocket puntualmente. Probablemente no se quede en el WebSocket en sí — es más probable que te compare: "¿por qué aquí SÍ necesitás algo con estado/bidireccional y en tu integración B2B no?" (esa es la pregunta que él mismo se hizo migrando SOAP legado hacia APIs modernas).
 
 ## SDD — Spec-Driven Development
 

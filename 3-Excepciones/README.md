@@ -1,6 +1,8 @@
-# Reto 14 — Pruebas BDD (Cucumber/Karate)
+# Reto 3 — Excepciones y depuración
 
 **Prioridad con tu evaluador (Rudyard):** 🟢 Baja
+
+**Estado:** 🔲 Sin empezar
 
 ## Cómo trabajar este reto (paso a paso)
 
@@ -15,17 +17,21 @@
 
 ## Enunciado
 
-Escribí un `.feature` con 3 escenarios para "Reservar una cita" (reto 5/11): reserva exitosa, horario ya ocupado, doctor inexistente. Implementá los step definitions conectados al `GestionarCitasUseCase` real.
+Implementá `ProcesadorPagos.procesar(Pago pago)` que lance `SaldoInsuficienteException` (checked) si el monto excede el saldo disponible, y `PagoInvalidoException` (checked) si el monto es ≤ 0 — ambas con constructor que acepte causa encadenada. El método debe usar `try-with-resources` para "cerrar" un recurso simulado (`RegistroTransaccion implements AutoCloseable`). Escribí 3 pruebas: pago válido, saldo insuficiente, monto inválido.
 
 ## Qué debés entregar
 
-`.feature` + step definitions + los 3 escenarios pasando.
+Código + pruebas JUnit pasando.
 
 ## Cómo sabés que lo dominás
 
-¿Un compañero no técnico puede leer tu `.feature` y decirte qué se está probando sin que le expliques nada del código?
+¿Podés explicar, sin ver el código, en qué orden se ejecutan las cosas si `procesar()` lanza una excepción dentro del bloque `try-with-resources` — se cierra igual el recurso?
 
+## SDD — Spec-Driven Development
+
+Antes de tocar código en este reto, escribí (alcanza con 3-5 líneas, en un comentario o en un README aparte) la especificación de lo que vas a construir: qué clases/métodos necesitás, el contrato de cada uno (entradas, salidas, casos borde) y la regla de negocio que cubre — el "qué" antes del "cómo". Es la misma disciplina que separa TDD (diseñás guiado por tests que escribís vos) de SDD (diseñás guiado por una spec escrita, para vos mismo o para que una IA la ejecute): la decisión de diseño se toma **antes** de escribir la primera línea, no se descubre a medida que tecleás. Encaja directo con el feedback de tus evaluadores: podés usar la IA para redactar o pulir esa spec, pero la decisión de qué debe hacer cada pieza es tuya, no de la IA — spec en mano, después sí generás o escribís el código.
 
 ---
+
 
 *Enunciado completo, entrega esperada y ejemplo de la técnica en un dominio distinto: `Retos_Assessment_Andrey.md` en la raíz de `retos/`. No copies el ejemplo — el dominio es distinto a propósito, para que entiendas la técnica y no el código.*

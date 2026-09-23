@@ -6,14 +6,20 @@ package pragma.nomina;
  */
 public class EmpleadoFijo extends Empleado implements Bonificable {
     // TODO: atributo salarioBase
+    private final double salarioBase;
+
+    public EmpleadoFijo(String nombre, String documento,double salarioBase ) {
+        super(nombre, documento);
+        this.salarioBase = salarioBase;
+    }
 
     @Override
     public double calcularSalario() {
-        throw new UnsupportedOperationException("TODO: implementar EmpleadoFijo.calcularSalario");
+        return salarioBase * 2;
     }
 
     @Override
     public double calcularBono() {
-        throw new UnsupportedOperationException("TODO: implementar EmpleadoFijo.calcularBono");
+        return salarioBase * 0.10;
     }
 }

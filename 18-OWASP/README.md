@@ -1,6 +1,6 @@
-# Reto 7 — Normalización BD / modelo E-R
+# Reto 18 — Seguridad — OWASP Top 10 / CWE
 
-**Prioridad con tu evaluador (Rudyard):** 🟡 Media
+**Prioridad con tu evaluador (Rudyard):** 🔴 Alta
 
 **Estado:** 🔲 Sin empezar
 
@@ -17,15 +17,19 @@
 
 ## Enunciado
 
-Normalizá hasta 3FN esta tabla: `Matriculas(id_matricula, estudiante_nombre, estudiante_documento, curso1_nombre, curso1_profesor, curso2_nombre, curso2_profesor)`.
+Te dan un endpoint `GET /usuarios/{id}/documentos` sin ninguna verificación de que el usuario autenticado sea el dueño del `id` solicitado. Identificá la vulnerabilidad (categoría OWASP + CWE), explicá el vector de ataque, y corregila.
 
 ## Qué debés entregar
 
-Tablas finales con PK/FK marcadas + una frase por cada paso (1FN, 2FN, 3FN) diciendo qué dependencia resolviste.
+Código corregido + identificación de categoría/CWE.
 
 ## Cómo sabés que lo dominás
 
-¿Podés explicar qué problema de inconsistencia real evitás al separar `curso_profesor` en su propia tabla? (pista: ¿qué pasa si el mismo profesor aparece con dos nombres distintos en filas distintas antes de normalizar?)
+¿Podés explicar la diferencia entre este fallo (control de acceso roto, CWE-284/A01) y una autenticación rota? — muchos los confunden.
+
+## 🎯 Con tu evaluador (Rudyard)
+
+JWT aparece explícito en el stack de sus dos trabajos como Technical Leader, así que conoce bien el terreno de autenticación — justo por eso es más probable que te tienda la trampa de confundir autenticación (JWT válido) con autorización (dueño del recurso), que es exactamente la distinción que pide este reto. No te quedes en "faltaba validar el JWT": el JWT SÍ es válido, el problema es otro.
 
 ## SDD — Spec-Driven Development
 

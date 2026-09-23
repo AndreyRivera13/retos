@@ -1,6 +1,8 @@
-# Reto 5 — Arquitectura de capas
+# Reto 16 — EDA — Arquitectura orientada a eventos (Kafka/RabbitMQ/etc)
 
 **Prioridad con tu evaluador (Rudyard):** 🟡 Media
+
+**Estado:** 🔲 Sin empezar
 
 ## Cómo trabajar este reto (paso a paso)
 
@@ -15,17 +17,21 @@
 
 ## Enunciado
 
-Diseñá (sin frameworks) un mini sistema de reservas de citas: `CitaRepository` (interfaz) + implementación en memoria, `CitaService` que valida que no haya dos citas en el mismo horario para el mismo doctor, y un "Controller" (clase simple con métodos que simula endpoints) que solo llama al Service.
+Cuando se reserva una cita (reto 5/11), publicá un evento `CitaReservada`. Creá un consumidor separado que, al recibirlo, simule el envío de un recordatorio — y hacelo idempotente: si el mismo evento (mismo id) llega dos veces, el recordatorio no se duplica (usá un `Set` de ids ya procesados, aunque sea en memoria para el ejercicio).
 
 ## Qué debés entregar
 
-Código + diagrama de texto (ASCII) mostrando qué capa llama a cuál.
+Productor + consumidor corriendo por separado + prueba de que mandar el mismo evento dos veces no duplica el efecto.
 
 ## Cómo sabés que lo dominás
 
-¿Podés señalar exactamente en qué capa vive la regla "no dos citas en el mismo horario" y explicar por qué no debería estar en el Controller ni en el Repository?
+¿Podés explicar qué semántica de entrega asumiste (at-least-once) y por qué sin la verificación de idempotencia tu sistema tendría un bug real en producción?
 
+## SDD — Spec-Driven Development
+
+Antes de tocar código en este reto, escribí (alcanza con 3-5 líneas, en un comentario o en un README aparte) la especificación de lo que vas a construir: qué clases/métodos necesitás, el contrato de cada uno (entradas, salidas, casos borde) y la regla de negocio que cubre — el "qué" antes del "cómo". Es la misma disciplina que separa TDD (diseñás guiado por tests que escribís vos) de SDD (diseñás guiado por una spec escrita, para vos mismo o para que una IA la ejecute): la decisión de diseño se toma **antes** de escribir la primera línea, no se descubre a medida que tecleás. Encaja directo con el feedback de tus evaluadores: podés usar la IA para redactar o pulir esa spec, pero la decisión de qué debe hacer cada pieza es tuya, no de la IA — spec en mano, después sí generás o escribís el código.
 
 ---
+
 
 *Enunciado completo, entrega esperada y ejemplo de la técnica en un dominio distinto: `Retos_Assessment_Andrey.md` en la raíz de `retos/`. No copies el ejemplo — el dominio es distinto a propósito, para que entiendas la técnica y no el código.*
