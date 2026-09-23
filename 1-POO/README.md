@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Trainer
 
-**Estado:** 🟡 En progreso — scaffold de `nomina/` armado, pero `Empleado`, `EmpleadoFijo`, `EmpleadoPorHoras` y `Nomina` todavía tienen `// TODO` sin implementar (verificado 2026-09-23).
+**Estado:** ✅ Cerrado — `Empleado`, `EmpleadoFijo`, `EmpleadoPorHoras` y `Nomina<T>` implementados (se corrigió un bug: `EmpleadoFijo.calcularSalario()` devolvía `salarioBase * 2` en vez de `salarioBase`). Verificado 2026-09-23.
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,9 @@ El polimorfismo permite que una clase abstracta (`Empleado`) delegue en cada sub
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+Ya implementé el modelo completo. `Empleado` es abstracta y deja `calcularSalario()` sin implementar; `EmpleadoFijo` devuelve `salarioBase` directo —sin depender de horas trabajadas— y además implementa `Bonificable` con `calcularBono()` al 10% del salario base; `EmpleadoPorHoras` calcula `horasTrabajadas * tarifaPorHora` y a propósito no implementa `Bonificable`, porque ese tipo de empleado no tiene bono. `Nomina<T extends Empleado>` recibe cualquier subtipo de `Empleado` y solo llama a `calcularSalario()` dentro del loop de `totalAPagar()` — en ningún punto usa `instanceof` ni necesita saber si el empleado es fijo o por horas.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+Eso es lo que cierra la brecha de POO: el polimorfismo vive en `calcularSalario()`, cada subtipo resuelve el suyo, y `Nomina<T>` queda genérica y cerrada a cambios. Si mañana agrego `EmpleadoComisionista`, solo creo esa clase —que extienda `Empleado` e implemente `calcularSalario()`— y ni `Nomina` ni el resto del código existente se tocan. Esa es la diferencia real con `List<Object>` y casts: con casts, el código que usa la lista necesita conocer el tipo concreto para poder operar sobre él; con polimorfismo, nunca lo necesita.
 
 ## SDD — Spec-Driven Development
 
