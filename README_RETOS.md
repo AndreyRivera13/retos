@@ -25,7 +25,7 @@ evaluador" — no hace falta volver a esta tabla para consultarlo. Marcá el
 | 5 | `5-Arquitectura-Capas` | model + usecase + memory-repository + simple-controller | 🔲 TODO |
 | 6 | `6-GRASP` | model + usecase | 🔲 TODO |
 | 7 | `7-Normalizacion-BD` | solo SQL/README (sin Gradle) | 🔲 TODO |
-| 8 | `8-Uso-IA` | solo README (sin código) | 🔲 TODO |
+| 8 | `8-Uso-IA` | solo README (sin código) | ✅ Cerrado — verificado el 2026-09-23 |
 | 9 | `9-WebSocket` | model + websocket-endpoint | 🔲 TODO |
 | 10 | `10-Cache` | model + usecase | 🔲 TODO |
 | 11 | `11-Clean-Architecture` | model + usecase + memory-adapter + jpa-adapter | 🔲 TODO |

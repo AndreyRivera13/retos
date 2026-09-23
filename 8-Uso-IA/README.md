@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Junior
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — tabla armada con tareas reales de esta misma sesión (generación de READMEs, script de automatización, y la lógica/bugs de los retos 1 y 2). Verificado 2026-09-23.
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,18 @@ El criterio de uso de IA en desarrollo no es técnico sino de trazabilidad de de
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+Usé como evidencia real las tareas de esta misma sesión trabajando con Claude en mis retos del assessment, en vez de una tarea inventada:
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+| Qué hice (tarea concreta) | ¿Usé IA? | Si sí: ¿qué le delegué? / Si no: ¿qué decisión tomé yo? |
+|---|---|---|
+| Generar los 19 `README.md` de los retos (estructura, redacción de las secciones explicativas) | Sí | Le delegué la redacción y el formato repetitivo de 19 archivos. Las decisiones editoriales —qué secciones iban, sacar las menciones al evaluador, pasar la sección de cierre a primera persona, quitar el paso a paso— las tomé yo, iterando hasta que quedó como quería. |
+| Escribir el script `gen_pasoapaso.py` que genera los README a partir de datos estructurados | Sí | Le delegué la implementación del script en sí (loops, f-strings, manejo de archivos). Decidí yo la estructura de datos (un dict por reto) y qué campos necesitaba. |
+| Entender conceptos técnicos para el assessment (SOLID, polimorfismo, GRASP, etc.) antes de codificar | Sí | Le delegué la explicación/síntesis de la teoría. No le delegué la aplicación: cada concepto lo apliqué yo en mi propio código. |
+| Implementar la lógica de negocio de `ReglaEdad`, `ReglaIngresos` y `ReglaHistorial` en el reto 2 (SOLID) | No | La IA me dio la estructura del patrón Strategy (ya venía en el scaffold) y preguntas guía, pero la lógica de cada `if` la escribí yo. De hecho cometí dos bugs yo solo —`ReglaHistorial` no leía el campo real, `ReglaEdad` usaba `>` en vez de `>=`— y los corregí yo, no la IA. |
+| Corregir el bug de `EmpleadoFijo.calcularSalario()` en el reto 1 (POO) que devolvía `salarioBase * 2` | No | La IA me hizo la pregunta de por qué estaba ese `*2`, pero la decisión de que el salario fijo debía ser directo (sin duplicar) y el cambio del código los hice yo. |
+| Decidir qué iba en cada sección de los README (quitar el "paso a paso", sacar el nombre del evaluador, primera persona sí/no) | No | Cada uno de esos cambios lo pedí yo explícitamente después de ver el resultado — la IA no propuso ninguno por su cuenta. |
+
+El patrón que se ve: a la IA le delego generación de contenido repetitivo y explicación de teoría, pero la lógica de negocio, los bugs y las decisiones de formato/edición las tomo yo. Puedo responder "¿por qué decidiste eso?" en cualquier fila sin necesitar abrir el chat.
 
 ## SDD — Spec-Driven Development
 
