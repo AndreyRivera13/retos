@@ -14,7 +14,7 @@ public class EmpleadoFijo extends Empleado implements Bonificable {
 
     @Override
     public double calcularSalario() {
-        return salarioBase * 2;
+        return salarioBase;
     }
 
     @Override
