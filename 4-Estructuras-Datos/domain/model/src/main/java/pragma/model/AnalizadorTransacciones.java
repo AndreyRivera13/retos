@@ -19,7 +19,6 @@ public class AnalizadorTransacciones {
         return totalPorCliente;
     }
 
-    /** TODO: usando totalPorCliente(...), devuelve el cliente con mayor total. */
     public String clienteConMayorTotal(List<String> transacciones) {
         Map<String, Double> totalPorCliente = totalPorCliente(transacciones);
         return totalPorCliente.entrySet().stream()
@@ -28,14 +27,13 @@ public class AnalizadorTransacciones {
                 .orElse(null);
     }
 
-    /** TODO: lista de clientes ordenada de mayor a menor total (sin Collectors). */
     public List<String> ordenarPorTotalDescendente(List<String> transacciones) {
         Map<String, Double> totalPorCliente = totalPorCliente(transacciones);
         return new ArrayList<>(totalPorCliente.keySet()).stream()
                 .sorted((cliente1, cliente2) -> totalPorCliente.get(cliente2).compareTo(totalPorCliente.get(cliente1)))
                 .collect(Collectors.toList());
     }
-    
+
     // la complejidad Big O de la solución para n transacciones
     //  O(n log n) debido a la operación de ordenamiento.
 

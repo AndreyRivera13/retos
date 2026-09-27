@@ -3,19 +3,39 @@ package pragma;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import pragma.model.AnalizadorTransacciones;
 
-/**
- * Punto de arranque del reto "4-Estructuras-Datos".
- * No necesitas tocar esta clase: úsala solo para probar manualmente
- * lo que vayas implementando (agrega tu propio código de prueba en el main
- * o, mejor, escribe pruebas JUnit en src/test).
- */
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class MainApplication {
     public static void main(String[] args) {
         SpringApplication.run(MainApplication.class, args);
-        // TODO (opcional): cuando tengas tus clases implementadas, arma aquí
-        // una pequeña prueba manual, igual a como se hizo en 1-POO/MainApplication.java
+
+        AnalizadorTransacciones analizador = new AnalizadorTransacciones();
+
+        List<String> transacciones = Arrays.asList(
+                "ana:500",
+                "luis:300",
+                "ana:200",
+                "carlos:800",
+                "luis:150"
+        );
+
+        System.out.println("=== 1. Total por cliente ===");
+        Map<String, Double> totales = analizador.totalPorCliente(transacciones);
+        totales.forEach((cliente, total) -> System.out.println(cliente + " -> $" + total));
+
+        System.out.println("\n=== 2. Cliente con mayor total ===");
+        String topCliente = analizador.clienteConMayorTotal(transacciones);
+        System.out.println("Cliente: " + topCliente);
+
+        System.out.println("\n=== 3. Clientes ordenados de mayor a menor total ===");
+        List<String> ordenados = analizador.ordenarPorTotalDescendente(transacciones);
+        System.out.println(ordenados);
     }
 }
