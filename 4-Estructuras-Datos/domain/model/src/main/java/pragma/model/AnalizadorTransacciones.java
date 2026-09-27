@@ -1,31 +1,42 @@
 package pragma.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Recibe transacciones en formato "cliente:monto" (ej: "ana:500").
- * TODO: implementa los 3 métodos SIN usar Collectors.groupingBy
- * (a mano, con Map + getOrDefault/merge + Comparator, como en el ejemplo
- * de votos del documento de retos, tema 4).
  */
 public class AnalizadorTransacciones {
 
-    /** TODO: suma el monto total por cliente. */
     public Map<String, Double> totalPorCliente(List<String> transacciones) {
-        throw new UnsupportedOperationException("TODO: implementar totalPorCliente");
+        Map<String, Double> totalPorCliente = transacciones.stream()
+                .collect(Collectors.toMap(
+                        transaccion -> transaccion.split(":")[0],
+                        transaccion -> Double.parseDouble(transaccion.split(":")[1]),
+                        Double::sum));
+        return totalPorCliente;
     }
 
     /** TODO: usando totalPorCliente(...), devuelve el cliente con mayor total. */
     public String clienteConMayorTotal(List<String> transacciones) {
-        throw new UnsupportedOperationException("TODO: implementar clienteConMayorTotal");
+        Map<String, Double> totalPorCliente = totalPorCliente(transacciones);
+        return totalPorCliente.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
     }
 
     /** TODO: lista de clientes ordenada de mayor a menor total (sin Collectors). */
     public List<String> ordenarPorTotalDescendente(List<String> transacciones) {
-        throw new UnsupportedOperationException("TODO: implementar ordenarPorTotalDescendente");
+        Map<String, Double> totalPorCliente = totalPorCliente(transacciones);
+        return new ArrayList<>(totalPorCliente.keySet()).stream()
+                .sorted((cliente1, cliente2) -> totalPorCliente.get(cliente2).compareTo(totalPorCliente.get(cliente1)))
+                .collect(Collectors.toList());
     }
+    
+    // la complejidad Big O de la solución para n transacciones
+    //  O(n log n) debido a la operación de ordenamiento.
 
-    // Recuerda: en la entrega debes anotar la complejidad Big O de tu solución
-    // para n transacciones (coméntala aquí arriba de cada método cuando termines).
 }
