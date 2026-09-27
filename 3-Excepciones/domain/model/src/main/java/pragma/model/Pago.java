@@ -1,6 +1,5 @@
 package pragma.model;
 
-/** DTO de un pago a procesar. Ya está completo. */
 public class Pago {
     private final double monto;
     private final double saldoDisponible;

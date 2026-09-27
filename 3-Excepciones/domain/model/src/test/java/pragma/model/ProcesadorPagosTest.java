@@ -5,27 +5,22 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * TODO: completa estas 3 pruebas (los nombres ya te dicen qué caso es cada una).
- * No cambies las firmas, solo el cuerpo.
- */
 class ProcesadorPagosTest {
 
     private final ProcesadorPagos procesador = new ProcesadorPagos();
 
     @Test
     void pagoValidoNoLanzaExcepcion() {
-        // TODO: arma un Pago válido (monto <= saldoDisponible, monto > 0)
-        // y verifica con assertDoesNotThrow que procesar() no lanza nada.
+        assertDoesNotThrow(() -> procesador.procesar(new Pago(100, 200)));
     }
 
     @Test
     void pagoConMontoMayorAlSaldoLanzaSaldoInsuficiente() {
-        // TODO: assertThrows(SaldoInsuficienteException.class, () -> procesador.procesar(pagoConMontoAlto));
+        assertThrows(SaldoInsuficienteException.class, () -> procesador.procesar(new Pago(300, 200)));
     }
 
     @Test
     void pagoConMontoInvalidoLanzaPagoInvalido() {
-        // TODO: assertThrows(PagoInvalidoException.class, () -> procesador.procesar(pagoConMontoCero));
+        assertThrows(PagoInvalidoException.class, () -> procesador.procesar(new Pago(0, 200)));
     }
 }
