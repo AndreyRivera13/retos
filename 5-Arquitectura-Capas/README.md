@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Trainer
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — `CitaRepository` (puerto), `CitaRepositoryEnMemoria` (adaptador driven), `CitaService` (caso de uso con regla de no solapamiento) y `CitaController` (entrypoint) implementados. Diagrama de arquitectura `ARQUITECTURA.txt` completado y pruebas unitarias pasando. Verificado 2026-09-27.
 
 ## Para qué te sirve este reto
 

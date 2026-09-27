@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Trainer
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — `AnalizadorTransacciones` implementado con `totalPorCliente`, `clienteConMayorTotal` y `ordenarPorTotalDescendente`. Análisis de complejidad Big O documentado. Verificado 2026-09-27.
 
 ## Para qué te sirve este reto
 

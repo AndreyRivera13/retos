@@ -1,6 +1,8 @@
 package pragma.model;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 /**
  * TODO (Experto en Información - GRASP): Cita tiene los datos (horaInicio,
@@ -18,17 +20,24 @@ public class Cita {
         this.horaFin = horaFin;
     }
 
-    /** TODO: duración en minutos entre horaInicio y horaFin. */
     public long duracionEnMinutos() {
-        throw new UnsupportedOperationException("TODO: implementar Cita.duracionEnMinutos");
+        return Duration.between(horaInicio, horaFin).toMinutes();
     }
 
-    /** TODO: ¿esta cita se solapa en el tiempo con otra? */
     public boolean seSolapaCon(Cita otra) {
-        throw new UnsupportedOperationException("TODO: implementar Cita.seSolapaCon");
+        return horaInicio.isBefore(otra.horaFin)
+                && otra.horaInicio.isBefore(horaFin);
     }
 
-    public String getDoctorId() { return doctorId; }
-    public LocalDateTime getHoraInicio() { return horaInicio; }
-    public LocalDateTime getHoraFin() { return horaFin; }
+    public String getDoctorId() {
+        return doctorId;
+    }
+
+    public LocalDateTime getHoraInicio() {
+        return horaInicio;
+    }
+
+    public LocalDateTime getHoraFin() {
+        return horaFin;
+    }
 }

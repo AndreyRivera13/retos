@@ -20,9 +20,9 @@ evaluador" — no hace falta volver a esta tabla para consultarlo. Marcá el
 |---|---|---|---|
 | 1 | `1-POO` | model + app-service | ✅ Cerrado — verificado el 2026-09-23 |
 | 2 | `2-SOLID` | model + app-service | ✅ Cerrado — verificado el 2026-09-23 |
-| 3 | `3-Excepciones` | model + app-service | 🔲 TODO |
-| 4 | `4-Estructuras-Datos` | model + app-service | 🔲 TODO |
-| 5 | `5-Arquitectura-Capas` | model + usecase + memory-repository + simple-controller | 🔲 TODO |
+| 3 | `3-Excepciones` | model + app-service | ✅ Cerrado — verificado el 2026-09-27 |
+| 4 | `4-Estructuras-Datos` | model + app-service | ✅ Cerrado — verificado el 2026-09-27 |
+| 5 | `5-Arquitectura-Capas` | model + usecase + memory-repository + simple-controller | ✅ Cerrado — verificado el 2026-09-27 |
 | 6 | `6-GRASP` | model + usecase | 🔲 TODO |
 | 7 | `7-Normalizacion-BD` | solo SQL/README (sin Gradle) | 🔲 TODO |
 | 8 | `8-Uso-IA` | solo README (sin código) | ✅ Cerrado — verificado el 2026-09-23 |
