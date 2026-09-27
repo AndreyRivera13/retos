@@ -1,6 +1,36 @@
-TODO: dibuja aquí (ASCII, no hace falta que sea bonito) qué capa llama a cuál.
-Ejemplo de formato:
+==============================================================================
+DIAGRAMA DE ARQUITECTURA DE CAPAS
+==============================================================================
 
-  [Controller] --> [Service] --> [Repository (interfaz)] --> [Repository en memoria]
+  +-------------------------------------------------------------------------+
+  | 1. ENTRY POINTS (Capa de Entrada / Infraestructura)                    |
+  |    - CitaController (adapta requests/invocaciones externas)             |
+  +-------------------------------------------------------------------------+
+                                      |
+                                      v (llama a)
+  +-------------------------------------------------------------------------+
+  | 2. DOMAIN USE CASE (Capa de Negocio / Aplicación)                      |
+  |    - CitaService                                                        |
+  |      * REGLA DE NEGOCIO: "No dos citas en el mismo horario para el      |
+  |        mismo doctor" vive AQUÍ. Valida disponibilidad antes de persistir|
+  +-------------------------------------------------------------------------+
+                                      |
+                                      v (depende de la abstracción / puerto)
+  +-------------------------------------------------------------------------+
+  | 3. DOMAIN REPOSITORY INTERFACE (Puerto en dominio)                     |
+  |    - CitaRepository (interfaz que desacopla la persistencia)            |
+  +-------------------------------------------------------------------------+
+                                      ^
+                                      | (implementa / principio de inversión)
+  +-------------------------------------------------------------------------+
+  | 4. DRIVEN ADAPTERS (Capa de Persistencia / Infraestructura)             |
+  |    - CitaRepositoryEnMemoria (almacenamiento en List en memoria)        |
+  +-------------------------------------------------------------------------+
 
-Señala en qué capa vive la regla "no dos citas en el mismo horario del mismo doctor".
+==============================================================================
+RESPONSABILIDAD Y UBICACIÓN DE LA REGLA:
+- La regla "no dos citas en el mismo horario para el mismo doctor" vive en CitaService
+  (capa de dominio/casos de uso).
+- No pertenece a CitaController (este solo adapta transporte/llamadas).
+- No pertenece a CitaRepository (este solo almacena y recupera datos).
+==============================================================================
