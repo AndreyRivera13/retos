@@ -1,7 +1,6 @@
 package pragma.model;
 
 /**
- * TODO: implementa procesar(Pago pago) usando try-with-resources sobre un
  * RegistroTransaccion:
  *  - si pago.getMonto() <= 0            -> lanza PagoInvalidoException
  *  - si pago.getMonto() > saldoDisponible -> lanza SaldoInsuficienteException
