@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Trainer
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Completado
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,22 @@ Una excepción checked obliga a quien llama a manejar explícitamente una falla 
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+- **¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?**
+  - `Pago`: Modelo de dominio inmutable que encapsula el monto a pagar y el saldo disponible.
+  - `PagoInvalidoException`: Excepción checked (`extends Exception`) lanzada cuando el monto a procesar es menor o igual a cero. Soporta mensajes y causa encadenada (`Throwable causa`).
+  - `SaldoInsuficienteException`: Excepción checked (`extends Exception`) lanzada cuando el monto solicitado supera el saldo disponible. Soporta mensajes y causa encadenada.
+  - `RegistroTransaccion`: Recurso transaccional que implementa `AutoCloseable` para simular la apertura y cierre controlado de recursos.
+  - `ProcesadorPagos.procesar(Pago pago)`: Orquesta la validación de negocio utilizando `try-with-resources` para garantizar el cierre seguro de `RegistroTransaccion` ante ejecuciones exitosas o excepciones.
+  - `ProcesadorPagosTest`: Suite de pruebas unitarias con JUnit 5 que valida los tres escenarios clave: pago exitoso, saldo insuficiente y monto inválido.
+  - `MainApplication`: Punto de entrada con demostración manual interactiva de captura y procesamiento de los tres escenarios.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+- **¿Cómo mi código, específicamente, resuelve el concepto de este reto?**
+  - `ProcesadorPagos.procesar(Pago pago)` declara explícitamente `throws SaldoInsuficienteException, PagoInvalidoException` asegurando que los llamadores manejen las fallas de negocio esperadas.
+  - El uso de la sentencia `try (RegistroTransaccion registro = new RegistroTransaccion())` garantiza que `registro.close()` sea invocado de forma determinista y prioritaria antes de que cualquier excepción escape del método.
+  - Los constructores sobrecargados de `PagoInvalidoException` y `SaldoInsuficienteException` permiten encadenar excepciones previas preservando la causa raíz y el stacktrace.
+
+- **¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí?**
+  - Es fundamental recordar que `try-with-resources` cierra el recurso *antes* de que la excepción sea capturada por un bloque `catch` externo o propagada hacia el llamador, y que si `close()` falla mientras existe una excepción activa en el bloque `try`, la excepción de `close()` pasa a ser una excepción suprimida (`suppressed exception`) para no opacar la causa principal.
 
 ## SDD — Spec-Driven Development
 
