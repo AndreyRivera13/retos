@@ -1,12 +1,15 @@
 package pragma.websocket;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
+import org.springframework.stereotype.Component;
 import pragma.model.MensajeEntrante;
+import tools.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 
 /**
  * TODO: implementa la lógica de:
@@ -21,6 +24,8 @@ import pragma.model.MensajeEntrante;
  * abruptamente SIN disparar onClose (pista: sendText a una sesión cerrada
  * lanza excepción — ¿cómo lo manejarías?).
  */
+
+@Component
 @ServerEndpoint("/notificaciones")
 public class NotificacionesEndpoint {
     private static final SesionesRegistro sesiones = new SesionesRegistro();
@@ -28,16 +33,60 @@ public class NotificacionesEndpoint {
 
     @OnOpen
     public void onOpen(Session session) {
-        throw new UnsupportedOperationException("TODO: implementar onOpen");
+        sesiones.agregar(session);
+
+        try {
+            session.getBasicRemote().sendText(
+                    "Bienvenido. Tu ID de sesión es: " + session.getId()
+            );
+        } catch (Exception e) {
+            sesiones.quitar(session);
+        }
     }
 
     @OnMessage
     public void onMessage(String mensajeJson, Session session) {
-        throw new UnsupportedOperationException("TODO: implementar onMessage");
+        try {
+            MensajeEntrante mensaje =
+                    objectMapper.readValue(mensajeJson, MensajeEntrante.class);
+
+            if ("alerta".equals(mensaje.tipo())) {
+
+                for (Session destino : sesiones.obtenerTodas()) {
+                    try {
+                        destino.getBasicRemote().sendText(mensaje.texto());
+                    } catch (Exception e) {
+                        sesiones.quitar(destino);
+                    }
+                }
+
+            } else if ("privado".equals(mensaje.tipo())) {
+
+                for (Session destino : sesiones.obtenerTodas()) {
+                    if (destino.getId().equals(mensaje.destino())) {
+                        try {
+                            destino.getBasicRemote().sendText(mensaje.texto());
+                        } catch (Exception e) {
+                            sesiones.quitar(destino);
+                        }
+                        break;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            try {
+                session.getBasicRemote().sendText(
+                        "Error procesando el mensaje: " + e.getMessage()
+                );
+            } catch (Exception ignored) {
+                sesiones.quitar(session);
+            }
+        }
     }
 
     @OnClose
     public void onClose(Session session) {
-        throw new UnsupportedOperationException("TODO: implementar onClose");
+        sesiones.quitar(session);
     }
 }

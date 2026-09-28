@@ -15,14 +15,14 @@ public class SesionesRegistro {
     private final Set<Session> sesiones = new CopyOnWriteArraySet<>();
 
     public void agregar(Session session) {
-        throw new UnsupportedOperationException("TODO: implementar agregar");
+        sesiones.add(session);
     }
 
     public void quitar(Session session) {
-        throw new UnsupportedOperationException("TODO: implementar quitar");
+        sesiones.remove(session);
     }
 
     public Set<Session> obtenerTodas() {
-        throw new UnsupportedOperationException("TODO: implementar obtenerTodas");
+        return sesiones;
     }
 }
