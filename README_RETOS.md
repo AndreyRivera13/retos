@@ -23,8 +23,8 @@ evaluador" — no hace falta volver a esta tabla para consultarlo. Marcá el
 | 3 | `3-Excepciones` | model + app-service | ✅ Cerrado — verificado el 2026-09-27 |
 | 4 | `4-Estructuras-Datos` | model + app-service | ✅ Cerrado — verificado el 2026-09-27 |
 | 5 | `5-Arquitectura-Capas` | model + usecase + memory-repository + simple-controller | ✅ Cerrado — verificado el 2026-09-27 |
-| 6 | `6-GRASP` | model + usecase | 🔲 TODO |
-| 7 | `7-Normalizacion-BD` | solo SQL/README (sin Gradle) | 🔲 TODO |
+| 6 | `6-GRASP` | model + usecase | ✅ Cerrado — verificado el 2026-09-27 |
+| 7 | `7-Normalizacion-BD` | solo SQL/README (sin Gradle) | ✅ Cerrado — verificado el 2026-09-27 |
 | 8 | `8-Uso-IA` | solo README (sin código) | ✅ Cerrado — verificado el 2026-09-23 |
 | 9 | `9-WebSocket` | model + websocket-endpoint | 🔲 TODO |
 | 10 | `10-Cache` | model + usecase | 🔲 TODO |

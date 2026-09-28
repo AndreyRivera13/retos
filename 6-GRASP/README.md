@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Trainer
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — verificado el 2026-09-27
 
 ## Para qué te sirve este reto
 
