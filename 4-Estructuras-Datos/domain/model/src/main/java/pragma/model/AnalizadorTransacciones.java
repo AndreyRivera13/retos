@@ -1,6 +1,7 @@
 package pragma.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,12 +12,14 @@ import java.util.stream.Collectors;
 public class AnalizadorTransacciones {
 
     public Map<String, Double> totalPorCliente(List<String> transacciones) {
-        Map<String, Double> totalPorCliente = transacciones.stream()
-                .collect(Collectors.toMap(
-                        transaccion -> transaccion.split(":")[0],
-                        transaccion -> Double.parseDouble(transaccion.split(":")[1]),
-                        Double::sum));
-        return totalPorCliente;
+        Map<String, Double> resultado = new HashMap<>();
+        for (String transaccion : transacciones) {
+            String cliente = transaccion.split(":")[0];
+            double monto = Double.parseDouble(transaccion.split(":")[1]);
+            resultado.put(cliente, resultado.getOrDefault(cliente, 0.0) + monto);
+            resultado.merge(cliente, monto, Double::sum);
+        }
+        return resultado;
     }
 
     public String clienteConMayorTotal(List<String> transacciones) {

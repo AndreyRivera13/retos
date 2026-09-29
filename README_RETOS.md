@@ -26,7 +26,7 @@ evaluador" — no hace falta volver a esta tabla para consultarlo. Marcá el
 | 6 | `6-GRASP` | model + usecase | ✅ Cerrado — verificado el 2026-09-29 |
 | 7 | `7-Normalizacion-BD` | solo SQL/README (sin Gradle) | ✅ Cerrado — verificado el 2026-09-29 |
 | 8 | `8-Uso-IA` | solo README (sin código) | ✅ Cerrado — verificado el 2026-09-23 |
-| 9 | `9-WebSocket` | model + websocket-endpoint | 🟡 En revisión — pendiente tu respuesta (ver README del reto) |
+| 9 | `9-WebSocket` | model + websocket-endpoint | ✅ Cerrado — verificado el 2026-09-29 |
 | 10 | `10-Cache` | model + usecase | 🔲 TODO |
 | 11 | `11-Clean-Architecture` | model + usecase + memory-adapter + jpa-adapter | 🔲 TODO |
 | 12 | `12-GoF` | model + app-service | 🔲 TODO |

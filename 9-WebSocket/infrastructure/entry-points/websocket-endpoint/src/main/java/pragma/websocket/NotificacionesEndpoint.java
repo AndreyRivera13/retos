@@ -19,7 +19,6 @@ import java.io.IOException;
  *      si tipo=="privado" -> reenvía SOLO a la sesión cuyo session.getId()
  *                             sea igual a mensaje.destino().
  *  - onClose: quita la sesión del registro.
- *
  * Demuestra dominio si puedes explicar qué pasa si un cliente se desconecta
  * abruptamente SIN disparar onClose (pista: sendText a una sesión cerrada
  * lanza excepción — ¿cómo lo manejarías?).
@@ -34,7 +33,6 @@ public class NotificacionesEndpoint {
     @OnOpen
     public void onOpen(Session session) {
         sesiones.agregar(session);
-
         try {
             session.getBasicRemote().sendText(
                     "Bienvenido. Tu ID de sesión es: " + session.getId()
@@ -49,31 +47,21 @@ public class NotificacionesEndpoint {
         try {
             MensajeEntrante mensaje =
                     objectMapper.readValue(mensajeJson, MensajeEntrante.class);
-
             if ("alerta".equals(mensaje.tipo())) {
-
-                for (Session destino : sesiones.obtenerTodas()) {
-                    try {
-                        destino.getBasicRemote().sendText(mensaje.texto());
-                    } catch (Exception e) {
-                        sesiones.quitar(destino);
-                    }
-                }
-
+                sesiones.obtenerTodas().stream()
+                        .filter(s -> !s.equals(session))
+                        .forEach(s -> {
+                            try {
+                                s.getAsyncRemote().sendText(mensaje.texto());
+                            } catch (Exception e) {
+                                sesiones.quitar(s);
+                            }
+                        });
             } else if ("privado".equals(mensaje.tipo())) {
-
-                for (Session destino : sesiones.obtenerTodas()) {
-                    if (destino.getId().equals(mensaje.destino())) {
-                        try {
-                            destino.getBasicRemote().sendText(mensaje.texto());
-                        } catch (Exception e) {
-                            sesiones.quitar(destino);
-                        }
-                        break;
-                    }
-                }
+                sesiones.obtenerTodas().stream()
+                        .filter(s -> !s.equals(session))
+                        .forEach(s -> s.getAsyncRemote().sendText(mensaje.texto()));
             }
-
         } catch (Exception e) {
             try {
                 session.getBasicRemote().sendText(

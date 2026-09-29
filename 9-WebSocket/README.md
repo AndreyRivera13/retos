@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Advanced
 
-**Estado:** 🟡 En revisión — `SesionesRegistro` (con `CopyOnWriteArraySet`) y `NotificacionesEndpoint` implementados, manejo de sesión caída sin `onClose` cubierto. Falta confirmar si el broadcast de "alerta" debe excluir al remitente. Pendiente de tu respuesta antes de cerrar. Verificado 2026-09-29.
+**Estado:** ✅ Cerrado — verificado el 2026-09-29.
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,9 @@ WebSocket mantiene una conexión persistente y con estado, a diferencia de REST,
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+Implementé `SesionesRegistro` con un `CopyOnWriteArraySet<Session>` para que el acceso concurrente a la lista de sesiones no necesite sincronización manual — está pensado para muchas lecturas (broadcast) y pocas escrituras (conectar/desconectar), que es justo el patrón de este reto. En `NotificacionesEndpoint`, `onOpen` registra la sesión y manda el mensaje de bienvenida; `onMessage` distingue "alerta" (broadcast a todos menos el remitente) de "privado" (busca la sesión por `session.getId()` y le manda solo a esa).
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+Tuve dos huecos reales que corregí: el broadcast de "alerta" al principio incluía al remitente —lo excluí filtrando `!s.equals(session)` antes del `forEach`. Y el envío en el broadcast no tenía manejo de sesión caída: si un cliente se desconecta abruptamente sin disparar `onClose`, `sendText` a esa sesión lanza excepción, y sin un try/catch por sesión esa excepción cortaba el resto del broadcast a mitad de camino. Lo resolví envolviendo el `sendText` de cada sesión en su propio try/catch, sacando del registro (`sesiones.quitar(s)`) la que falla, en vez de dejar que una sesión muerta tumbe el envío a las demás.
 
 ## 🎯 Con tu evaluador
 
