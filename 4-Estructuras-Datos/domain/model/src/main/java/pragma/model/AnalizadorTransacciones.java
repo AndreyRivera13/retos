@@ -16,7 +16,6 @@ public class AnalizadorTransacciones {
         for (String transaccion : transacciones) {
             String cliente = transaccion.split(":")[0];
             double monto = Double.parseDouble(transaccion.split(":")[1]);
-            resultado.put(cliente, resultado.getOrDefault(cliente, 0.0) + monto);
             resultado.merge(cliente, monto, Double::sum);
         }
         return resultado;
