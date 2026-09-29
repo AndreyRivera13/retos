@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Advanced
 
-**Estado:** 🔲 Sin empezar
+**Estado:** 🟡 En revisión — `SesionesRegistro` (con `CopyOnWriteArraySet`) y `NotificacionesEndpoint` implementados, manejo de sesión caída sin `onClose` cubierto. Falta confirmar si el broadcast de "alerta" debe excluir al remitente. Pendiente de tu respuesta antes de cerrar. Verificado 2026-09-29.
 
 ## Para qué te sirve este reto
 

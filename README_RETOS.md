@@ -20,13 +20,13 @@ evaluador" — no hace falta volver a esta tabla para consultarlo. Marcá el
 |---|---|---|---|
 | 1 | `1-POO` | model + app-service | ✅ Cerrado — verificado el 2026-09-23 |
 | 2 | `2-SOLID` | model + app-service | ✅ Cerrado — verificado el 2026-09-23 |
-| 3 | `3-Excepciones` | model + app-service | ✅ Cerrado — verificado el 2026-09-27 |
-| 4 | `4-Estructuras-Datos` | model + app-service | ✅ Cerrado — verificado el 2026-09-27 |
-| 5 | `5-Arquitectura-Capas` | model + usecase + memory-repository + simple-controller | ✅ Cerrado — verificado el 2026-09-27 |
-| 6 | `6-GRASP` | model + usecase | ✅ Cerrado — verificado el 2026-09-27 |
-| 7 | `7-Normalizacion-BD` | solo SQL/README (sin Gradle) | ✅ Cerrado — verificado el 2026-09-27 |
+| 3 | `3-Excepciones` | model + app-service | ✅ Cerrado — verificado el 2026-09-29 |
+| 4 | `4-Estructuras-Datos` | model + app-service | 🟡 En revisión — pendiente tu respuesta (ver README del reto) |
+| 5 | `5-Arquitectura-Capas` | model + usecase + memory-repository + simple-controller | ✅ Cerrado — verificado el 2026-09-29 |
+| 6 | `6-GRASP` | model + usecase | ✅ Cerrado — verificado el 2026-09-29 |
+| 7 | `7-Normalizacion-BD` | solo SQL/README (sin Gradle) | ✅ Cerrado — verificado el 2026-09-29 |
 | 8 | `8-Uso-IA` | solo README (sin código) | ✅ Cerrado — verificado el 2026-09-23 |
-| 9 | `9-WebSocket` | model + websocket-endpoint | 🔲 TODO |
+| 9 | `9-WebSocket` | model + websocket-endpoint | 🟡 En revisión — pendiente tu respuesta (ver README del reto) |
 | 10 | `10-Cache` | model + usecase | 🔲 TODO |
 | 11 | `11-Clean-Architecture` | model + usecase + memory-adapter + jpa-adapter | 🔲 TODO |
 | 12 | `12-GoF` | model + app-service | 🔲 TODO |

@@ -1,7 +1,7 @@
 package pragma.nomina;
 
 /**
- * Clase abstracta base. TODO: define los atributos comunes (ej. nombre,
+ * Clase abstracta base. se define los atributos comunes (ej. nombre,
  * documento) y deja calcularSalario() abstracto — cada subtipo decide cómo
  * se calcula el suyo, sin que Nomina<T> necesite saber cuál es cuál.
  */

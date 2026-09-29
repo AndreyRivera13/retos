@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Trainer
 
-**Estado:** ✅ Cerrado — `AnalizadorTransacciones` implementado con `totalPorCliente`, `clienteConMayorTotal` y `ordenarPorTotalDescendente`. Análisis de complejidad Big O documentado. Verificado 2026-09-27.
+**Estado:** 🟡 En revisión — `AnalizadorTransacciones` implementado y funciona, pero usa `Collectors.toMap(...)` para agrupar, y el enunciado pedía explícitamente hacerlo a mano (sin Collector), con `getOrDefault`/`merge`. Pendiente de tu respuesta antes de cerrar. Verificado 2026-09-29.
 
 ## Para qué te sirve este reto
 

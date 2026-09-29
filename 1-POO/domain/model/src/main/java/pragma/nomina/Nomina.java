@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO: clase genérica que recibe una lista de Empleado (de cualquier
+ * clase genérica que recibe una lista de Empleado (de cualquier
  * subtipo) y calcula el total a pagar SIN usar instanceof en ningún punto
  * (ese es justo el punto del reto: Nomina<T> no debe saber qué tipo
  * concreto de empleado está sumando).

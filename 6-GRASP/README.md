@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Trainer
 
-**Estado:** ✅ Cerrado — verificado el 2026-09-27
+**Estado:** ✅ Cerrado — Experto en Información (`Cita.duracionEnMinutos()`) y Creador (`AgendaDoctor.crearCita()`) aplicados correctamente, con comentarios propios señalando cada patrón. Verificado 2026-09-29.
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,9 @@ Experto en Información asigna una responsabilidad a la clase que tiene los dato
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+Apliqué Experto en Información dejando que `Cita` calcule su propia `duracionEnMinutos()` con los datos que ya tiene (`horaInicio`, `horaFin`), en vez de sacarle esos datos a un Service externo para que él haga la cuenta. Apliqué Creador dejando que `AgendaDoctor` sea quien construye las instancias de `Cita` con su método `crearCita()`, porque es quien agrupa y mantiene las citas de un doctor —tiene más contexto que nadie más para crearlas.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+`AgendaDoctorUseCase` quedó solo coordinando: suma las duraciones sin necesitar saber cómo se calcula una duración ni construir citas directamente. Dejé el razonamiento de cada patrón comentado en el propio código, en la línea donde se aplica.
 
 ## SDD — Spec-Driven Development
 

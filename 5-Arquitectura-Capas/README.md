@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Trainer
 
-**Estado:** ✅ Cerrado — `CitaRepository` (puerto), `CitaRepositoryEnMemoria` (adaptador driven), `CitaService` (caso de uso con regla de no solapamiento) y `CitaController` (entrypoint) implementados. Diagrama de arquitectura `ARQUITECTURA.txt` completado y pruebas unitarias pasando. Verificado 2026-09-27.
+**Estado:** ✅ Cerrado — `CitaController`, `CitaService` y `CitaRepositoryEnMemoria` implementados respetando la separación de capas, sin bugs encontrados. Verificado 2026-09-29.
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,9 @@ La separación en capas asigna una responsabilidad exclusiva a cada una: el Cont
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+Separé la solución en tres piezas: `CitaController` solo recibe la petición y llama a `CitaService.reservar()`; `CitaService` tiene la única regla de negocio —que no haya dos citas en el mismo horario para el mismo doctor— y lanza `IllegalStateException` si se viola; `CitaRepositoryEnMemoria` solo guarda y busca, sin decidir nada.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+El Controller no conoce el Repository directamente, solo habla con el Service. Eso es lo que me permite testear la regla de negocio sin levantar nada de infraestructura, y es la misma separación que ya uso en microservicios reales: si la regla estuviera en el Controller o en el Repository, quedaría acoplada a un detalle técnico en vez de vivir donde debe.
 
 ## SDD — Spec-Driven Development
 

@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Trainer
 
-**Estado:** ✅ Cerrado — verificado el 2026-09-27
+**Estado:** ✅ Cerrado — `reto.sql` con los 3 pasos (1FN/2FN/3FN) y justificación de cada dependencia resuelta, sin errores de modelado. Verificado 2026-09-29.
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,9 @@ Una dependencia funcional parcial —un atributo que depende solo de parte de un
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+Normalicé `Matriculas` en tres pasos. En 1FN eliminé los grupos repetidos `curso1_*`/`curso2_*`, moviendo cada curso matriculado a su propia fila en `MatriculaCursos`. En 2FN separé `Cursos` porque `profesor_nombre` dependía solo de `curso_nombre` —parte de la clave compuesta— y no de la matrícula completa. En 3FN separé `Profesores` de `Cursos` porque los datos del profesor dependían del profesor mismo, no directamente del curso.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+El resultado evita que el mismo profesor quede escrito de forma inconsistente en filas distintas —si antes de normalizar el mismo profesor aparecía con dos nombres distintos en dos filas, la base ya no tiene una sola fuente de verdad sobre quién es ese profesor.
 
 ## SDD — Spec-Driven Development
 

@@ -1,6 +1,5 @@
 package pragma.model;
 
-/** Ya está completo. */
 public class Precio {
     private final String productoId;
     private final double valor;
