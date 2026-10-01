@@ -8,8 +8,8 @@ import pragma.repository.CitaRepositoryPort;
  * el nombre debe terminar en "UseCase" para que UseCasesConfig lo registre
  * como bean automáticamente).
  *
- * TODO: implementa reservar(...). La regla de negocio (ej. no duplicar
- * citas) va aquí, nunca en los adaptadores de infraestructura.
+ * Regla de negocio: un doctor no puede tener dos citas en el mismo horario.
+ * Vive aquí, nunca en los adaptadores de infraestructura.
  *
  * Prueba mental antes de programar: si le pusieras @Entity directamente a
  * la clase Cita (dominio), ¿qué se rompería exactamente y por qué?
@@ -22,6 +22,10 @@ public class GestionarCitasUseCase {
     }
 
     public Cita reservar(String id, String doctorId, String horario) {
-        throw new UnsupportedOperationException("TODO: implementar GestionarCitasUseCase.reservar");
+        if (repository.existePorDoctorYHorario(doctorId, horario)) {
+            throw new IllegalStateException(
+                    "El doctor " + doctorId + " ya tiene una cita en el horario " + horario);
+        }
+        return repository.guardar(new Cita(id, doctorId, horario));
     }
 }

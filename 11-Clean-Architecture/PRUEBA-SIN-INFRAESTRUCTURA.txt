@@ -1,7 +1,18 @@
-TODO: como parte de la entrega, demuestra que si borraras por completo la
-carpeta infrastructure/, el resto (domain/model + domain/usecase) seguiría
-compilando solo. Puedes hacerlo literal (borra la carpeta y corre
-`./gradlew :model:compileJava :usecase:compileJava`) o, si prefieres no
-borrar nada, corre esos dos gradle tasks puntuales y confirma que no
-dependen de ningún project(':memory-adapter') ni project(':jpa-adapter').
-Anota aquí el resultado.
+Prueba: el dominio compila sin la carpeta infrastructure/
+
+1) Verificación estática (revisión de código):
+   - domain/model/build.gradle: sin dependencias de proyecto.
+   - domain/usecase/build.gradle: solo `implementation project(':model')`.
+     Ninguno de los dos referencia project(':memory-adapter') ni project(':jpa-adapter').
+   - Ningún archivo de domain/ importa org.springframework.* ni jakarta.persistence.*
+     (el único sitio con @Entity es CitaEntity, dentro de infrastructure/jpa-adapter).
+   - La dependencia va en un solo sentido: los adaptadores dependen del dominio
+     (project(':usecase') / project(':model')), nunca al revés.
+
+2) Verificación ejecutada (completar con tu salida real):
+   Comando:   ./gradlew :model:compileJava :usecase:compileJava
+   Resultado: <pegá acá la salida, debería terminar en BUILD SUCCESSFUL>
+
+   Opcional (prueba literal): mover infrastructure/ fuera del proyecto, quitar
+   los include de :memory-adapter y :jpa-adapter en settings.gradle, y repetir
+   el comando.

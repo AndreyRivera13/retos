@@ -1,20 +1,38 @@
 package pragma.repository;
 
-// import jakarta.persistence.Entity;
-// import jakarta.persistence.Id;
+import jakarta.persistence.Id;
+import jakarta.persistence.Entity;
 
-/**
- * TODO: esqueleto de la entidad JPA (independiente del Cita de dominio, a
- * propósito — así queda claro que "infraestructura" puede cambiar sin tocar
- * el dominio). Descomenta las anotaciones @Entity/@Id cuando la completes.
- */
-// @Entity
+@Entity
 public class CitaEntity {
-    // @Id
+    @Id
     private String id;
     private String doctorId;
     private String horario;
 
-    // TODO: getters/setters, y un mapeo Cita <-> CitaEntity (puede ir aquí
-    // mismo o en un mapper aparte, tú decides).
+    public CitaEntity() {}
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(String doctorId) {
+        this.doctorId = doctorId;
+    }
+
+    public String getHorario() {
+        return horario;
+    }
+
+    public void setHorario(String horario) {
+        this.horario = horario;
+    }
 }

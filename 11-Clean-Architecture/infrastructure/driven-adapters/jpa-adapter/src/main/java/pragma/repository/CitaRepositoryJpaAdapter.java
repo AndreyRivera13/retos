@@ -5,22 +5,27 @@ import pragma.model.Cita;
 
 import java.util.Optional;
 
-/**
- * Adaptador de salida #2 (esqueleto): JPA. No es @Primary — solo existe
- * para que veas que puedes tener dos implementaciones intercambiables del
- * mismo puerto. TODO (opcional, si quieres ir más allá): conecta esto a un
- * JpaRepository<CitaEntity, String> real con H2.
- */
 @Repository
 public class CitaRepositoryJpaAdapter implements CitaRepositoryPort {
 
+    private final CitaJpaRepository jpaRepository;
+
+    public CitaRepositoryJpaAdapter(CitaJpaRepository jpaRepository) {
+        this.jpaRepository = jpaRepository;
+    }
+
     @Override
     public Cita guardar(Cita cita) {
-        throw new UnsupportedOperationException("TODO (opcional): implementar guardar (JPA)");
+        return CitaMapper.toDomain(jpaRepository.save(CitaMapper.toEntity(cita)));
     }
 
     @Override
     public Optional<Cita> buscarPorId(String id) {
-        throw new UnsupportedOperationException("TODO (opcional): implementar buscarPorId (JPA)");
+        return jpaRepository.findById(id).map(CitaMapper::toDomain);
+    }
+
+    @Override
+    public boolean existePorDoctorYHorario(String doctorId, String horario) {
+        return jpaRepository.existsByDoctorIdAndHorario(doctorId, horario);
     }
 }

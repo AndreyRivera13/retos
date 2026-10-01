@@ -8,11 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Adaptador de salida #1: memoria. @Primary para que sea el que se use por
- * defecto (puedes quitarlo cuando quieras probar el de JPA).
- * TODO: implementa guardar/buscarPorId con un Map interno.
- */
 @Repository
 @Primary
 public class CitaRepositoryMemoriaAdapter implements CitaRepositoryPort {
@@ -20,11 +15,18 @@ public class CitaRepositoryMemoriaAdapter implements CitaRepositoryPort {
 
     @Override
     public Cita guardar(Cita cita) {
-        throw new UnsupportedOperationException("TODO: implementar guardar (memoria)");
+        citas.put(cita.getId(), cita);
+        return cita;
     }
 
     @Override
     public Optional<Cita> buscarPorId(String id) {
-        throw new UnsupportedOperationException("TODO: implementar buscarPorId (memoria)");
+        return Optional.ofNullable(citas.get(id));
+    }
+
+    @Override
+    public boolean existePorDoctorYHorario(String doctorId, String horario) {
+        return citas.values().stream()
+                .anyMatch(c -> c.getDoctorId().equals(doctorId) && c.getHorario().equals(horario));
     }
 }
