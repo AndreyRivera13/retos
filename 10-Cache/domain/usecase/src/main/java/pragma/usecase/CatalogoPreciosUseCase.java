@@ -20,19 +20,25 @@ import java.util.Map;
  */
 public class CatalogoPreciosUseCase {
     private final Map<String, EntradaCache<Double>> cache = new HashMap<>();
-    private final Map<String, Double> origenDeDatos = new HashMap<>(); // simula tu BD
+    private final Map<String, Double> origenDeDatos = new HashMap<>(); //simula bd
     private final long ttlMillis = 30_000;
 
     public double obtenerPrecio(String productoId) {
-        throw new UnsupportedOperationException("TODO: implementar obtenerPrecio (Cache-Aside + TTL)");
+        EntradaCache<Double> entradaCache = cache.get(productoId);
+        if (entradaCache != null && !entradaCache.expiro(ttlMillis)) {
+            return entradaCache.getValor();
+        }
+        double precio = consultarOrigenLento(productoId);
+        cache.put(productoId, new EntradaCache<>(precio));
+        return precio;
     }
 
     public void actualizarPrecio(String productoId, double nuevoPrecio) {
-        throw new UnsupportedOperationException("TODO: implementar actualizarPrecio (debe invalidar cache)");
+        origenDeDatos.put(productoId, nuevoPrecio);
+        cache.remove(productoId);
     }
 
     private double consultarOrigenLento(String productoId) {
-        // Ya está dado: simula una consulta lenta a la BD real.
         return origenDeDatos.getOrDefault(productoId, 0.0);
     }
 }
