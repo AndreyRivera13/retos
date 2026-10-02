@@ -19,9 +19,24 @@ import java.util.Map;
  * vez de Cache-Aside, y en qué escenario real de tu proyecto usarías cada una.
  */
 public class CatalogoPreciosUseCase {
+    private static final long TTL_POR_DEFECTO_MILLIS = 30_000;
+
     private final Map<String, EntradaCache<Double>> cache = new HashMap<>();
-    private final Map<String, Double> origenDeDatos = new HashMap<>(); //simula bd
-    private final long ttlMillis = 30_000;
+    private final Map<String, Double> origenDeDatos; //simula bd
+    private final long ttlMillis;
+
+    public CatalogoPreciosUseCase() {
+        this(TTL_POR_DEFECTO_MILLIS);
+    }
+
+    public CatalogoPreciosUseCase(long ttlMillis) {
+        this(ttlMillis, new HashMap<>());
+    }
+
+    CatalogoPreciosUseCase(long ttlMillis, Map<String, Double> origenDeDatos) {
+        this.ttlMillis = ttlMillis;
+        this.origenDeDatos = origenDeDatos;
+    }
 
     public double obtenerPrecio(String productoId) {
         EntradaCache<Double> entradaCache = cache.get(productoId);
