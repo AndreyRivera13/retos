@@ -6,25 +6,44 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.concurrent.TimeoutException;
 
-/**
- * TODO: convierte a reactivo:
- *  - reservar(...): retorna Mono<Cita>.
- *  - citasDelDia(fecha): retorna Flux<Cita>; si no emite nada en 2 segundos
- *    (usa .timeout(Duration.ofSeconds(2))), cae a un valor/lista por defecto
- *    en vez de propagar el error (revisa .onErrorResume / .switchIfEmpty
- *    en el ejemplo de buscarUsuario del documento de retos, tema 15).
- *
- * Antes de programar, respóndete: si nadie llama .subscribe() sobre el
- * Mono/Flux que devuelves, ¿pasa algo? ¿por qué?
- */
 public class GestionarCitasReactivoUseCase {
+    private static final Duration LATENCIA_POR_DEFECTO = Duration.ofMillis(200);
+    private static final Duration TIMEOUT_POR_DEFECTO = Duration.ofSeconds(2);
+
+    private final Duration latenciaOrigen;
+    private final Duration timeout;
+
+    public GestionarCitasReactivoUseCase() {
+        this(LATENCIA_POR_DEFECTO, TIMEOUT_POR_DEFECTO);
+    }
+
+    public GestionarCitasReactivoUseCase(Duration latenciaOrigen, Duration timeout) {
+        this.latenciaOrigen = latenciaOrigen;
+        this.timeout = timeout;
+    }
 
     public Mono<Cita> reservar(String doctorId, LocalDate fecha) {
-        throw new UnsupportedOperationException("TODO: implementar reservar reactivo");
+        return Mono.defer(() -> {
+            if (doctorId == null || doctorId.isBlank()) {
+                return Mono.error(new IllegalArgumentException("El doctor es obligatorio"));
+            }
+            if (fecha == null) {
+                return Mono.error(new IllegalArgumentException("La fecha es obligatoria"));
+            }
+            return Mono.just(new Cita(doctorId, fecha));
+        });
     }
 
     public Flux<Cita> citasDelDia(LocalDate fecha) {
-        throw new UnsupportedOperationException("TODO: implementar citasDelDia reactivo");
+        return consultarCitasLento(fecha)
+                .timeout(timeout)
+                .onErrorResume(TimeoutException.class, error -> Flux.empty());
+    }
+
+    private Flux<Cita> consultarCitasLento(LocalDate fecha) {
+        return Flux.just(new Cita("dra-lopez", fecha), new Cita("dr-perez", fecha))
+                .delaySubscription(latenciaOrigen);
     }
 }

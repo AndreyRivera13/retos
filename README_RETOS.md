@@ -32,7 +32,7 @@ evaluador" — no hace falta volver a esta tabla para consultarlo. Marcá el
 | 12 | `12-GoF` | model + app-service | ✅ Cerrado — verificado el 2026-10-03 |
 | 13 | `13-Resiliencia` | model + usecase + pasarela-pagos | 🔲 TODO |
 | 14 | `14-BDD` | model + usecase + features/steps Cucumber | 🔲 TODO |
-| 15 | `15-Reactivo` | model + usecase | 🔲 TODO |
+| 15 | `15-Reactivo` | model + usecase | ✅ Cerrado — verificado el 2026-10-03 |
 | 16 | `16-EDA` | model + kafka-producer + kafka-listener | 🔲 TODO |
 | 17 | `17-IaC` | solo .tf/.yml (sin Gradle) | 🔲 TODO |
 | 18 | `18-OWASP` | model + rest-documentos | 🔲 TODO |

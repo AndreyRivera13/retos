@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Senior
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — verificado el 2026-10-03 (6 tests con StepVerifier + ArchitectureTest en verde, prueba manual en MainApplication).
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,13 @@ La programación reactiva declara qué hacer cuando un dato esté disponible (`M
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+Dejé el caso de uso de citas en reactivo: `reservar` devuelve `Mono<Cita>` y `citasDelDia` devuelve `Flux<Cita>`. La validación de entrada (doctor o fecha nulos) la envuelvo en `Mono.defer` y respondo con `Mono.error(IllegalArgumentException)`: un dato inválido es un error, no un resultado vacío. Vacío lo reservo para "consulté y no hay nada", que es una respuesta válida del negocio. Como `Mono`/`Flux` son perezosos, nada se ejecuta hasta que alguien se suscribe: si nadie llama `.subscribe()` o `.block()`, el origen ni siquiera se consulta y el error de validación ni siquiera se emite.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+Para el requisito de los 2 segundos usé `.timeout(Duration)` seguido de `.onErrorResume(TimeoutException.class, error -> Flux.empty())`: si el origen no emite a tiempo, el flujo completa vacío en vez de propagar el error, y cualquier otro error sigue propagándose porque solo capturo `TimeoutException`. La latencia del origen y el timeout son inyectables por constructor, así los tests usan 50 ms / 500 ms en vez de esperar 2 segundos reales. Los 6 tests usan `StepVerifier` y no hay `Thread.sleep` dentro de la cadena reactiva (BlockHound está activo).
+
+Mi versión inicial tenía tres defectos reales. Uno: no compilaba, porque el `.onErrorResume(..., Flux.empty())` encadenado infería `Flux<Object>` y no se podía convertir a `Flux<Cita>`. Dos: el origen de prueba era un `Flux.empty()`, que completa de inmediato, así que `timeout` nunca se disparaba (medí 141 ms, contra ~2005 ms con un origen que nunca emite); un timeout solo actúa si el origen no emite ni completa a tiempo. Tres: el `MainApplication` nunca se suscribía, así que la "prueba manual" no probaba nada. El esqueleto de tests, la prueba manual y la reescritura los hice con ayuda de IA y los revisé.
+
+Un tema abierto que conozco: con este fallback, "no hay citas" y "el origen estuvo lento" se ven igual para quien consume el `Flux` (ambos completan vacío). En producción distinguiría el caso con un valor por defecto explícito o con una métrica/log del timeout, para no esconder una degradación como si fuera ausencia de datos.
 
 ## 🎯 Con tu evaluador
 

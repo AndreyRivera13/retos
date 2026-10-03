@@ -2,7 +2,6 @@ package pragma.model;
 
 import java.time.LocalDate;
 
-/** Ya está completo. */
 public class Cita {
     private final String doctorId;
     private final LocalDate fecha;

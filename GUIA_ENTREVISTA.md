@@ -20,7 +20,7 @@ Para usar ANTES de abrir el código: busca el número del reto, di la frase de a
 | 12 | `12-GoF` | Builder + Strategy + Observer en un generador de reportes | ✅ Cerrado |
 | 13 | `13-Resiliencia` | Pasarela de pagos que falla: Retry, CircuitBreaker, Bulkhead, Fallback | 🔲 Pendiente |
 | 14 | `14-BDD` | Pruebas Cucumber para reservar una cita | 🔲 Pendiente |
-| 15 | `15-Reactivo` | El use case de citas en Mono/Flux con timeout y fallback | 🔲 Pendiente |
+| 15 | `15-Reactivo` | El use case de citas en Mono/Flux con timeout y fallback | ✅ |
 | 16 | `16-EDA` | Evento `CitaReservada` en Kafka con consumidor idempotente | 🔲 Pendiente |
 | 17 | `17-IaC` | Terraform con IAM de mínimo privilegio + pipeline de escaneo | 🔲 Pendiente |
 | 18 | `18-OWASP` | Encontrar y corregir un control de acceso roto | 🔲 Pendiente |
@@ -160,13 +160,15 @@ Para usar ANTES de abrir el código: busca el número del reto, di la frase de a
 
 **Pregunta probable:** ¿un compañero no técnico puede leer el `.feature` y decir qué se prueba sin que se lo expliques?
 
-## Reto 15 — Reactivo (`15-Reactivo`) — pendiente
+## Reto 15 — Reactivo (`15-Reactivo`) — ✅
 
-**Antes de abrir el código, di:** "El use case de citas llevado a programación reactiva: `Mono` para reservar y `Flux` para las citas del día, con un timeout de 2 segundos y un fallback en vez de propagar el error."
+**Antes de abrir el código, di:** "El use case de citas llevado a programación reactiva: `Mono` para reservar y `Flux` para las citas del día, con un timeout de 2 segundos que, si el origen no responde, completa vacío en vez de propagar el error."
 
-**Archivos a mostrar:** `GestionarCitasReactivoUseCase` (`reservar`, `citasDelDia`).
+**Archivos a mostrar:** `GestionarCitasReactivoUseCase` (`reservar` con `Mono.defer` + `Mono.error`; `citasDelDia` con `timeout` + `onErrorResume(TimeoutException.class, ...)`), `GestionarCitasReactivoUseCaseTest` (StepVerifier) y la prueba manual en `MainApplication`.
 
-**Pregunta probable:** ¿qué diferencia hay entre devolver un `Mono` vacío por diseño y lanzar una excepción, y cuándo usas cada uno?
+**Para contar:** `Mono`/`Flux` son perezosos: sin `subscribe()` o `block()` no se ejecuta nada, ni siquiera la validación. Dato inválido = `Mono.error`; vacío lo reservo para "consulté y no hay nada". Mi versión inicial no compilaba (`Flux<Object>`), y el timeout nunca se disparaba porque el origen de prueba era `Flux.empty()`, que completa de inmediato (141 ms contra ~2005 ms con un origen que nunca emite). Latencia y timeout inyectables para testear sin esperar 2 s reales. Tema abierto que conozco: "sin citas" y "origen lento" se ven igual para el consumidor.
+
+**Pregunta probable:** ¿qué diferencia hay entre devolver un `Mono` vacío por diseño y lanzar una excepción, y cuándo usas cada uno? Y, con tu evaluador (lideró la migración a WebFlux): ¿qué se vuelve difícil de depurar en reactivo y qué no migrarías?
 
 ## Reto 16 — EDA (`16-EDA`) — pendiente
 
