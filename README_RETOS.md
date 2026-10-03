@@ -27,9 +27,9 @@ evaluador" — no hace falta volver a esta tabla para consultarlo. Marcá el
 | 7 | `7-Normalizacion-BD` | solo SQL/README (sin Gradle) | ✅ Cerrado — verificado el 2026-09-29 |
 | 8 | `8-Uso-IA` | solo README (sin código) | ✅ Cerrado — verificado el 2026-09-23 |
 | 9 | `9-WebSocket` | model + websocket-endpoint | ✅ Cerrado — verificado el 2026-09-29 |
-| 10 | `10-Cache` | model + usecase | 🔲 TODO |
-| 11 | `11-Clean-Architecture` | model + usecase + memory-adapter + jpa-adapter | 🔲 TODO |
-| 12 | `12-GoF` | model + app-service | 🔲 TODO |
+| 10 | `10-Cache` | model + usecase | ✅ Cerrado — verificado el 2026-10-02 |
+| 11 | `11-Clean-Architecture` | model + usecase + memory-adapter + jpa-adapter | ✅ Cerrado — verificado el 2026-10-02 |
+| 12 | `12-GoF` | model + app-service | ✅ Cerrado — verificado el 2026-10-03 |
 | 13 | `13-Resiliencia` | model + usecase + pasarela-pagos | 🔲 TODO |
 | 14 | `14-BDD` | model + usecase + features/steps Cucumber | 🔲 TODO |
 | 15 | `15-Reactivo` | model + usecase | 🔲 TODO |

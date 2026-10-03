@@ -1,9 +1,21 @@
 package pragma.model;
 
-/** TODO: "exporta" el reporte a un String con formato CSV simulado. */
+/**
+ * Strategy: "exporta" el reporte a CSV simulado, una fila por sección.
+ * El contenido va siempre entre comillas, con las comillas internas duplicadas,
+ * para que comas o comillas dentro del texto no rompan el formato.
+ */
 public class ExportadorCSV implements ExportadorReporte {
     @Override
     public String exportar(Reporte reporte) {
-        throw new UnsupportedOperationException("TODO: implementar ExportadorCSV.exportar");
+        StringBuilder salida = new StringBuilder("tipo,contenido");
+        for (SeccionReporte seccion : reporte.getSecciones()) {
+            salida.append('\n').append(seccion.getTipo()).append(',').append(escapar(seccion.getContenido()));
+        }
+        return salida.toString();
+    }
+
+    private String escapar(String valor) {
+        return "\"" + valor.replace("\"", "\"\"") + "\"";
     }
 }

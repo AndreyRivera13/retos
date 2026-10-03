@@ -4,48 +4,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO (Builder): completa el Builder para que puedas construir un Reporte
- * con secciones opcionales sin un constructor de N parámetros. Fíjate en el
- * ejemplo de Pizza.Builder del documento de retos (tema 12).
+ * Reporte inmutable, construido siempre mediante {@link Builder} (patrón Builder):
+ * las secciones son opcionales y no hay un constructor de N parámetros.
  *
- * Uso esperado:
+ * Uso:
  *   Reporte r = new Reporte.Builder()
  *       .conEncabezado("Ventas Q1")
  *       .conTabla("...")
  *       .build();
+ *
+ * El constructor es privado y la lista es inmutable: una vez construido, el
+ * Reporte no cambia aunque se siga usando el Builder o se intente modificar
+ * la lista que devuelve getSecciones().
  */
 public class Reporte {
-    private final List<SeccionReporte> secciones = new ArrayList<>();
+    private final List<SeccionReporte> secciones;
+
+    private Reporte(List<SeccionReporte> secciones) {
+        this.secciones = List.copyOf(secciones);
+    }
 
     public List<SeccionReporte> getSecciones() {
         return secciones;
     }
 
     public static class Builder {
-        private final Reporte reporte = new Reporte();
+        private final List<SeccionReporte> secciones = new ArrayList<>();
 
         public Builder conEncabezado(String texto) {
-            // TODO: agrega una SeccionReporte tipo "encabezado" y retorna this
-            throw new UnsupportedOperationException("TODO: implementar conEncabezado");
+            secciones.add(new SeccionReporte("encabezado", texto));
+            return this;
         }
 
         public Builder conTabla(String contenido) {
-            // TODO
-            throw new UnsupportedOperationException("TODO: implementar conTabla");
+            secciones.add(new SeccionReporte("tabla", contenido));
+            return this;
         }
 
         public Builder conGrafico(String contenido) {
-            // TODO
-            throw new UnsupportedOperationException("TODO: implementar conGrafico");
+            secciones.add(new SeccionReporte("grafico", contenido));
+            return this;
         }
 
         public Builder conPiePagina(String texto) {
-            // TODO
-            throw new UnsupportedOperationException("TODO: implementar conPiePagina");
+            secciones.add(new SeccionReporte("piePagina", texto));
+            return this;
         }
 
+        /** Cada llamada devuelve un Reporte nuevo e independiente del Builder. */
         public Reporte build() {
-            return reporte;
+            return new Reporte(secciones);
         }
     }
 }

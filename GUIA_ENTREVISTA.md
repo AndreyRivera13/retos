@@ -17,7 +17,7 @@ Para usar ANTES de abrir el código: busca el número del reto, di la frase de a
 | 9 | `9-WebSocket` | Notificaciones en tiempo real: broadcast y mensaje privado | ✅ Cerrado |
 | 10 | `10-Cache` | Cache-Aside con TTL (+ comparación con Write-Through) | ✅ Cerrado |
 | 11 | `11-Clean-Architecture` | Citas en hexagonal: puertos y adaptadores intercambiables | ✅ Cerrado |
-| 12 | `12-GoF` | Builder + Strategy + Observer en un generador de reportes | 🔲 Pendiente |
+| 12 | `12-GoF` | Builder + Strategy + Observer en un generador de reportes | ✅ Cerrado |
 | 13 | `13-Resiliencia` | Pasarela de pagos que falla: Retry, CircuitBreaker, Bulkhead, Fallback | 🔲 Pendiente |
 | 14 | `14-BDD` | Pruebas Cucumber para reservar una cita | 🔲 Pendiente |
 | 15 | `15-Reactivo` | El use case de citas en Mono/Flux con timeout y fallback | 🔲 Pendiente |
@@ -30,7 +30,7 @@ Para usar ANTES de abrir el código: busca el número del reto, di la frase de a
 
 **Agrupados por tema:** fundamentos (1, 2, 3, 4) · arquitectura y diseño (5, 6, 11, 19, 12) · datos y caché (7, 10) · comunicación (9, 16) · resiliencia y calidad (13, 14) · paradigma reactivo (15) · seguridad e infraestructura (17, 18) · IA (8).
 
-> Los retos 12 al 19 aún no están implementados: sus frases de apertura salen del enunciado y los "archivos a mostrar" son los del scaffold. Cuando los cierres, actualiza el estado y agrega aquí lo que realmente decidiste.
+> Los retos 13 al 19 aún no están implementados: sus frases de apertura salen del enunciado y los "archivos a mostrar" son los del scaffold. Cuando los cierres, actualiza el estado y agrega aquí lo que realmente decidiste.
 
 ---
 
@@ -134,11 +134,13 @@ Para usar ANTES de abrir el código: busca el número del reto, di la frase de a
 
 **Pregunta probable:** ¿qué se rompería si pusieras `@Entity` directamente en `Cita`?
 
-## Reto 12 — GoF (`12-GoF`) — pendiente
+## Reto 12 — GoF (`12-GoF`)
 
-**Antes de abrir el código, di:** "Un generador de reportes con tres patrones: Builder para armar el reporte con secciones opcionales, sin un constructor de seis parámetros; Strategy para exportar el mismo reporte a PDF o CSV elegido en runtime; y Observer para notificar a suscriptores sin que el generador los conozca."
+**Antes de abrir el código, di:** "Un generador de reportes con tres patrones: Builder para armar el reporte con secciones opcionales, sin un constructor de seis parámetros; Strategy para exportar el mismo reporte a PDF o CSV, elegido en runtime; y Observer para notificar a suscriptores sin que el generador los conozca."
 
-**Archivos a mostrar:** `Reporte` y su `Builder`, `ExportadorReporte` / `ExportadorPDF` / `ExportadorCSV`, `GeneradorReportes`, `ObservadorReporte`.
+**Archivos a mostrar:** `Reporte` y su `Builder`, `ExportadorReporte` con `ExportadorPDF` y `ExportadorCSV`, `GeneradorReportes` (recibe la estrategia en `generar(reporte, exportador)`), `ObservadorReporte` con `ContadorReportes` y `LogReportes`, y la prueba manual en `MainApplication`.
+
+**Para contar:** mi primer Builder era mutable (constructor público, `build()` devolvía la misma instancia y `getSecciones()` exponía la lista interna); lo corregí con constructor privado y `List.copyOf`. En el CSV escapo comas y comillas. Tema abierto que conozco: si un observador lanza una excepción, los que vienen después no se notifican.
 
 **Pregunta probable:** ¿qué problema tendrías si las notificaciones fueran llamadas directas dentro de `Reporte` en vez de Observer?
 

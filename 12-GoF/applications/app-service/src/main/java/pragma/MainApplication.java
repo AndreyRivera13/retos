@@ -3,19 +3,46 @@ package pragma;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import pragma.model.ContadorReportes;
+import pragma.model.ExportadorCSV;
+import pragma.model.ExportadorPDF;
+import pragma.model.GeneradorReportes;
+import pragma.model.LogReportes;
+import pragma.model.Reporte;
 
 /**
  * Punto de arranque del reto "12-GoF".
- * No necesitas tocar esta clase: úsala solo para probar manualmente
- * lo que vayas implementando (agrega tu propio código de prueba en el main
- * o, mejor, escribe pruebas JUnit en src/test).
  */
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class MainApplication {
     public static void main(String[] args) {
         SpringApplication.run(MainApplication.class, args);
-        // TODO (opcional): cuando tengas tus clases implementadas, arma aquí
-        // una pequeña prueba manual, igual a como se hizo en 1-POO/MainApplication.java
+
+        pruebaManual();
+    }
+
+    private static void pruebaManual() {
+        // Builder: secciones opcionales, sin constructor de N parámetros.
+        Reporte reporte = new Reporte.Builder()
+                .conEncabezado("Ventas Q1")
+                .conTabla("producto,total")
+                .conPiePagina("Generado automáticamente")
+                .build();
+        System.out.println("1. Builder -> " + reporte.getSecciones().size() + " secciones (esperado: 3)");
+
+        // Observer: dos suscriptores que Reporte no conoce.
+        GeneradorReportes generador = new GeneradorReportes();
+        ContadorReportes contador = new ContadorReportes();
+        LogReportes log = new LogReportes();
+        generador.agregarObservador(contador);
+        generador.agregarObservador(log);
+
+        // Strategy: el mismo reporte, dos formatos elegidos en runtime.
+        System.out.println("2. Strategy PDF:\n" + generador.generar(reporte, new ExportadorPDF()));
+        System.out.println("3. Strategy CSV:\n" + generador.generar(reporte, new ExportadorCSV()));
+
+        System.out.println("4. Observer contador -> " + contador.getTotal() + " (esperado: 2)");
+        System.out.println("5. Observer log -> " + log.getRegistros() + " (esperado: 2 registros)");
     }
 }

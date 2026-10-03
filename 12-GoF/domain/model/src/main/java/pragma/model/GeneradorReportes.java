@@ -4,21 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Sujeto observable (equivalente a PedidoSujeto del ejemplo).
- * Reporte NO debe conocer a sus observadores concretos — por eso esta clase
- * es la que orquesta la generación y avisa a quien esté suscrito.
+ * Sujeto observable (Observer): Reporte NO conoce a sus observadores concretos;
+ * esta clase orquesta la generación y avisa a quien esté suscrito.
  *
- * TODO: implementa agregarObservador(...) y generar(...) (este último debe
- * llamar a notificar() de cada observador registrado).
+ * También es el punto donde se elige el formato en runtime (Strategy): quien
+ * llama decide qué {@link ExportadorReporte} usar en cada generación.
  */
 public class GeneradorReportes {
     private final List<ObservadorReporte> observadores = new ArrayList<>();
 
     public void agregarObservador(ObservadorReporte observador) {
-        throw new UnsupportedOperationException("TODO: implementar agregarObservador");
+        observadores.add(observador);
     }
 
     public void generar(Reporte reporte) {
-        throw new UnsupportedOperationException("TODO: implementar generar (debe notificar a los observadores)");
+        observadores.forEach(observador -> observador.notificar(reporte));
+    }
+
+    /** Exporta con la estrategia indicada, notifica a los observadores y devuelve el resultado. */
+    public String generar(Reporte reporte, ExportadorReporte exportador) {
+        String salida = exportador.exportar(reporte);
+        generar(reporte);
+        return salida;
     }
 }

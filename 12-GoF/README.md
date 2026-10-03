@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Senior
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — verificado el 2026-10-03 (11 tests propios + ArchitectureTest en verde, prueba manual en MainApplication).
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,11 @@ Builder resuelve la construcción de objetos con múltiples atributos opcionales
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+Apliqué tres patrones sobre un generador de reportes. Builder: `Reporte.Builder` arma el reporte con secciones opcionales (encabezado, tabla, gráfico, pie) encadenando métodos, sin un constructor de seis parámetros. Strategy: `ExportadorPDF` y `ExportadorCSV` implementan `ExportadorReporte`, y `GeneradorReportes.generar(reporte, exportador)` recibe la estrategia por parámetro, así el formato se elige en runtime sin ningún `if` por tipo. Observer: `GeneradorReportes` mantiene una lista de `ObservadorReporte` (`ContadorReportes` y `LogReportes`) y los notifica en cada generación; `Reporte` no conoce a ninguno.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+Tuve un defecto real en el Builder que corregí: mi primera versión era mutable, porque `Reporte` tenía constructor público, `build()` devolvía la misma instancia que el Builder seguía guardando y `getSecciones()` exponía la lista interna. Si seguía usando el Builder después de `build()`, el reporte ya entregado cambiaba. Ahora el constructor es privado, el Builder guarda su propia lista y `build()` crea un `Reporte` nuevo con `List.copyOf`, de modo que cada reporte es independiente e inmutable. En el CSV escapo el contenido (siempre entre comillas, con las comillas internas duplicadas) para que comas o comillas dentro del texto no rompan el formato.
+
+Las exportaciones, los observadores y los tests (11, incluidos los de inmutabilidad y de escape de CSV) los hice con ayuda de IA y los revisé. Un tema abierto que conozco: en `generar()`, si un observador lanza una excepción, los observadores que venían después no se notifican; para producción aislaría cada notificación con su propio try/catch y decidiría qué hacer con el error en vez de tragarlo en silencio. Y sin Observer, con las notificaciones como llamadas directas dentro de `Reporte`, el reporte quedaría acoplado a cada consumidor y habría que modificarlo cada vez que apareciera uno nuevo.
 
 ## 🎯 Con tu evaluador
 
