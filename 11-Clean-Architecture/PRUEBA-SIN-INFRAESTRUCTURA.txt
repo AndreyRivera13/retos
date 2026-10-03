@@ -1,5 +1,7 @@
 Prueba: el dominio compila sin la carpeta infrastructure/
 
+Verificado el 2026-10-02 con Java 25 (toolchain del proyecto) y Gradle 9.5.1.
+
 1) Verificación estática (revisión de código):
    - domain/model/build.gradle: sin dependencias de proyecto.
    - domain/usecase/build.gradle: solo `implementation project(':model')`.
@@ -9,10 +11,32 @@ Prueba: el dominio compila sin la carpeta infrastructure/
    - La dependencia va en un solo sentido: los adaptadores dependen del dominio
      (project(':usecase') / project(':model')), nunca al revés.
 
-2) Verificación ejecutada (completar con tu salida real):
+2) Verificación ejecutada, con el proyecto completo:
    Comando:   ./gradlew :model:compileJava :usecase:compileJava
-   Resultado: <pegá acá la salida, debería terminar en BUILD SUCCESSFUL>
+   Resultado:
+       > Task :validateStructure
+       > Task :model:compileJava UP-TO-DATE
+       > Task :usecase:compileJava UP-TO-DATE
+       BUILD SUCCESSFUL
 
-   Opcional (prueba literal): mover infrastructure/ fuera del proyecto, quitar
-   los include de :memory-adapter y :jpa-adapter en settings.gradle, y repetir
-   el comando.
+3) Prueba literal, sin infrastructure/:
+   Se copió el proyecto SIN la carpeta infrastructure/, se quitaron los include de
+   :memory-adapter y :jpa-adapter en settings.gradle y las dependencias a esos dos
+   módulos en applications/app-service/build.gradle, y se repitió el comando:
+   Comando:   ./gradlew :model:compileJava :usecase:compileJava
+   Resultado:
+       > Task :validateStructure
+       > Task :model:compileJava FROM-CACHE
+       > Task :usecase:compileJava FROM-CACHE
+       BUILD SUCCESSFUL
+
+Conclusión: domain/model y domain/usecase compilan solos, sin ningún adaptador. Se
+puede cambiar o borrar la infraestructura (memoria, JPA) sin tocar el dominio: la
+regla de dependencia del hexágono se cumple.
+
+Anexo - resultado de ./gradlew build en el proyecto completo (todos los tests en verde):
+   - GestionarCitasUseCaseTest ........ 3 tests, 0 fallos (puerto falso, sin Spring)
+   - CitaMapperTest ................... 5 tests, 0 fallos
+   - ArchitectureTest ................. 6 tests, 0 fallos
+   - bootRun: la prueba manual de MainApplication da el mismo resultado con el
+     adaptador de memoria y con el adaptador JPA (H2) usando el mismo use case.
