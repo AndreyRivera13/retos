@@ -1,0 +1,5 @@
+=== PRUEBA MANUAL: control de acceso en /usuarios/{id}/documentos ===
+1. Ana (1) pide sus documentos -> HTTP 200
+2. Ana (1) pide los de Luis (2) -> HTTP 403
+3. Luis (2) pide sus documentos -> HTTP 200
+4. Sin credenciales -> HTTP 401

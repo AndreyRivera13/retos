@@ -1,0 +1,8 @@
+=== PRUEBA MANUAL: CuentaBancaria (Aggregate Root) ===
+1. Saldo tras depositar 500: 1500 COP (esperado: 1500 COP)
+2. Saldo tras retirar 300: 1200 COP (esperado: 1200 COP)
+3. Eventos emitidos: [RetiroRealizado[cuentaId=cta-1, monto=300 COP, ocurridoEn=2026-10-03T08:48:16.422963877Z]]
+4. Retirar 5000 (excede el saldo) -> IllegalStateException: Saldo insuficiente: saldo 1200 COP, retiro 5000 COP
+5. Sumar COP + USD -> IllegalArgumentException: No se pueden operar monedas distintas: COP y USD
+6. Retirar con la cuenta BLOQUEADA -> IllegalStateException: La cuenta cta-1 est? bloqueada
+7. Dinero(100) == Dinero(100.00)? true (esperado: true)

@@ -21,3 +21,5 @@ project(':app-service').projectDir = file('./applications/app-service')
 project(':model').projectDir = file('./domain/model')
 include ':rest-documentos'
 project(':rest-documentos').projectDir = file('./infrastructure/entry-points/rest-documentos')
+include ':memory-documentos'
+project(':memory-documentos').projectDir = file('./infrastructure/driven-adapters/memory-documentos')

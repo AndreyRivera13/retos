@@ -18,13 +18,13 @@ Para usar ANTES de abrir el código: busca el número del reto, di la frase de a
 | 10 | `10-Cache` | Cache-Aside con TTL (+ comparación con Write-Through) | ✅ Cerrado |
 | 11 | `11-Clean-Architecture` | Citas en hexagonal: puertos y adaptadores intercambiables | ✅ Cerrado |
 | 12 | `12-GoF` | Builder + Strategy + Observer en un generador de reportes | ✅ Cerrado |
-| 13 | `13-Resiliencia` | Pasarela de pagos que falla: Retry, CircuitBreaker, Bulkhead, Fallback | 🔲 Pendiente |
-| 14 | `14-BDD` | Pruebas Cucumber para reservar una cita | 🔲 Pendiente |
-| 15 | `15-Reactivo` | El use case de citas en Mono/Flux con timeout y fallback | ✅ |
-| 16 | `16-EDA` | Evento `CitaReservada` en Kafka con consumidor idempotente | 🔲 Pendiente |
-| 17 | `17-IaC` | Terraform con IAM de mínimo privilegio + pipeline de escaneo | 🔲 Pendiente |
-| 18 | `18-OWASP` | Encontrar y corregir un control de acceso roto | 🔲 Pendiente |
-| 19 | `19-DDD` | Cuenta bancaria: Aggregate Root, Value Object y evento de dominio | 🔲 Pendiente |
+| 13 | `13-Resiliencia` | Pasarela de pagos que falla: Retry, CircuitBreaker, Bulkhead, Fallback | ✅ Cerrado |
+| 14 | `14-BDD` | Pruebas Cucumber para reservar una cita | ✅ Cerrado |
+| 15 | `15-Reactivo` | El use case de citas en Mono/Flux con timeout y fallback | ✅ Cerrado |
+| 16 | `16-EDA` | Evento `CitaReservada` en Kafka con consumidor idempotente | ✅ Cerrado |
+| 17 | `17-IaC` | Terraform con IAM de mínimo privilegio + pipeline de escaneo | ✅ Cerrado |
+| 18 | `18-OWASP` | Encontrar y corregir un control de acceso roto | ✅ Cerrado |
+| 19 | `19-DDD` | Cuenta bancaria: Aggregate Root, Value Object y evento de dominio | ✅ Cerrado |
 
 **Hilo conductor para contarlo:** los retos 5, 6, 11, 14, 15 y 16 son el MISMO sistema de citas médicas visto desde ángulos distintos: primero en capas (5), luego asignando responsabilidades (6), luego en hexagonal (11), después probado con BDD (14), reactivo (15) y publicando eventos (16). Si el entrevistador pregunta "¿cómo se conectan?", ahí está la respuesta.
 
@@ -144,19 +144,23 @@ Para usar ANTES de abrir el código: busca el número del reto, di la frase de a
 
 **Pregunta probable:** ¿qué problema tendrías si las notificaciones fueran llamadas directas dentro de `Reporte` en vez de Observer?
 
-## Reto 13 — Resiliencia (`13-Resiliencia`) — pendiente
+## Reto 13 — Resiliencia (`13-Resiliencia`) — ✅
 
 **Antes de abrir el código, di:** "Una pasarela de pagos simulada que falla cerca del 40% de las veces, protegida con Resilience4j: Retry con backoff exponencial, CircuitBreaker, Bulkhead y un fallback que responde 'pago en proceso' en vez de un error crudo."
 
-**Archivos a mostrar:** `PasarelaPagosAdapter` (las anotaciones y el fallback), `application.yaml` (valores de resiliencia), `RealizarPagoUseCase` (solo delega).
+**Archivos a mostrar:** `PasarelaPagosAdapter` (las tres anotaciones y el fallback), `application.yaml` (valores de resiliencia), `RealizarPagoUseCase` (solo delega), `PasarelaResilienciaTest` y `LOG-CIRCUITO.txt`.
 
-**Pregunta probable:** ¿por qué combinar Bulkhead con CircuitBreaker, y qué problema distinto resuelve cada uno?
+**Para contar:** el fallback va en `@Retry` (la capa más externa); si va en `@CircuitBreaker` devuelve una respuesta "exitosa" y el Retry nunca reintenta. `minimum-number-of-calls` vale 100 por defecto: con ventana de 10 el circuito nunca abriría. El Retry ignora `CallNotPermittedException` y `BulkheadFullException`. En Spring Boot 4 hay que usar `resilience4j-spring-boot4`.
 
-## Reto 14 — BDD (`14-BDD`) — pendiente
+**Pregunta probable:** ¿por qué combinar Bulkhead con CircuitBreaker? El CircuitBreaker protege del fallo; el Bulkhead de la lentitud (una pasarela lenta no falla, pero agotaría los hilos).
 
-**Antes de abrir el código, di:** "Pruebas BDD con Cucumber para reservar una cita: un archivo `.feature` en Gherkin con tres escenarios, reserva exitosa, horario ocupado y doctor inexistente, conectado al use case real."
+## Reto 14 — BDD (`14-BDD`) — ✅
 
-**Archivos a mostrar:** `reservar_cita.feature`, `ReservarCitaSteps`, `GestionarCitasUseCase`.
+**Antes de abrir el código, di:** "Pruebas BDD con Cucumber para reservar una cita: un archivo `.feature` en Gherkin, en español, con tres escenarios (reserva exitosa, horario ocupado y doctor inexistente) conectado al use case real."
+
+**Archivos a mostrar:** `reservar_cita.feature` (primero, sin código), `ReservarCitaSteps`, `GestionarCitasUseCase`.
+
+**Para contar:** el `.feature` es una prueba ejecutable, no solo documentación: si el use case cambia, el escenario falla. Cada escenario arranca con instancias nuevas, sin estado compartido. El use case valida primero el doctor y luego el horario.
 
 **Pregunta probable:** ¿un compañero no técnico puede leer el `.feature` y decir qué se prueba sin que se lo expliques?
 
@@ -170,34 +174,42 @@ Para usar ANTES de abrir el código: busca el número del reto, di la frase de a
 
 **Pregunta probable:** ¿qué diferencia hay entre devolver un `Mono` vacío por diseño y lanzar una excepción, y cuándo usas cada uno? Y, con tu evaluador (lideró la migración a WebFlux): ¿qué se vuelve difícil de depurar en reactivo y qué no migrarías?
 
-## Reto 16 — EDA (`16-EDA`) — pendiente
+## Reto 16 — EDA (`16-EDA`) — ✅
 
 **Antes de abrir el código, di:** "Arquitectura orientada a eventos con Kafka: al reservar una cita se publica un evento `CitaReservada` y un consumidor separado simula el recordatorio de forma idempotente, ignorando el evento si ya lo procesó."
 
-**Archivos a mostrar:** `CitaReservada`, `CitaEventoProducer`, `RecordatorioConsumer`.
+**Archivos a mostrar:** `CitaReservada`, `CitaEventoProducer`, `RecordatorioConsumer`, `KafkaExtremoAExtremoTest`.
+
+**Para contar:** uso `citaId` como clave del mensaje (orden por partición) e `eventoId` para la idempotencia. Verificado con un Kafka embebido: el mismo evento dos veces envía un solo recordatorio. En Spring Boot 4 hace falta `spring-boot-starter-kafka`. Tema abierto: el `Set` en memoria se pierde al reiniciar; en producción, tabla con restricción de unicidad o Redis con TTL. No lo corrí contra Docker real, solo embebido.
 
 **Pregunta probable:** ¿qué semántica de entrega asumiste (at-least-once) y qué bug tendrías en producción sin la verificación de idempotencia?
 
-## Reto 17 — IaC (`17-IaC`) — pendiente
+## Reto 17 — IaC (`17-IaC`) — ✅
 
 **Antes de abrir el código, di:** "Infraestructura como código: un Terraform con una tabla DynamoDB y un rol IAM de mínimo privilegio, más un pipeline con escaneo de secretos, de dependencias y de `tfsec`/`checkov`, en el orden correcto y con comentarios de por qué."
 
-**Archivos a mostrar:** `main.tf`, `pipeline.yml` (sin Gradle: solo `.tf` y `.yml`).
+**Archivos a mostrar:** `main.tf`, `pipeline.yml` (sin Gradle: solo `.tf` y `.yml`), `RESULTADOS-ESCANEO.txt`.
+
+**Para contar:** el rol solo tiene `GetItem`, `PutItem` y `Query` sobre el ARN de la tabla; NO tiene `DeleteItem` ni `Scan`. Orden del pipeline: secretos, luego IaC y dependencias en paralelo, deploy al final solo en `main` y con OIDC. Verificado con `terraform validate`, tfsec y checkov; checkov me falló una vez (KMS sin policy) y lo corregí.
 
 **Pregunta probable:** ¿qué es el principio de menor privilegio en el rol que escribiste, y qué permiso NO le diste y por qué?
 
-## Reto 18 — OWASP (`18-OWASP`) — pendiente
+## Reto 18 — OWASP (`18-OWASP`) — ✅
 
 **Antes de abrir el código, di:** "Análisis de una vulnerabilidad: un endpoint que devuelve los documentos de cualquier usuario según el `id` de la URL. Identifico la categoría OWASP y el CWE, explico el vector de ataque y lo corrijo verificando que el usuario autenticado sea el dueño."
 
-**Archivos a mostrar:** `DocumentoController`.
+**Archivos a mostrar:** `DocumentoController` (el chequeo de dueño), `SecurityConfig`, `ControlDeAccesoTest`.
 
-**Pregunta probable:** ¿cuál es la diferencia entre control de acceso roto (A01 / CWE-284) y autenticación rota? Es el error que más se confunde.
+**Para contar:** A01:2021 Broken Access Control; CWE-639 (IDOR), dentro de CWE-284/CWE-862. Vector: cambiar el 1 por el 2 en la URL. Corregido con `autenticado.getName()` contra `id` y `AccessDeniedException` (403). Probado por HTTP real: dueño 200, otro usuario 403, sin credenciales 401. Alternativa declarativa: `@PreAuthorize`. Tema abierto: 403 revela que el recurso existe; a veces se prefiere 404.
 
-## Reto 19 — DDD (`19-DDD`) — pendiente
+**Pregunta probable:** ¿cuál es la diferencia entre control de acceso roto y autenticación rota? Acá el token es válido; lo que falta es autorización sobre ese recurso.
+
+## Reto 19 — DDD (`19-DDD`) — ✅
 
 **Antes de abrir el código, di:** "El modelado de una cuenta bancaria con DDD: `CuentaBancaria` como Aggregate Root, `Dinero` como Value Object inmutable que no mezcla monedas, y un evento de dominio `RetiroRealizado` tras un retiro exitoso."
 
-**Archivos a mostrar:** `CuentaBancaria`, `Dinero`, `RetiroRealizado`.
+**Archivos a mostrar:** `CuentaBancaria`, `Dinero`, `RetiroRealizado`, `DineroTest`, `CuentaBancariaTest`.
+
+**Para contar:** `Dinero` es VO porque no tiene identidad (100 COP son intercambiables con otros 100 COP); `CuentaBancaria` es Entidad porque sigue siendo la misma aunque cambie su saldo. Si un retiro falla no cambia el saldo ni se emite el evento. `equals()` usa `compareTo` porque `BigDecimal.equals` distingue 100 de 100.00, y `hashCode()` con `stripTrailingZeros`. Agregué `bloquear()` porque el esqueleto no tenía cómo llegar a `BLOQUEADA`.
 
 **Pregunta probable:** ¿qué garantía del dominio se rompería si `Dinero` tuviera un `setMonto()` público?

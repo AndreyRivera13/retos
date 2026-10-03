@@ -1,13 +1,15 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
+	testImplementation 'tools.jackson.core:jackson-databind'
     implementation project(':model')
     implementation project(':kafka-producer')
     implementation project(':kafka-listener')
     implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.springframework.boot:spring-boot-starter-kafka'
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
     testImplementation 'com.tngtech.archunit:archunit:1.4.2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-kafka-test'
 }
 
 tasks.register('explodedJar', Copy) {

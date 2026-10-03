@@ -1,6 +1,5 @@
 package pragma.model;
 
-/** Ya está completo — reutiliza el mismo modelo simple de los retos 5/11. */
 public class Cita {
     private final String doctorId;
     private final String horario;

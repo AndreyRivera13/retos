@@ -1,16 +1,82 @@
-# TODO: completa los "steps" de cada job y verifica que el orden tenga sentido.
-# Deja un comentario en cada job explicando POR QUÉ va en ese orden
-# (mira el ejemplo comentado del documento de retos, tema 17, si te trabas).
+name: infra-citas
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
 jobs:
   seguridad-secretos:
-    # TODO steps: [ ... ]   (gitleaks u otro escaneo de secretos)
+    # Primero y más barato: si hay una credencial en el repo, no tiene sentido
+    # seguir. Se escanea TODO el historial (fetch-depth 0) porque un secreto
+    # borrado en un commit posterior sigue estando en git.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Escanear secretos con gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   validar-iac:
-    # TODO steps: [ ... ]   (tfsec y/o checkov sobre TU propio Terraform)
+    # Después de secretos y en paralelo con dependencias: revisa NUESTRO
+    # Terraform (cifrado, rol con permisos mínimos) antes de que llegue
+    # a cualquier cuenta de AWS. Es análisis estático, no necesita credenciales.
+    needs: seguridad-secretos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: terraform fmt y validate
+        uses: hashicorp/setup-terraform@v3
+      - run: terraform fmt -check
+      - run: terraform init -backend=false
+      - run: terraform validate
+      - name: Escanear Terraform con tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+      - name: Escanear Terraform con checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: terraform
 
   escaneo-dependencias:
-    # TODO steps: [ ... ]   (dependency-check)
+    # También depende de secretos y corre en paralelo con validar-iac porque
+    # son independientes entre sí. Busca CVE en las librerías de la aplicación
+    # que se desplegará con esta infraestructura.
+    needs: seguridad-secretos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: OWASP Dependency-Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: citas
+          path: .
+          format: HTML
+          args: --failOnCVSS 7
 
   deploy:
-    needs: []  # TODO: qué jobs deben pasar ANTES de este
-    # TODO steps: [ ... ]   (terraform apply)
+    # Último y solo en main: apply cambia infraestructura real, así que exige
+    # que los tres escaneos anteriores hayan pasado. Usa OIDC en vez de llaves
+    # de AWS guardadas como secretos.
+    needs: [seguridad-secretos, validar-iac, escaneo-dependencias]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_DEPLOY }}
+          aws-region: us-east-1
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform init
+      - run: terraform plan -out=tfplan
+      - run: terraform apply -auto-approve tfplan

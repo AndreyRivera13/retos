@@ -1,6 +1,5 @@
 package pragma.model;
 
-/** Ya está completo. */
 public class Documento {
     private final Long id;
     private final Long usuarioId;

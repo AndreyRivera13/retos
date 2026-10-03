@@ -7,33 +7,26 @@ import org.springframework.stereotype.Component;
 import pragma.model.Pago;
 import pragma.model.RespuestaPago;
 
-/**
- * Simula una pasarela externa que falla 40% de las veces.
- *
- * TODO:
- *  1. en procesar(): if (Math.random() < 0.4) throw new RuntimeException("timeout simulado");
- *     si no falla, retorna un RespuestaPago("APROBADO", "ok").
- *  2. implementa fallback(...) con la MISMA firma + (Exception e) al final,
- *     devolviendo RespuestaPago("EN_PROCESO", "pago en proceso, se confirmará luego").
- *  3. ajusta el application.yaml de app-service con los valores exactos del
- *     reto: Retry 3 intentos + backoff exponencial, CircuitBreaker >50% fallos
- *     en ventana de 10, Bulkhead máximo 5 llamadas concurrentes.
- *
- * Debes poder explicar por qué combinaste Bulkhead + CircuitBreaker (qué
- * problema distinto resuelve cada uno aquí).
- */
 @Component
 public class PasarelaPagosAdapter implements ProcesarPagoPort {
+    private final FallaSimulada falla;
 
-    @Retry(name = "pasarelaPagos")
-    @CircuitBreaker(name = "pasarelaPagos", fallbackMethod = "fallback")
+    public PasarelaPagosAdapter(FallaSimulada falla) {
+        this.falla = falla;
+    }
+
+    @Retry(name = "pasarelaPagos", fallbackMethod = "fallback")
+    @CircuitBreaker(name = "pasarelaPagos")
     @Bulkhead(name = "pasarelaPagos")
     @Override
     public RespuestaPago procesar(Pago pago) {
-        throw new UnsupportedOperationException("TODO: implementar PasarelaPagosAdapter.procesar");
+        if (falla.debeFallar()) {
+            throw new IllegalStateException("timeout simulado");
+        }
+        return new RespuestaPago("APROBADO", "ok");
     }
 
     public RespuestaPago fallback(Pago pago, Exception e) {
-        throw new UnsupportedOperationException("TODO: implementar fallback");
+        return new RespuestaPago("EN_PROCESO", "pago en proceso, se confirmará luego");
     }
 }

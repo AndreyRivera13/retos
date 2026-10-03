@@ -4,12 +4,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import pragma.model.CitaReservada;
 
-/**
- * TODO: publica el evento en el tópico "citas-reservadas" usando kafkaTemplate.send(...).
- * (ver ejemplo OrdenService del documento de retos, tema 16).
- */
 @Component
 public class CitaEventoProducer {
+    public static final String TOPICO = "citas-reservadas";
+
     private final KafkaTemplate<String, CitaReservada> kafkaTemplate;
 
     public CitaEventoProducer(KafkaTemplate<String, CitaReservada> kafkaTemplate) {
@@ -17,6 +15,6 @@ public class CitaEventoProducer {
     }
 
     public void publicar(CitaReservada evento) {
-        throw new UnsupportedOperationException("TODO: implementar CitaEventoProducer.publicar");
+        kafkaTemplate.send(TOPICO, evento.citaId(), evento);
     }
 }

@@ -1,0 +1,5 @@
+=== PRUEBA MANUAL: los 3 escenarios del .feature ===
+1. Reserva exitosa -> dra-lopez
+2. Horario ocupado -> IllegalStateException: Horario ocupado
+3. Doctor inexistente -> IllegalArgumentException: Doctor no existe
+Citas registradas: 1 (esperado: 1)

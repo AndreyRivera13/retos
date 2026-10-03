@@ -1,14 +1,15 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
+	testImplementation 'tools.jackson.core:jackson-databind'
     implementation project(':model')
     implementation project(':rest-documentos')
+    implementation project(':memory-documentos')
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
     testImplementation 'com.tngtech.archunit:archunit:1.4.2'
-    testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.register('explodedJar', Copy) {

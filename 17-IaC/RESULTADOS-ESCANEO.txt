@@ -1,0 +1,8 @@
+Verificado el 2026-10-03 sobre main.tf:
+- terraform fmt -check: sin diferencias
+- terraform validate: Success! The configuration is valid.
+- tfsec v1.28.11: passed 11, critical/high/medium/low 0 — No problems detected
+- checkov: Passed checks: 22, Failed checks: 0
+- actionlint v1.7.7 sobre pipeline.yml: sin errores
+
+Hallazgo en el camino: checkov falló CKV2_AWS_64 (KMS key sin policy definida) en la primera versión; se agregó la policy explícita y quedó en 0 fallos.

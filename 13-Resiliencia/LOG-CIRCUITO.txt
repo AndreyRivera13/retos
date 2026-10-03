@@ -1,0 +1,78 @@
+LOG DE UNA CORRIDA REAL (bootRun, pasarela con 40% de fallo, 60 pagos)
+
+=== PRUEBA MANUAL: 60 pagos contra una pasarela que falla ~40% ===
+ 1. APROBADO   circuito=CLOSED
+ 2. APROBADO   circuito=CLOSED
+ 3. APROBADO   circuito=CLOSED
+ 4. APROBADO   circuito=CLOSED
+ 5. APROBADO   circuito=CLOSED
+ 6. APROBADO   circuito=CLOSED
+ 7. APROBADO   circuito=CLOSED
+ 8. APROBADO   circuito=CLOSED
+ 9. APROBADO   circuito=CLOSED
+10. APROBADO   circuito=CLOSED
+11. APROBADO   circuito=CLOSED
+12. APROBADO   circuito=CLOSED
+13. APROBADO   circuito=CLOSED
+14. APROBADO   circuito=CLOSED
+15. APROBADO   circuito=CLOSED
+16. APROBADO   circuito=CLOSED
+17. APROBADO   circuito=CLOSED
+   >> CIRCUITO: State transition from CLOSED to OPEN
+18. EN_PROCESO circuito=OPEN
+19. EN_PROCESO circuito=OPEN
+20. EN_PROCESO circuito=OPEN
+21. EN_PROCESO circuito=OPEN
+22. EN_PROCESO circuito=OPEN
+   >> CIRCUITO: State transition from OPEN to HALF_OPEN
+23. APROBADO   circuito=HALF_OPEN
+   >> CIRCUITO: State transition from HALF_OPEN to OPEN
+24. EN_PROCESO circuito=OPEN
+25. EN_PROCESO circuito=OPEN
+26. EN_PROCESO circuito=OPEN
+27. EN_PROCESO circuito=OPEN
+   >> CIRCUITO: State transition from OPEN to HALF_OPEN
+28. APROBADO   circuito=HALF_OPEN
+   >> CIRCUITO: State transition from HALF_OPEN to CLOSED
+29. APROBADO   circuito=CLOSED
+30. APROBADO   circuito=CLOSED
+31. APROBADO   circuito=CLOSED
+32. APROBADO   circuito=CLOSED
+33. APROBADO   circuito=CLOSED
+34. APROBADO   circuito=CLOSED
+35. APROBADO   circuito=CLOSED
+36. APROBADO   circuito=CLOSED
+37. APROBADO   circuito=CLOSED
+38. APROBADO   circuito=CLOSED
+39. APROBADO   circuito=CLOSED
+40. APROBADO   circuito=CLOSED
+41. APROBADO   circuito=CLOSED
+42. APROBADO   circuito=CLOSED
+   >> CIRCUITO: State transition from CLOSED to OPEN
+43. EN_PROCESO circuito=OPEN
+44. EN_PROCESO circuito=OPEN
+45. EN_PROCESO circuito=OPEN
+46. EN_PROCESO circuito=OPEN
+47. EN_PROCESO circuito=OPEN
+   >> CIRCUITO: State transition from OPEN to HALF_OPEN
+   >> CIRCUITO: State transition from HALF_OPEN to OPEN
+48. EN_PROCESO circuito=OPEN
+49. EN_PROCESO circuito=OPEN
+50. EN_PROCESO circuito=OPEN
+51. EN_PROCESO circuito=OPEN
+52. EN_PROCESO circuito=OPEN
+   >> CIRCUITO: State transition from OPEN to HALF_OPEN
+53. APROBADO   circuito=HALF_OPEN
+   >> CIRCUITO: State transition from HALF_OPEN to OPEN
+54. EN_PROCESO circuito=OPEN
+55. EN_PROCESO circuito=OPEN
+56. EN_PROCESO circuito=OPEN
+57. EN_PROCESO circuito=OPEN
+   >> CIRCUITO: State transition from OPEN to HALF_OPEN
+58. APROBADO   circuito=HALF_OPEN
+   >> CIRCUITO: State transition from HALF_OPEN to CLOSED
+59. APROBADO   circuito=CLOSED
+60. APROBADO   circuito=CLOSED
+Resumen: aprobados=37 enProceso=23 (ning?n pago termin? en error crudo)
+
+TEST elCircuitoPasaPorLosTresEstados (determinista): [CLOSED_TO_OPEN, OPEN_TO_HALF_OPEN, HALF_OPEN_TO_CLOSED]
