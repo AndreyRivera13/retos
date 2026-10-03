@@ -4,11 +4,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-/**
- * TODO (Experto en Información - GRASP): Cita tiene los datos (horaInicio,
- * horaFin) para poder calcular su propia duración. No lo calcules afuera
- * (en un Service) si Cita ya tiene todo lo necesario para hacerlo.
- */
 public class Cita {
     private final String doctorId;
     private final LocalDateTime horaInicio;

@@ -10,9 +10,6 @@ import pragma.model.GeneradorReportes;
 import pragma.model.LogReportes;
 import pragma.model.Reporte;
 
-/**
- * Punto de arranque del reto "12-GoF".
- */
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class MainApplication {
@@ -23,7 +20,6 @@ public class MainApplication {
     }
 
     private static void pruebaManual() {
-        // Builder: secciones opcionales, sin constructor de N parámetros.
         Reporte reporte = new Reporte.Builder()
                 .conEncabezado("Ventas Q1")
                 .conTabla("producto,total")
@@ -31,14 +27,12 @@ public class MainApplication {
                 .build();
         System.out.println("1. Builder -> " + reporte.getSecciones().size() + " secciones (esperado: 3)");
 
-        // Observer: dos suscriptores que Reporte no conoce.
         GeneradorReportes generador = new GeneradorReportes();
         ContadorReportes contador = new ContadorReportes();
         LogReportes log = new LogReportes();
         generador.agregarObservador(contador);
         generador.agregarObservador(log);
 
-        // Strategy: el mismo reporte, dos formatos elegidos en runtime.
         System.out.println("2. Strategy PDF:\n" + generador.generar(reporte, new ExportadorPDF()));
         System.out.println("3. Strategy CSV:\n" + generador.generar(reporte, new ExportadorCSV()));
 

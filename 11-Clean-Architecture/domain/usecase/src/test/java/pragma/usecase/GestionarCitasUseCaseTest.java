@@ -13,12 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Prueba el use case con un puerto falso propio, sin Spring ni infraestructura:
- * demuestra que el dominio no sabe qué hay detrás del puerto.
- */
 class GestionarCitasUseCaseTest {
-
     private static class RepositorioFalso implements CitaRepositoryPort {
         private final Map<String, Cita> citas = new HashMap<>();
 

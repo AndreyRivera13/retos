@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class ExportadoresTest {
-
     private final Reporte reporte = new Reporte.Builder()
             .conEncabezado("Ventas Q1")
             .conTabla("a|b")

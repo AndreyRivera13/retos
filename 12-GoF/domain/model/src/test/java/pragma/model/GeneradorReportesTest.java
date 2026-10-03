@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class GeneradorReportesTest {
-
     private final Reporte reporte = new Reporte.Builder().conEncabezado("x").conTabla("y").build();
 
     @Test

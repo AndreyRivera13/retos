@@ -1,9 +1,5 @@
 package pragma.nomina;
 
-/**
- * salario fijo (un valor que no depende de horas trabajadas).
- * Implementa Bonificable — este tipo sí tiene bono, EmpleadoPorHoras no.
- */
 public class EmpleadoFijo extends Empleado implements Bonificable {
     private final double salarioBase;
 

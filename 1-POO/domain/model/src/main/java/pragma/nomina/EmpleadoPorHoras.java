@@ -1,9 +1,5 @@
 package pragma.nomina;
 
-/**
- * salario = horasTrabajadas * tarifaPorHora.
- * OJO: a propósito NO implementa Bonificable (ese tipo de empleado no tiene bono).
- */
 public class EmpleadoPorHoras extends Empleado {
     private double horasTrabajadas;
     private double tarifaPorHora;

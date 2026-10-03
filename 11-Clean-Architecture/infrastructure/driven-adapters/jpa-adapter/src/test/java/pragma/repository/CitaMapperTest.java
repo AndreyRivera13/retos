@@ -7,7 +7,6 @@ import pragma.model.Cita;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CitaMapperTest {
-
     @Test
     @DisplayName("Debe mapear de Cita (dominio) a CitaEntity correctamente")
     void testToEntity() {

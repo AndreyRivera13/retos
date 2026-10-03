@@ -2,12 +2,7 @@ package pragma.repository;
 
 import pragma.model.Cita;
 
-/**
- * Mapper para convertir entre el modelo de dominio {@link Cita}
- * y la entidad JPA {@link CitaEntity}.
- */
 public final class CitaMapper {
-
     private CitaMapper() {
     }
 

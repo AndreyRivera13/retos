@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReporteTest {
-
     @Test
     void builderCreaLasSeccionesEnElOrdenIndicado() {
         Reporte reporte = new Reporte.Builder()

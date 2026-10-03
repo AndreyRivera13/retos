@@ -7,7 +7,6 @@ import java.util.Optional;
 
 @Repository
 public class CitaRepositoryJpaAdapter implements CitaRepositoryPort {
-
     private final CitaJpaRepository jpaRepository;
 
     public CitaRepositoryJpaAdapter(CitaJpaRepository jpaRepository) {

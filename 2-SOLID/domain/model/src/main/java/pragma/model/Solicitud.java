@@ -1,9 +1,5 @@
 package pragma.model;
 
-/**
- * Datos de una solicitud de crédito. Ya está completa, no la modifiques:
- * el reto es sobre ValidadorSolicitud y las reglas, no sobre este DTO.
- */
 public class Solicitud {
     private final int edad;
     private final double ingresosMensuales;

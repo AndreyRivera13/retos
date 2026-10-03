@@ -6,23 +6,11 @@ import pragma.model.Precio;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *    implemente Cache-Aside completo con TTL de 30 segundos:
- *  - obtenerPrecio(id): si hay HIT y no expiró, retorna del cache;
- *    si hay MISS o expiró, consulta consultarOrigenLento(id) (ya dado, simula
- *    ir a una BD), guarda en cache y retorna.
- *  - actualizarPrecio(id, nuevoPrecio): actualiza el "origen" y ADEMÁS invalida
- *    el cache (cache.remove(id)) para esa clave.
- *
- * Cuando termines el código, escribe (en un archivo aparte WRITE-THROUGH.md,
- * sin código) cómo cambiaría este mismo catálogo si usaras Write-Through en
- * vez de Cache-Aside, y en qué escenario real de tu proyecto usarías cada una.
- */
 public class CatalogoPreciosUseCase {
     private static final long TTL_POR_DEFECTO_MILLIS = 30_000;
 
     private final Map<String, EntradaCache<Double>> cache = new HashMap<>();
-    private final Map<String, Double> origenDeDatos; //simula bd
+    private final Map<String, Double> origenDeDatos;
     private final long ttlMillis;
 
     public CatalogoPreciosUseCase() {

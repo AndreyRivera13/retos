@@ -3,17 +3,6 @@ package pragma.usecase;
 import pragma.model.Cita;
 import pragma.repository.CitaRepositoryPort;
 
-/**
- * Puerto de entrada + su propia implementación (convención del scaffold:
- * el nombre debe terminar en "UseCase" para que UseCasesConfig lo registre
- * como bean automáticamente).
- *
- * Regla de negocio: un doctor no puede tener dos citas en el mismo horario.
- * Vive aquí, nunca en los adaptadores de infraestructura.
- *
- * Prueba mental antes de programar: si le pusieras @Entity directamente a
- * la clase Cita (dominio), ¿qué se rompería exactamente y por qué?
- */
 public class GestionarCitasUseCase {
     private final CitaRepositoryPort repository;
 

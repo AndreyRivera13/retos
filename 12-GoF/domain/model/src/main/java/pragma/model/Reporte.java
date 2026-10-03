@@ -3,20 +3,6 @@ package pragma.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Reporte inmutable, construido siempre mediante {@link Builder} (patrón Builder):
- * las secciones son opcionales y no hay un constructor de N parámetros.
- *
- * Uso:
- *   Reporte r = new Reporte.Builder()
- *       .conEncabezado("Ventas Q1")
- *       .conTabla("...")
- *       .build();
- *
- * El constructor es privado y la lista es inmutable: una vez construido, el
- * Reporte no cambia aunque se siga usando el Builder o se intente modificar
- * la lista que devuelve getSecciones().
- */
 public class Reporte {
     private final List<SeccionReporte> secciones;
 
@@ -51,7 +37,6 @@ public class Reporte {
             return this;
         }
 
-        /** Cada llamada devuelve un Reporte nuevo e independiente del Builder. */
         public Reporte build() {
             return new Reporte(secciones);
         }

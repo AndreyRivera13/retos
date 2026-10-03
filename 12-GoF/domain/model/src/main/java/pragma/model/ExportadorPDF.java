@@ -2,7 +2,6 @@ package pragma.model;
 
 import java.util.Locale;
 
-/** Strategy: "exporta" el reporte a un texto que simula un PDF (no genera un PDF real). */
 public class ExportadorPDF implements ExportadorReporte {
     @Override
     public String exportar(Reporte reporte) {

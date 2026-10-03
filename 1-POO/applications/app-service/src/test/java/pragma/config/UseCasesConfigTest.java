@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Import;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UseCasesConfigTest {
-
     @Test
     void testUseCaseBeansExist() {
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(TestConfig.class)) {
@@ -31,7 +30,6 @@ class UseCasesConfigTest {
     @Configuration
     @Import(UseCasesConfig.class)
     static class TestConfig {
-
         @Bean
         public MyUseCase myUseCase() {
             return new MyUseCase();

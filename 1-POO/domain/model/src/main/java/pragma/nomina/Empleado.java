@@ -1,10 +1,5 @@
 package pragma.nomina;
 
-/**
- * Clase abstracta base. se define los atributos comunes (ej. nombre,
- * documento) y deja calcularSalario() abstracto — cada subtipo decide cómo
- * se calcula el suyo, sin que Nomina<T> necesite saber cuál es cuál.
- */
 public abstract class Empleado {
     private String nombre;
     private String documento;

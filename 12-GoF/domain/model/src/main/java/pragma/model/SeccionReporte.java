@@ -1,6 +1,5 @@
 package pragma.model;
 
-/** Una sección del reporte (encabezado, tabla, grafico, pie). Ya está completa. */
 public class SeccionReporte {
     private final String tipo;
     private final String contenido;

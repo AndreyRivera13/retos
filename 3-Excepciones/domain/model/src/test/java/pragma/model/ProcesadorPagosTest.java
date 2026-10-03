@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ProcesadorPagosTest {
-
     private final ProcesadorPagos procesador = new ProcesadorPagos();
 
     @Test

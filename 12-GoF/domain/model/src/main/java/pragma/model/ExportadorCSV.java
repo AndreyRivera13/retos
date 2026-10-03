@@ -1,10 +1,5 @@
 package pragma.model;
 
-/**
- * Strategy: "exporta" el reporte a CSV simulado, una fila por sección.
- * El contenido va siempre entre comillas, con las comillas internas duplicadas,
- * para que comas o comillas dentro del texto no rompan el formato.
- */
 public class ExportadorCSV implements ExportadorReporte {
     @Override
     public String exportar(Reporte reporte) {

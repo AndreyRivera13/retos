@@ -8,7 +8,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CatalogoPreciosUseCaseTest {
-
     private static final long TTL_LARGO = 30_000;
     private static final long TTL_CORTO = 20;
 
@@ -31,18 +30,18 @@ class CatalogoPreciosUseCaseTest {
     void hit_dentroDelTtlNoVuelveAlOrigen() {
         Map<String, Double> origen = new HashMap<>(Map.of("p-1", 100.0));
         CatalogoPreciosUseCase catalogo = new CatalogoPreciosUseCase(TTL_LARGO, origen);
-        catalogo.obtenerPrecio("p-1"); // miss: puebla el cache
+        catalogo.obtenerPrecio("p-1");
 
-        origen.put("p-1", 999.0); // otro servicio escribe directo en la BD, sin pasar por actualizarPrecio
+        origen.put("p-1", 999.0);
 
-        assertEquals(100.0, catalogo.obtenerPrecio("p-1")); // sigue saliendo del cache
+        assertEquals(100.0, catalogo.obtenerPrecio("p-1"));
     }
 
     @Test
     void actualizarPrecio_invalidaElCache() {
         CatalogoPreciosUseCase catalogo = new CatalogoPreciosUseCase(TTL_LARGO);
         catalogo.actualizarPrecio("p-1", 100.0);
-        assertEquals(100.0, catalogo.obtenerPrecio("p-1")); // queda en cache
+        assertEquals(100.0, catalogo.obtenerPrecio("p-1"));
 
         catalogo.actualizarPrecio("p-1", 150.0);
 
@@ -53,11 +52,11 @@ class CatalogoPreciosUseCaseTest {
     void expirado_despuesDelTtlVuelveAlOrigen() throws InterruptedException {
         Map<String, Double> origen = new HashMap<>(Map.of("p-1", 100.0));
         CatalogoPreciosUseCase catalogo = new CatalogoPreciosUseCase(TTL_CORTO, origen);
-        catalogo.obtenerPrecio("p-1"); // miss: puebla el cache
-        origen.put("p-1", 200.0); // cambio directo en la BD
+        catalogo.obtenerPrecio("p-1");
+        origen.put("p-1", 200.0);
 
-        Thread.sleep(TTL_CORTO * 3); // deja vencer el TTL
+        Thread.sleep(TTL_CORTO * 3);
 
-        assertEquals(200.0, catalogo.obtenerPrecio("p-1")); // TTL vencido: refresca desde el origen
+        assertEquals(200.0, catalogo.obtenerPrecio("p-1"));
     }
 }

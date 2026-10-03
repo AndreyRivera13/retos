@@ -6,11 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Recibe transacciones en formato "cliente:monto" (ej: "ana:500").
- */
 public class AnalizadorTransacciones {
-
     public Map<String, Double> totalPorCliente(List<String> transacciones) {
         Map<String, Double> resultado = new HashMap<>();
         for (String transaccion : transacciones) {
@@ -35,8 +31,4 @@ public class AnalizadorTransacciones {
                 .sorted((cliente1, cliente2) -> totalPorCliente.get(cliente2).compareTo(totalPorCliente.get(cliente1)))
                 .collect(Collectors.toList());
     }
-
-    // la complejidad Big O de la solución para n transacciones
-    //  O(n log n) debido a la operación de ordenamiento.
-
 }

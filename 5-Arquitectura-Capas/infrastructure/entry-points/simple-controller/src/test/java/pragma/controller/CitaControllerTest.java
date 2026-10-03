@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CitaControllerTest {
-
     @Test
     void solicitarCitaDelegaEnCitaService() {
         CitaRepository repository = new CitaRepository() {

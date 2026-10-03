@@ -11,19 +11,6 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-/**
- * TODO: implementa la lógica de:
- *  - onOpen: registra la sesión y le manda un mensaje de bienvenida.
- *  - onMessage: parsea el JSON a MensajeEntrante (usa objectMapper.readValue).
- *      si tipo=="alerta"  -> reenvía el texto a TODAS las sesiones registradas.
- *      si tipo=="privado" -> reenvía SOLO a la sesión cuyo session.getId()
- *                             sea igual a mensaje.destino().
- *  - onClose: quita la sesión del registro.
- * Demuestra dominio si puedes explicar qué pasa si un cliente se desconecta
- * abruptamente SIN disparar onClose (pista: sendText a una sesión cerrada
- * lanza excepción — ¿cómo lo manejarías?).
- */
-
 @Component
 @ServerEndpoint("/notificaciones")
 public class NotificacionesEndpoint {

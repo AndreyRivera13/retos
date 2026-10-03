@@ -1,6 +1,5 @@
 package pragma.model;
 
-/** Resultado de validar una Solicitud. Ya está completa. */
 public class ResultadoValidacion {
     private final boolean aprobada;
     private final String mensaje;
