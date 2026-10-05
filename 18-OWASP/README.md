@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Senior
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — verificado el 2026-10-03 (4 tests de control de acceso por HTTP + ArchitectureTest en verde, prueba manual en MainApplication).
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,13 @@ Autenticación verifica identidad (quién es el usuario); autorización verifica
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+La vulnerabilidad del endpoint `GET /usuarios/{id}/documentos` es control de acceso roto: OWASP Top 10 2021 A01 (Broken Access Control). El CWE más preciso es CWE-639 (autorización eludida mediante una clave controlada por el usuario, lo que comúnmente se llama IDOR), dentro de la familia CWE-284/CWE-862 (autorización ausente). El vector de ataque: un usuario legítimo se autentica, ve que su URL es `/usuarios/1/documentos`, cambia el 1 por 2, 3, 4... y el servidor le devuelve los documentos de otras personas, porque solo verifica que el token sea válido, no que el recurso le pertenezca.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+La corrección está en `DocumentoController.ver()`: ahora recibe el `Authentication` y compara `autenticado.getName()` con el `id` pedido; si no es el dueño lanza `AccessDeniedException`, que Spring Security traduce a 403. El nombre del principal es el id del usuario (en un JWT real sería el claim `sub`). La alternativa declarativa sería `@PreAuthorize("#id.toString() == authentication.name")` con `@EnableMethodSecurity`; dejé el chequeo explícito porque es más fácil de leer y de probar. Para que el proyecto corra agregué un `SecurityConfig` (todo requiere autenticación, HTTP Basic y dos usuarios de demo con contraseña cifrada con BCrypt) y un adaptador en memoria `DocumentoRepositoryMemoria`, en su propio módulo.
+
+Lo probé con 4 tests por HTTP real: el dueño recibe 200 y solo ve sus documentos, un usuario autenticado que pide los de otro recibe 403, sin credenciales 401 y con clave incorrecta 401. Hallazgo real: el controlador falló con 500 ("Name for argument of type [Long] not specified") porque ese módulo se compila sin el flag `-parameters`; lo resolví con `@PathVariable("id")` explícito.
+
+La diferencia que me van a preguntar: autenticación rota es no poder verificar quién eres (contraseñas débiles, tokens mal validados, sin límite de intentos); acá la autenticación funciona perfecto, el token es válido, y el fallo es de autorización, que no se verifica que ese usuario autenticado tenga permiso sobre ese recurso concreto. Un JWT válido resuelve la primera pregunta, no la segunda. Un tema abierto: un 403 revela que el recurso existe; para algunos casos se prefiere responder 404.
 
 ## 🎯 Con tu evaluador
 

@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Senior
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — verificado el 2026-10-03 (4 tests de resiliencia + ArchitectureTest en verde, log de corrida real en LOG-CIRCUITO.txt).
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,13 @@ Retry reintenta una operación que falla por una causa transitoria. CircuitBreak
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+Dejé `RealizarPagoUseCase` "tonto" a propósito: solo delega en el puerto `ProcesarPagoPort`. La resiliencia vive en el adaptador `PasarelaPagosAdapter`, que lleva las tres anotaciones de Resilience4j sobre `procesar()`. La pasarela simulada decide si falla a través de `FallaSimulada` (`FallaAleatoria` en producción, con 40% configurable en `pasarela.probabilidad-fallo`), lo que me permite controlarla en los tests. El `application.yaml` tiene los valores del reto: Retry de 3 intentos con backoff exponencial (x2), CircuitBreaker que abre con 50% de fallos en ventana de 10, y Bulkhead de 5 llamadas concurrentes.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+Tuve cuatro hallazgos reales. Uno: el proyecto está en Spring Boot 4 y `resilience4j-spring-boot3` / `spring-boot-starter-aop` ya no resuelven; usé `resilience4j-spring-boot4` 2.4.0 y `spring-boot-starter-aspectj`. Dos: `@Fallback` no existe en Resilience4j, es el atributo `fallbackMethod`, y su ubicación importa: si lo pongo en `@CircuitBreaker` (que queda por dentro del Retry), el fallback devuelve una respuesta "exitosa" y el Retry nunca reintenta. Lo puse en `@Retry`, que es la capa más externa, así primero se reintenta y el fallback solo actúa al final. Tres: `minimum-number-of-calls` vale 100 por defecto, así que con ventana de 10 el circuito nunca abriría; lo fijé en 10. Cuatro: el Retry no debe reintentar contra un circuito abierto o un Bulkhead lleno, así que ignoro `CallNotPermittedException` y `BulkheadFullException`.
+
+Probé todo con 4 tests de Spring que ejecutan las anotaciones de verdad: pasarela sana, pasarela caída (3 intentos y respuesta `EN_PROCESO`), el circuito pasando por CLOSED, OPEN, HALF_OPEN y CLOSED, y el Bulkhead lleno recibiendo el fallback sin tocar la pasarela. `LOG-CIRCUITO.txt` guarda una corrida real de 60 pagos.
+
+Para la pregunta del evaluador: el CircuitBreaker protege del fallo (deja de insistir contra una pasarela que ya está caída y le da tiempo de recuperarse) y el Bulkhead protege de la lentitud (limita cuántas llamadas simultáneas puede consumir esa dependencia, para que no se lleve todos los hilos del servicio). Una pasarela lenta pero que no falla nunca abre el circuito, pero sí agotaría los hilos sin el Bulkhead.
 
 ## SDD — Spec-Driven Development
 

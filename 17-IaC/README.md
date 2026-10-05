@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Senior
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — verificado el 2026-10-03 (terraform validate, tfsec y checkov en cero hallazgos; actionlint sin errores).
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,11 @@ Infraestructura como código versiona la infraestructura igual que el código de
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+`main.tf` declara una tabla DynamoDB `citas` (pago por uso, clave `citaId`, recuperación a un punto en el tiempo y cifrado con una llave KMS propia con rotación) y un rol IAM `servicio-citas` para Lambda con una política en línea. El principio de menor privilegio está aplicado así: el rol solo tiene `dynamodb:GetItem`, `PutItem` y `Query`, y únicamente sobre el ARN de esa tabla (no sobre `*`). El permiso que NO le di es `dynamodb:DeleteItem` (y tampoco `Scan` ni `UpdateItem`): este servicio reserva y consulta citas, y si una credencial se filtra, quien la use no puede borrar ni recorrer toda la tabla. También agregué solo `kms:Decrypt` y `kms:GenerateDataKey` sobre esa llave, condicionados a `kms:ViaService = dynamodb.<región>.amazonaws.com`, porque cifrar con llave propia exige ese permiso.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+`pipeline.yml` (GitHub Actions) tiene cuatro jobs y el orden está explicado en sus comentarios: primero `seguridad-secretos` (gitleaks sobre todo el historial: es lo más barato y un secreto expuesto invalida todo lo demás), luego en paralelo `validar-iac` (`terraform fmt`/`validate`, tfsec y checkov sobre mi propio Terraform) y `escaneo-dependencias` (OWASP Dependency-Check), y al final `deploy`, que solo corre en `main`, necesita los tres anteriores y usa OIDC en lugar de llaves guardadas como secretos.
+
+Lo verifiqué ejecutando las herramientas de verdad: `terraform fmt -check` y `terraform validate` (con el proveedor AWS real), tfsec (11 chequeos, 0 hallazgos), checkov (22 pasan, 0 fallan) y actionlint sobre el pipeline. Mi primera versión falló un chequeo de checkov (CKV2_AWS_64): la llave KMS no tenía policy explícita; la agregué. Aclaración: los comentarios del `.yml` los dejé a propósito porque el enunciado los pide como entregable. Un tema abierto: el estado de Terraform (`tfstate`) debería ir en un backend remoto con bloqueo (S3 + DynamoDB), que no configuré porque el reto es mínimo.
 
 ## SDD — Spec-Driven Development
 

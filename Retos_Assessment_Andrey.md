@@ -228,7 +228,7 @@ Resultado: `Vendedores(id_vendedor PK, nombre, telefono)` — `Ventas(id_venta P
 # JUNIOR
 
 ## 8. Uso de asistente de IA en el desarrollo
-**Reto (no es código):** Toma una tarea real de tu sprint actual en Entitlement. Documenta, paso a paso, qué partes resolviste con ayuda de IA y cuáles no, y para las que no, explica qué decisión de diseño tomaste que la IA no podía tomar por ti.
+**Reto (no es código):** Toma una tarea real de tu sprint actual en Entitlement.
 
 **Demuestra dominio si:** tu evaluador podría preguntarte "¿por qué decidiste eso?" sobre cualquier parte de la tarea y responder sin necesitar abrir el chat de la IA.
 

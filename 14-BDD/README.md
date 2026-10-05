@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Senior
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — verificado el 2026-10-03 (3 escenarios Cucumber en verde + ArchitectureTest, prueba manual en MainApplication).
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,11 @@ BDD especifica el comportamiento esperado en lenguaje natural estructurado (Give
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+Escribí `reservar_cita.feature` en español (`# language: es`) con los tres escenarios del reto: reserva exitosa, horario ya ocupado y doctor inexistente. Usé Dado/Cuando/Entonces con frases de negocio ("el doctor dra-lopez ya tiene una cita a las..."), de modo que alguien no técnico pueda leerlo sin ver código. `ReservarCitaSteps` conecta cada frase con el `GestionarCitasUseCase` real y guarda la excepción capturada en un campo para verificarla en el `Entonces`, igual que el patrón del documento de retos.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+El use case lo tuve que implementar yo: `reservar()` valida primero que el doctor exista (lanza `IllegalArgumentException("Doctor no existe")`), luego que el horario esté libre (`IllegalStateException("Horario ocupado")`) y solo entonces guarda la cita. Hice `getCitas()` devolver una copia inmutable para que el test no pueda alterar el estado interno. Cucumber crea una instancia nueva de los steps por escenario, así que cada escenario arranca con un use case vacío y no hay estado compartido entre ellos.
+
+El único tropiezo fue de build: el `ArchitectureTest` que inyecta el plugin de Clean Architecture necesita `tools.jackson.core:jackson-databind` en el módulo de pruebas y sin eso `compileTestJava` fallaba. Verifiqué los 3 escenarios en verde y agregué una prueba manual en `MainApplication` con los mismos 3 casos.
 
 ## SDD — Spec-Driven Development
 

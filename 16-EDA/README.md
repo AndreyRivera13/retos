@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Senior
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — verificado el 2026-10-03 (3 tests unitarios + 1 de extremo a extremo con Kafka embebido + ArchitectureTest en verde).
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,11 @@ Una arquitectura orientada a eventos desacopla productor y consumidor: el produc
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+`CitaEventoProducer.publicar()` envía el evento `CitaReservada` al tópico `citas-reservadas` con `kafkaTemplate.send(TOPICO, evento.citaId(), evento)`: uso el id de la cita como clave para que todos los eventos de una misma cita caigan en la misma partición y conserven el orden. `RecordatorioConsumer.escuchar()` es idempotente: si `idsProcesados.add(evento.eventoId())` devuelve `false`, el evento ya se procesó, lo registra como duplicado y retorna; si devuelve `true`, llama a un `EnviadorRecordatorio`. Separé ese envío en una interfaz (`EnviadorRecordatorioConsola` es la implementación que imprime) para poder verificar en los tests cuántos recordatorios se enviaron de verdad.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+La semántica que asumí es at-least-once: Kafka garantiza que el mensaje llega, pero ante un reintento del productor o un rebalanceo del consumidor puede llegar dos veces. Sin la verificación de idempotencia, el paciente recibiría el recordatorio duplicado, o, en un caso más grave (un cobro, un descuento de inventario), el efecto se aplicaría dos veces. La idempotencia usa `eventoId`, no `citaId`: dos eventos distintos sobre la misma cita sí deben procesarse, uno repetido no.
+
+Lo verifiqué con 3 tests unitarios del consumidor y uno de extremo a extremo con un broker Kafka embebido: publica el mismo evento dos veces y otro distinto, y solo se envían 2 recordatorios. Hallazgos reales: con Spring Boot 4 hace falta `spring-boot-starter-kafka`, porque con solo `spring-kafka` no hay autoconfiguración y el `KafkaTemplate` ni siquiera existe como bean; y los (de)serializadores JSON ahora son `JacksonJsonSerializer`/`JacksonJsonDeserializer`. Dejé un `docker-compose.yml` y una prueba manual (`--demo.publicar=true`) para correrlo contra un Kafka real; la corrida contra Docker no la pude ejecutar en mi entorno, la verificación es con el broker embebido. Un tema abierto que conozco: el `Set` en memoria se pierde si el consumidor se reinicia y crece sin límite; en producción usaría una tabla con restricción de unicidad sobre `eventoId` (o Redis con TTL).
 
 ## SDD — Spec-Driven Development
 

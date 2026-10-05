@@ -30,13 +30,13 @@ evaluador" — no hace falta volver a esta tabla para consultarlo. Marcá el
 | 10 | `10-Cache` | model + usecase | ✅ Cerrado — verificado el 2026-10-02 |
 | 11 | `11-Clean-Architecture` | model + usecase + memory-adapter + jpa-adapter | ✅ Cerrado — verificado el 2026-10-02 |
 | 12 | `12-GoF` | model + app-service | ✅ Cerrado — verificado el 2026-10-03 |
-| 13 | `13-Resiliencia` | model + usecase + pasarela-pagos | 🔲 TODO |
-| 14 | `14-BDD` | model + usecase + features/steps Cucumber | 🔲 TODO |
+| 13 | `13-Resiliencia` | model + usecase + pasarela-pagos | ✅ Cerrado — verificado el 2026-10-03 |
+| 14 | `14-BDD` | model + usecase + features/steps Cucumber | ✅ Cerrado — verificado el 2026-10-03 |
 | 15 | `15-Reactivo` | model + usecase | ✅ Cerrado — verificado el 2026-10-03 |
-| 16 | `16-EDA` | model + kafka-producer + kafka-listener | 🔲 TODO |
-| 17 | `17-IaC` | solo .tf/.yml (sin Gradle) | 🔲 TODO |
-| 18 | `18-OWASP` | model + rest-documentos | 🔲 TODO |
-| 19 | `19-DDD` | model + app-service | 🔲 TODO |
+| 16 | `16-EDA` | model + kafka-producer + kafka-listener | ✅ Cerrado — verificado el 2026-10-03 |
+| 17 | `17-IaC` | solo .tf/.yml (sin Gradle) | ✅ Cerrado — verificado el 2026-10-03 |
+| 18 | `18-OWASP` | model + rest-documentos + memory-documentos | ✅ Cerrado — verificado el 2026-10-03 |
+| 19 | `19-DDD` | model + app-service | ✅ Cerrado — verificado el 2026-10-03 |
 
 ## Cómo trabajar cada reto
 

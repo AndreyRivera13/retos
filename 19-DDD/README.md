@@ -2,7 +2,7 @@
 
 **Nivel que evalúa:** Senior
 
-**Estado:** 🔲 Sin empezar
+**Estado:** ✅ Cerrado — verificado el 2026-10-03 (15 tests propios + ArchitectureTest en verde, prueba manual en MainApplication).
 
 ## Para qué te sirve este reto
 
@@ -26,11 +26,11 @@ El Aggregate Root es el único punto de entrada para modificar el estado de un a
 
 ## Cómo cerré esta brecha (mi implementación)
 
-*Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*
+`CuentaBancaria` es el Aggregate Root: es la única puerta para cambiar el saldo y protege sus propias reglas. `depositar()` y `retirar()` rechazan operar con la cuenta `BLOQUEADA` (`IllegalStateException`), con monto nulo o cero (`IllegalArgumentException`) o con otra moneda (lo detecta `Dinero`). `retirar()` además lanza `IllegalStateException` si el monto excede el saldo, y solo después de validar todo resta el saldo y agrega un `RetiroRealizado` a la lista de eventos; si el retiro falla, ni cambia el saldo ni emite el evento. Permitir retirar exactamente el saldo (`esMayorQue` es estricto) fue una decisión deliberada y está probada. Agregué `bloquear()`/`desbloquear()` porque el esqueleto no tenía forma de llegar al estado `BLOQUEADA`, y una interfaz marcadora `EventoDominio` para tipar los eventos en vez de `List<Object>`; `extraerEventos()` entrega los pendientes y los limpia, y `getEventos()` devuelve una vista no modificable para que desde afuera nadie pueda saltarse el agregado.
 
-- *¿Qué clases/métodos concretos escribí y qué responsabilidad tiene cada uno?*
-- *¿Cómo mi código, específicamente, resuelve el concepto de este reto? Cito mis propias clases y métodos, no la teoría.*
-- *¿Qué bug o mal entendido tuve en el camino, y cómo lo corregí? (revisar esto antes de la entrevista me sirve más que repasar la teoría de nuevo).*
+`Dinero` es un Value Object y no una Entidad porque no tiene identidad: lo que lo define es su valor. 100 COP son intercambiables con cualquier otros 100 COP, no hay un "ese billete en particular"; una Entidad, como `CuentaBancaria`, tiene un id y sigue siendo la misma aunque cambie su saldo. Por eso `Dinero` es `final`, sus atributos son `final`, no tiene setters, `sumar()`/`restar()` devuelven un `Dinero` nuevo y `equals()`/`hashCode()` se basan en monto y moneda. Si tuviera un `setMonto()` público se rompería la inmutabilidad: el mismo objeto `Dinero` compartido (por ejemplo el que está en el evento `RetiroRealizado`, o el saldo de otra cuenta) podría cambiar a espaldas de quien lo guardó, el historial del evento dejaría de ser un hecho, y la validación del constructor (sin negativos, sin nulls) se podría saltar después de creado.
+
+Tuve un detalle sutil: `equals()` con `BigDecimal.equals` considera distintos 100 y 100.00 porque difieren en escala, así que usé `compareTo` y, para que `hashCode()` sea consistente con `equals()`, `stripTrailingZeros()` (hay un test para eso). Lo verifiqué con 7 tests de `Dinero` y 8 de `CuentaBancaria`, más una prueba manual en `MainApplication`.
 
 ## SDD — Spec-Driven Development
 
