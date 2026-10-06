@@ -58,6 +58,33 @@ Cuándo NO: no registres datos personales ni secretos en logs; no etiquetes mét
 
 Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o por escrito, las preguntas de repaso de este tema en `REPASO_MASTER.md` (están sin respuesta; las respuestas modelo están al final del archivo). Si te cuesta más que escribir el entregable, el hueco está en el concepto.
 
+<!-- ENTITLEMENT:25:START -->
+## Ejemplo fácil de explicar
+
+Las tres señales: **métricas** (qué tan mal está: el termómetro), **logs** (qué pasó: el diario) y **trazas** (por dónde pasó la petición: el recorrido). Una métrica de negocio dice "cuántos flujos de aprobación se crearon"; una de infraestructura dice "CPU al 80%". Se alerta por **síntoma** (usuarios fallando), no por causa, y cada alerta lleva un runbook.
+
+```
+RED: Rate (peticiones/s), Errors (% fallos), Duration (latencia p95)
+```
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Logs estructurados ECS (Elastic Common Schema):** `Library_MR/ecs_logs` (`ecs-model`, `ecs-core`, `ecs-reactive`, `ecs-imperative`). `ReactiveLogsHandler implements WebFilter` (`@Order(Integer.MIN_VALUE)`) extrae/propaga `message-id` en el `Context` de Reactor (`MessageIdMngUseCase`). Elixir: `Library_MR/ecs_elixir_logs`.
+- **Correlación:** `message-id` (UUID obligatorio), `X_REQUEST_ID` y `aidCreator` en `ContextData`. En `incidentes/` las consultas filtran por `trace_id`.
+- **Métricas:** `spring-boot-starter-actuator` + `micrometer-registry-prometheus` (`ms_admin_authorization`, `client_parameters_ms`, `permitions_entitlement_ms`); `MicrometerMetricPublisher` publica métricas del SDK de AWS como `Timer`/`Counter`; el path de prometheus se permite en la `AuthorizationPolicy`.
+- **Health:** `/actuator/health/readiness` y `/liveness` (+ `startupProbe`) en `app.yaml`; Elixir `get "/health"`.
+- **Trazas:** OpenTelemetry en Elixir (`opentelemetry_plug`, `opentelemetry_ecto`, exporter OTLP, `Tracer.with_span "redis.get_permission"`, sidecar `opentelemetry.io/inject`). En Java no hay dependencias OTel en los `build.gradle` revisados: se usa `message-id`.
+- **Logs sin PII:** `SensitiveHelper` y el sampling del configmap (`print-on-error`, `rules20XJson/rules40XJson`).
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Alertas, dashboards y runbooks versionados: NO ENCONTRADO (solo un `grafana-event-decoder`). Trazas distribuidas en Java: NO ENCONTRADO.
+
+**Cómo contarlo en la entrevista:** Tu historia: `message-id` propagado en el `Context` de Reactor para reconstruir un incidente. Reconoce que faltan alertas por síntoma y runbook (reto 25).
+<!-- ENTITLEMENT:25:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 *Completo esto yo mismo cuando termine el reto, no antes. Con lo que ya entregué, respondo aquí:*
@@ -65,7 +92,6 @@ Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o 
 - *¿Qué archivos y decisiones concretas produje y qué responsabilidad tiene cada uno?*
 - *¿Cómo mi entrega, específicamente, resuelve el concepto de este reto? Cito mis propios archivos.*
 - *¿Qué error o malentendido tuve en el camino y cómo lo corregí?*
-- *¿Qué hice yo y qué hice con ayuda de IA?*
 
 ## SDD — Spec-Driven Development
 

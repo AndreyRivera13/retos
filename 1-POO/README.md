@@ -24,6 +24,37 @@ Código + un párrafo explicando qué pasaría si agregas un tercer tipo `Emplea
 
 El polimorfismo permite que una clase abstracta (`Empleado`) delegue en cada subtipo (`EmpleadoFijo`, `EmpleadoPorHoras`) la implementación de un método común (`calcularSalario()`). El código que usa `Empleado` no necesita conocer el tipo concreto ni usar `instanceof`: cada objeto resuelve su propio comportamiento. Este es el mismo principio que sostiene Clean Architecture y varios patrones GoF, aplicado ahí a nivel de arquitectura en vez de a nivel de clase.
 
+<!-- ENTITLEMENT:1:START -->
+## Ejemplo fácil de explicar
+
+Piensa en canales de notificación. La clase abstracta define *qué* se hace; cada subclase define *cómo*:
+
+```java
+abstract class Canal { abstract String enviar(String mensaje); }
+class Correo extends Canal { String enviar(String m) { return "correo: " + m; } }
+class Sms    extends Canal { String enviar(String m) { return "sms: " + m; } }
+
+List<Canal> canales = List.of(new Correo(), new Sms());
+canales.forEach(c -> c.enviar("tu flujo fue aprobado"));   // polimorfismo: quien llama no sabe cuál es cuál
+```
+Cuándo NO: si las "subclases" solo cambian un dato, no necesitas herencia; basta un campo o un enum.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Abstracción + herencia + validación:** `AbstractString` (clase abstracta con constructor protegido que valida) y `RoleCode extends AbstractString`, que solo acepta `TIT, TRE, REP, TAD, TAR`. Micro `Entitlement_Service_MR/ms_actors`, paquete `model/.../value`.
+- **Genéricos:** `Command<P, C>(payload, context)` (record) y `DomainEvent<T>` en `ms_actors`; `CommandHandler<T extends CommandBusData>` y `CommandBus.dispatch(T command)` en `Monetary_Limits_MR/ms_limit_create`.
+- **Anotaciones propias:** `@UseCase`, `@DomainService`, `@EventHandlerService` (masam_core_ms, ms_authorization_flows) y `@CommandHandlerService` (`ms_limit_create`) — marcadores `@Retention(RUNTIME)` que el registro descubre por reflexión.
+- **Polimorfismo:** `ValidateSchemeChannelHandler implements SyncEventHandler<ValidateSchemeChannelInitiatedEvent>` en `Entitlement_MASAM_MR/masam_core_ms`: el bus resuelve el handler por tipo de evento.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- No hay jerarquías profundas de herencia de negocio: el proyecto favorece composición + interfaces (gateways).
+
+**Cómo contarlo en la entrevista:** Abre con `RoleCode`: "la validación vive en el tipo, no regada por los casos de uso". Luego `CommandHandler<T>` para genéricos y polimorfismo.
+<!-- ENTITLEMENT:1:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 Ya implementé el modelo completo. `Empleado` es abstracta y deja `calcularSalario()` sin implementar; `EmpleadoFijo` devuelve `salarioBase` directo —sin depender de horas trabajadas— y además implementa `Bonificable` con `calcularBono()` al 10% del salario base; `EmpleadoPorHoras` calcula `horasTrabajadas * tarifaPorHora` y a propósito no implementa `Bonificable`, porque ese tipo de empleado no tiene bono. `Nomina<T extends Empleado>` recibe cualquier subtipo de `Empleado` y solo llama a `calcularSalario()` dentro del loop de `totalAPagar()` — en ningún punto usa `instanceof` ni necesita saber si el empleado es fijo o por horas.

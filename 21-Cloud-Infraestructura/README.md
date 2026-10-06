@@ -56,6 +56,34 @@ Cuándo NO complicarlo: si el servicio recibe 50 solicitudes al día, Lambda má
 
 Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o por escrito, las preguntas de repaso de este tema en `REPASO_MASTER.md` (están sin respuesta; las respuestas modelo están al final del archivo). Si te cuesta más que escribir el entregable, el hueco está en el concepto.
 
+<!-- ENTITLEMENT:21:START -->
+## Ejemplo fácil de explicar
+
+Lo mínimo de una solución en la nube: una **puerta** (enrutamiento: API Gateway/ALB), un **cerebro** (cómputo: Lambda, ECS o EC2) y una **bodega** (almacenamiento: S3, DynamoDB o RDS).
+
+```
+Cliente → API Gateway → Lambda → DynamoDB
+```
+Lambda si es esporádico y corto; ECS/contenedores si hay tráfico constante; EC2 si necesitas control total. DynamoDB para acceso por clave a escala; RDS cuando necesitas joins y transacciones.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Cómputo:** contenedores en Kubernetes con malla Istio (`sidecar.istio.io/inject`, HPA por CPU/memoria, PDB, canary con `DestinationRule`); imagen Java 21 Alpine con usuario no root (`ms_actors/deployment/Dockerfile`). **Lambda, ECS, EC2 y API Gateway: NO ENCONTRADO.**
+- **Datos:** Aurora PostgreSQL con pools separados lectura/escritura (`r2dbc-core-read/write`, `r2dbc-transactions-read/write`; `AuroraConnectionRoleValidator` espera `WRITER`), DynamoDB (event sourcing, eventos fallidos, `roleCapabilityTable`), ElastiCache Redis (host y `hostread`).
+- **Almacenamiento de objetos:** S3 en `ms_products` (`bucket-s3`: `VerifyExecuteGroupS3FileService`, `S3AsyncClientConfig`) y URLs prefirmadas en `permitions_entitlement_ms` (`S3PresignedConfig`).
+- **Procesos pesados:** AWS Batch (`AwsBatchService`: `SubmitJobRequest` con `jobQueue`/`jobDefinition`) y Glue ETL (`GenerateReportService`) para el reporte analítico.
+- **Configuración y secretos:** SSM Parameter Store y Secrets Manager.
+- **Justificación por atributos de calidad:** lecturas por réplica y Redis (latencia), HPA/PDB/canary (disponibilidad), Batch para no bloquear al micro (rendimiento).
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Lambda / ECS / EC2 / API Gateway no se usan en estos micros. La comparación Lambda vs ECS vs EC2 la defiendes con criterios, y con el reto 21 como práctica.
+
+**Cómo contarlo en la entrevista:** "Nuestro cómputo son contenedores sobre K8s, el dato está en Aurora + DynamoDB + Redis y lo pesado va a Batch/Glue", y por qué cada uno por su atributo de calidad.
+<!-- ENTITLEMENT:21:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 *Completo esto yo mismo cuando termine el reto, no antes. Con lo que ya entregué, respondo aquí:*
@@ -63,7 +91,6 @@ Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o 
 - *¿Qué archivos y decisiones concretas produje y qué responsabilidad tiene cada uno?*
 - *¿Cómo mi entrega, específicamente, resuelve el concepto de este reto? Cito mis propios archivos.*
 - *¿Qué error o malentendido tuve en el camino y cómo lo corregí?*
-- *¿Qué hice yo y qué hice con ayuda de IA?*
 
 ## SDD — Spec-Driven Development
 

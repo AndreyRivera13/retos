@@ -56,6 +56,34 @@ Cuándo NO: no borres físicamente sin pensar en dependencias (una cita cancelad
 
 Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o por escrito, las preguntas de repaso de este tema en `REPASO_MASTER.md` (están sin respuesta; las respuestas modelo están al final del archivo). Si te cuesta más que escribir el entregable, el hueco está en el concepto.
 
+<!-- ENTITLEMENT:26:START -->
+## Ejemplo fácil de explicar
+
+El ciclo de vida de un dato: **captura** (formulario) → **almacenamiento** (BD) → **gestión** (calidad, accesos) → **publicación** (qué se comparte y cómo) → **disposición** (borrado). Minimizar es no pedir lo que no usarás. Anonimizar no se puede revertir; seudonimizar sí (con una llave aparte).
+
+```sql
+CREATE VIEW v_publicacion AS SELECT id, ciudad, edad_rango FROM clientes;   -- sin nombre ni documento
+```
+Habeas data (Ley 1581 de 2012): el titular puede conocer, actualizar y suprimir sus datos.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Almacenamiento:** esquemas PostgreSQL por dominio (`shentitp` core, `scenttrx` transaccional; ER en `bd/*.png`), DynamoDB y Redis.
+- **Gestión del cambio:** Liquibase con contexto `REF,QA,PDN`, nombres `NN_DDMMAAAA_ACCION_tabla.sql`, `data_dml`, `function`, `trigger`, `view` (`ENTITLEMENT_ENTMG_SQL`/`ENTNT_SQL`). Trigger de ejemplo: `trg_delete_temp_flow_on_status_change` (limpia temporales al cambiar el estado de la transacción).
+- **Rendimiento del dato:** `CREATE INDEX` sobre `administrative_transactions`, `CREATE INDEX CONCURRENTLY` en `tbl_transactions`, y la carpeta `OPTIMIZACION_CONSULTA` con planes `EXPLAIN (ANALYZE, BUFFERS)` (Hash Join, Seq Scan con filtro de estado, Memoize).
+- **Disposición / depuración:** índice `tbl_transactions_update_date_depuration_idx` creado "para optimizar la consulta de depuración"; TTL con `aws.dynamodb.expirationDays` y `expirationTime` en Redis.
+- **Publicación segura:** el enmascaramiento existe en **logs** (`SensitiveHelper`), no en la BD.
+- **Correcciones de datos:** `migracion/` usa `generar_updates.py` que arma `UPDATE` desde CSV, con scripts `validar_*.sql` y validación por fases antes y después.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Particionado de tablas y enmascaramiento/anonimización en BD: NO ENCONTRADO. Políticas de retención formales y vista de publicación sin datos personales: NO ENCONTRADO (reto 26).
+
+**Cómo contarlo en la entrevista:** Ciclo de vida con ejemplos reales: Liquibase (gestión), índice de depuración (disposición), TTL (disposición), enmascaramiento en logs (publicación). Y di qué te falta: vista de publicación y política de retención.
+<!-- ENTITLEMENT:26:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 *Completo esto yo mismo cuando termine el reto, no antes. Con lo que ya entregué, respondo aquí:*
@@ -63,7 +91,6 @@ Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o 
 - *¿Qué archivos y decisiones concretas produje y qué responsabilidad tiene cada uno?*
 - *¿Cómo mi entrega, específicamente, resuelve el concepto de este reto? Cito mis propios archivos.*
 - *¿Qué error o malentendido tuve en el camino y cómo lo corregí?*
-- *¿Qué hice yo y qué hice con ayuda de IA?*
 
 ## 🎯 Con tu evaluador
 

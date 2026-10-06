@@ -24,6 +24,25 @@ Tabla con al menos 3 filas "sí usé IA" y 3 "no usé IA", con tareas reales tuy
 
 El criterio de uso de IA en desarrollo no es técnico sino de trazabilidad de decisiones: qué se delega (código repetitivo, boilerplate, sintaxis) y qué se mantiene bajo control humano (diseño, reglas de negocio, trade-offs). Documentar una tarea real separando ambas columnas deja evidencia de que las decisiones de diseño no se delegaron a la IA, que es justamente lo que suele fallar cuando se usa IA sin ese criterio.
 
+<!-- ENTITLEMENT:8:START -->
+## Ejemplo fácil de explicar
+
+Regla simple: delega a la IA lo mecánico y verificable (boilerplate, tests de caminos felices, borradores de docs); **no** delegues decidir la arquitectura ni entender el porqué. Si no puedes explicar el código que aceptaste, no lo aceptes.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- El equipo tiene una **skill de revisión de código con IA** en `Library_MR/cursor-sources/skills/java-code-review/` (`SKILL.md`, `reference.md`, `examples.md`, `review-template.md`). Revisa una carpeta de proceso de negocio contra cinco principios: (1) estructura `info/management` y `main/sub`, (2) paradigma funcional pragmático con Reactor y un solo `Command/Query` por caso de uso, (3) estilo (Google Java Style, Clean Code, Effective Java), (4) separación de efectos (el dominio no hace I/O, logs ni lee el reloj), (5) DDD con value objects y agregados.
+- Reglas en inglés, feedback en español: la IA **revisa contra reglas del equipo** y el humano decide.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- `AGENTS.md`, `CLAUDE.md`, `.cursorrules` y `copilot-instructions` no aparecen en `Micros/`.
+
+**Cómo contarlo en la entrevista:** "Uso IA como revisor con reglas explícitas, no como generador ciego": la skill `java-code-review` es tu evidencia. Ten claro qué te toca a ti.
+<!-- ENTITLEMENT:8:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 Usé como evidencia real las tareas de esta misma sesión trabajando con Claude en mis retos del assessment, en vez de una tarea inventada:

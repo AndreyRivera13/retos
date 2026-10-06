@@ -59,6 +59,35 @@ Cuándo NO: no tiene sentido tener dos herramientas de IaC en un proyecto peque�
 
 Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o por escrito, las preguntas de repaso de este tema en `REPASO_MASTER.md` (están sin respuesta; las respuestas modelo están al final del archivo). Si te cuesta más que escribir el entregable, el hueco está en el concepto.
 
+<!-- ENTITLEMENT:22:START -->
+## Ejemplo fácil de explicar
+
+Pipeline = una banda transportadora: cada commit pasa por compilar → pruebas → análisis de calidad → seguridad → artefacto, y si una estación falla, la banda se detiene. Las pruebas de rendimiento definen **umbrales** (por ejemplo p95 < 300 ms) y fallan si no se cumplen.
+
+```js
+export const options = { thresholds: { http_req_duration: ['p(95)<300'] } };  // k6
+```
+Cuándo NO: no metas una prueba de carga de 20 minutos en cada commit; córrela en una etapa o nocturna.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Pipeline por micro** (monorepo con triggers por `paths`): `deployment/azure_build.yaml` (Java), `ms_retrieve_role/resources/pipeline/azure-pipelines.yaml` (Elixir), `ms_masam_front/azure-pipeline.yaml` (Angular). Etapa `CI`, job `build`, JDK 21: `SonarQubePrepare` → `Gradle clean build jacocoMergedReport` → reporte Pitest → `PublishCodeCoverageResults`; en `trunk` empaqueta jar, Dockerfile, k8s, `AcceptanceTest` y `PerformanceTest`.
+- **Calidad:** Sonar con exclusiones, Jacoco, Pitest (mutation testing); `Sonar-buildbreaker` (rompe el build si falla el quality gate) en `ms_retrieve_role` y `ms_masam_front`; Elixir con `credo` + `sobelow` (SAST) enviados a Sonar.
+- **Seguridad:** job `Task_DevSecops` (`devsecops-engine@1`, `useVulnerabilityManagement: true`, config remota).
+- **Rendimiento:** JMeter por micro (`deployment/performance-test/Jmeter`, `SC_EntitlementMsRetrieveRole.jmx`, `EntitlementRoles.jmx`); varios son plantilla del scaffold.
+- **Base de datos:** pipeline Liquibase Pro por contextos de ambiente.
+- **Despliegue (CD):** no está en estos pipelines; publican artefactos y un release externo despliega.
+- **Zero trust (lo más cercano):** `AuthorizationPolicy` de Istio con identidad JWT por scope/método/path y `ALLOW` explícito: "nunca confiar, siempre verificar", aunque no está escrito como *policy as code* con OPA/Conftest.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- k6, Gatling, CloudFormation/CDK y policy-as-code con OPA: NO ENCONTRADO. IA en el pipeline: solo la skill de revisión (tema 8).
+
+**Cómo contarlo en la entrevista:** Pipeline de calidad con Sonar + Pitest + DevSecOps como lo real; k6, CloudFormation y el triage con IA son el reto 22.
+<!-- ENTITLEMENT:22:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 *Completo esto yo mismo cuando termine el reto, no antes. Con lo que ya entregué, respondo aquí:*
@@ -66,7 +95,6 @@ Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o 
 - *¿Qué archivos y decisiones concretas produje y qué responsabilidad tiene cada uno?*
 - *¿Cómo mi entrega, específicamente, resuelve el concepto de este reto? Cito mis propios archivos.*
 - *¿Qué error o malentendido tuve en el camino y cómo lo corregí?*
-- *¿Qué hice yo y qué hice con ayuda de IA?*
 
 ## SDD — Spec-Driven Development
 

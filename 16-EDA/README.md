@@ -24,6 +24,36 @@ Productor + consumidor corriendo por separado + prueba de que mandar el mismo ev
 
 Una arquitectura orientada a eventos desacopla productor y consumidor: el productor publica un hecho ocurrido (`CitaReservada`) sin saber quién lo consume ni cómo. La semántica at-least-once, la más común en sistemas de mensajería, garantiza que el evento llegue al menos una vez pero no exactamente una — por eso el consumidor debe ser idempotente (verificar si el id del evento ya fue procesado), de forma que un reintento normal del broker no duplique el efecto.
 
+<!-- ENTITLEMENT:16:START -->
+## Ejemplo fácil de explicar
+
+El tablero de pedidos de una cocina: el mesero (productor) pega la comanda y se va; cada estación (consumidor) toma las que le tocan. Nadie espera a nadie.
+
+```java
+// productor
+eventos.emit(new PagoRealizado(id, monto));      // no sabe quién escucha
+// consumidor (at-least-once → puede llegar duplicado → debe ser idempotente)
+if (procesados.add(evento.id())) aplicar(evento);
+```
+Cuándo NO: cuando necesitas respuesta inmediata y consistencia fuerte en la misma transacción.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Broker real: RabbitMQ (AMQP) con `reactive-commons`** (`async-commons-rabbit-starter` 7.3.1) en casi todos los micros; mensajes en formato **CloudEvents**; contratos **AsyncAPI** (`ms_actors/deployment/ApiDoc/External_Events`, `Internal_Events`).
+- **Productor con persistencia previa (estilo outbox):** `ReactiveEventsGateway.emit` (`client_parameters_ms`, `async-event-bus`): guarda en DynamoDB con `published=false` → `domainEventBus.emit(...)` → marca `published=true` con TTL en días → `.timeout(...).retry(...)`.
+- **Consumidores y DLQ por evento:** `HandlerRegistryConfiguration` (`@EnableEventListeners`) con `listenDomainEvent(...)` y su `*_DLQ` (`Monetary_Transactions_MR/ms_authorization_flows`); el handler deserializa el CloudEvent y llama a un caso de uso (`CreateAuthorizationFlowDlqEventUseCase`).
+- **Reintentos del broker:** `withDLQRetry(true).retryDelay(...).maxRetries(...)` en `ms_products`; `FailedEventsAdapter` publica los fallidos con el subject `masam.core.failed` (`masam_core_ms`).
+- **Event sourcing:** tabla DynamoDB `eventSourcingTableName` y `DynamoDBTemplateAdapter` (`masam`).
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Kafka y SQS/SNS: NO ENCONTRADO como broker. Idempotencia explícita del consumidor: NO ENCONTRADO (lo más cercano es `published` + id del evento en el productor). Es una brecha concreta y la cubre el reto 16.
+
+**Cómo contarlo en la entrevista:** Cuenta el productor (guardar → emitir → marcar) y la DLQ. Si te preguntan Kafka, di que lo practicaste en el reto 16 y que en Entitlement es RabbitMQ; y si te preguntan idempotencia, defiende el `idsProcesados`.
+<!-- ENTITLEMENT:16:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 `CitaEventoProducer.publicar()` envía el evento `CitaReservada` al tópico `citas-reservadas` con `kafkaTemplate.send(TOPICO, evento.citaId(), evento)`: uso el id de la cita como clave para que todos los eventos de una misma cita caigan en la misma partición y conserven el orden. `RecordatorioConsumer.escuchar()` es idempotente: si `idsProcesados.add(evento.eventoId())` devuelve `false`, el evento ya se procesó, lo registra como duplicado y retorna; si devuelve `true`, llama a un `EnviadorRecordatorio`. Separé ese envío en una interfaz (`EnviadorRecordatorioConsola` es la implementación que imprime) para poder verificar en los tests cuántos recordatorios se enviaron de verdad.

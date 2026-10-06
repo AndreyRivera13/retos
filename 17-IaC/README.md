@@ -24,6 +24,33 @@ Escribí un Terraform mínimo que declare una tabla DynamoDB (o RDS) y un rol IA
 
 Infraestructura como código versiona la infraestructura igual que el código de aplicación, lo que permite revisarla, auditarla y escanearla antes de aplicarla. El principio de menor privilegio en IAM implica otorgar solo los permisos estrictamente necesarios, nunca un comodín. Un pipeline con escaneo de secretos, de dependencias y de la propia infraestructura (`tfsec`/`checkov`) detecta estos problemas antes del despliegue, no después.
 
+<!-- ENTITLEMENT:17:START -->
+## Ejemplo fácil de explicar
+
+IaC es escribir la receta de la infraestructura en un archivo y versionarla, en vez de hacer clic en una consola:
+
+```hcl
+resource "aws_s3_bucket" "reportes" { bucket = "reportes-${var.env}" }
+```
+`terraform plan` te muestra qué va a cambiar *antes* de aplicarlo; así la infra se revisa en un PR como cualquier código. Cuándo NO: un experimento de 10 minutos que vas a borrar.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Terraform, CloudFormation y Helm: NO existen en los micros.** La infraestructura declarativa del proyecto es otra:
+  - **Manifiestos Kubernetes/Istio parametrizados** con tokens `#{variable}#` que se reemplazan en el release: `deployment/k8s/` de `ms_actors` (`app.yaml`, `configmap.yaml`, `hpa.yaml`, `gateway.yaml`, `destinationrule.yaml`, `authorization_policy.yaml`) y `pdb.yaml` en `ms_retrieve_role`.
+  - **Base de datos como código con Liquibase Pro:** `azure-pipelines.yml` con `liquibase-pro-task@1` en los repos `ENTITLEMENT_ENTMG_SQL` y `ENTITLEMENT_ENTNT_SQL`; changesets con `context:REF,QA,PDN`.
+  - **Dockerfile** versionado (`ms_actors/deployment/Dockerfile`, usuario no root).
+- **Escaneo en pipeline:** job `Task_DevSecops` (`devsecops-engine@1`, pool `DevSecOps-Engine`) con configuración remota; qué escáneres corren adentro no se ve en el repo. Fortify/Trivy/Gitleaks/Dependency-Check explícitos: NO ENCONTRADO.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Terraform/CloudFormation: NO ENCONTRADO. Lo tuyo con Terraform son los retos 17 y 21.
+
+**Cómo contarlo en la entrevista:** "En Entitlement la infra es declarativa con K8s/Istio y Liquibase; Terraform lo practiqué con `tfsec`/`checkov` en el reto 17". Es honesto y sigue siendo IaC.
+<!-- ENTITLEMENT:17:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 `main.tf` declara una tabla DynamoDB `citas` (pago por uso, clave `citaId`, recuperación a un punto en el tiempo y cifrado con una llave KMS propia con rotación) y un rol IAM `servicio-citas` para Lambda con una política en línea. El principio de menor privilegio está aplicado así: el rol solo tiene `dynamodb:GetItem`, `PutItem` y `Query`, y únicamente sobre el ARN de esa tabla (no sobre `*`). El permiso que NO le di es `dynamodb:DeleteItem` (y tampoco `Scan` ni `UpdateItem`): este servicio reserva y consulta citas, y si una credencial se filtra, quien la use no puede borrar ni recorrer toda la tabla. También agregué solo `kms:Decrypt` y `kms:GenerateDataKey` sobre esa llave, condicionados a `kms:ViaService = dynamodb.<región>.amazonaws.com`, porque cifrar con llave propia exige ese permiso.

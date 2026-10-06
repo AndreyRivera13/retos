@@ -24,6 +24,35 @@ Código con los 3 patrones funcionando juntos en un `main`.
 
 Builder resuelve la construcción de objetos con múltiples atributos opcionales sin recurrir a un constructor con parámetros excesivos. Strategy permite intercambiar un algoritmo —en este caso, el formato de exportación— en tiempo de ejecución sin condicionales. Observer desacopla al emisor de un evento (`Reporte`) de sus receptores (suscriptores), que se registran sin que el emisor conozca su implementación concreta. Cada patrón resuelve un problema de diseño específico; no son intercambiables entre sí.
 
+<!-- ENTITLEMENT:12:START -->
+## Ejemplo fácil de explicar
+
+**Factory** = pedir "una pizza" y que la cocina decida la masa. **Builder** = armar la pizza paso a paso. **Strategy** = elegir cómo cobrar el domicilio (por km, fijo, gratis).
+
+```java
+Pizza p = Pizza.builder().tamano("L").extra("queso").build();     // Builder
+Cobro c = estrategias.stream().filter(e -> e.supports(pedido)).findFirst().orElseThrow(); // Strategy
+```
+Cuándo NO: no metas un patrón si una función simple resuelve; los patrones son vocabulario, no meta.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Strategy:** `DestinationStrategy`/`OriginStrategy` con `supports()` y 4 implementaciones; el contexto `CloneLimitDispatcher.findDestinationStrategy` hace `Flux.fromIterable(strategies).filter(s -> s.supports(command)).next().switchIfEmpty(Mono.error(...))` (`Monetary_Limits_MR/ms_limit_clone_processor`).
+- **Builder:** Lombok `@Builder(toBuilder = true)` en `SchemeClientCreated`, `RoleManagement`, `SaveEventPublicationInfo`; builder manual `ManagedRequest.<T>builder().withService(...).build()` en `RetrieveClientLimitService`.
+- **Factory:** `FunctionalLogFactory.build(...)` (constructor privado) en `transversal-log`; `MapperFactory` en `async-event-handler` y `ms_actors`.
+- **Template Method:** `TemplateAdapterOperations<E,V>` (hooks `toEntity`/`toModel`) y `DynamoDBTemplateAdapter extends TemplateAdapterOperations<...>` en `Entitlement_MASAM_MR/ms_masam`.
+- **Command / Mediator:** `InMemoryCommandBus` (resuelve el handler por tipo de comando con `applicationContext.getBean`).
+- **Singleton:** beans Spring por defecto; `EventFormatProvider.getInstance()` (cloudevents).
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Decorator, Observer y Chain of Responsibility explícitos: NO ENCONTRADO. Para esos usa el reto 12.
+
+**Cómo contarlo en la entrevista:** Strategy (`CloneLimitDispatcher`) como estrella, luego Template Method (`DynamoDBTemplateAdapter`) como patrón menos obvio que sí usan.
+<!-- ENTITLEMENT:12:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 Apliqué tres patrones sobre un generador de reportes. Builder: `Reporte.Builder` arma el reporte con secciones opcionales (encabezado, tabla, gráfico, pie) encadenando métodos, sin un constructor de seis parámetros. Strategy: `ExportadorPDF` y `ExportadorCSV` implementan `ExportadorReporte`, y `GeneradorReportes.generar(reporte, exportador)` recibe la estrategia por parámetro, así el formato se elige en runtime sin ningún `if` por tipo. Observer: `GeneradorReportes` mantiene una lista de `ObservadorReporte` (`ContadorReportes` y `LogReportes`) y los notifica en cada generación; `Reporte` no conoce a ninguno.

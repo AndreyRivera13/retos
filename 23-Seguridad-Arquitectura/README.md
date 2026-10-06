@@ -51,6 +51,34 @@ Cuándo NO: limitar la tasa de forma muy agresiva rompe a usuarios legítimos (u
 
 Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o por escrito, las preguntas de repaso de este tema en `REPASO_MASTER.md` (están sin respuesta; las respuestas modelo están al final del archivo). Si te cuesta más que escribir el entregable, el hueco está en el concepto.
 
+<!-- ENTITLEMENT:23:START -->
+## Ejemplo fácil de explicar
+
+Las tácticas de seguridad se agrupan en cuatro verbos: **resistir** (cerradura), **detectar** (alarma), **reaccionar** (guardia) y **recuperarse** (copia de llaves). STRIDE es la lista de qué puede salir mal: Suplantar, Manipular, Repudiar, Revelar info, Denegar servicio, Elevar privilegios.
+
+```
+Ataque: enumerar /documentos/1..N  → resistir: chequeo de dueño (IDOR); detectar: alerta por muchos 403; reaccionar: bloquear; recuperar: auditar y rotar
+```
+Rate limiting no corrige un IDOR: solo hace más lento al atacante.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Resistir:** JWT y `AuthorizationPolicy` en Istio (identidad, scope, método, path); autorización de negocio en `PermissionsUseCase`; HSTS y `nosniff` (`SecurityHeadersConfig`); secretos en Secrets Manager; validación con value objects.
+- **Rate limiting:** solo en `InternalServices_MR/internal_information_ms/deployment/k8s/local_rate_limit.yaml` (`EnvoyFilter` `local_ratelimit`, token bucket por `allowed-tps`). En los demás micros: NO ENCONTRADO.
+- **Detectar:** logs funcionales (`transversal-log-v3`), `LogAuthorization` en `PermissionsUseCase`, `message-id`/`x-request-id`/`aidCreator` en `ContextData`, tabla de eventos en DynamoDB.
+- **Datos sensibles en logs:** `SensitiveHelper` (`Library_MR/ecs_logs/ecs-core`) con estrategias `FULL`, `PARTIAL`, `CUSTOM`, `REMOVE`; en el configmap, patrones/campos/headers permitidos y muestreo de 2xx/4xx.
+- **Recuperar:** réplicas HPA, PDB, canary, DLQ de eventos y `FailedEventsAdapter`.
+- **Contra-evidencia:** `mTLS` explícito (`PeerAuthentication`/`ISTIO_MUTUAL`): NO ENCONTRADO; cifrado en reposo/KMS: NO ENCONTRADO; en Elixir `authorization_controller.ex` registra el cuerpo del request (verificar que no incluya datos sensibles); `verify_none` en la conexión a Postgres de `ms_retrieve_role`.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- mTLS explícito, KMS y WAF: NO ENCONTRADO en este código.
+
+**Cómo contarlo en la entrevista:** Mapea 4 verbos con ejemplos reales (JWT/Istio, logs con `message-id`, DLQ/canary) y menciona los 2 hallazgos como mejora propuesta.
+<!-- ENTITLEMENT:23:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 *Completo esto yo mismo cuando termine el reto, no antes. Con lo que ya entregué, respondo aquí:*
@@ -58,7 +86,6 @@ Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o 
 - *¿Qué archivos y decisiones concretas produje y qué responsabilidad tiene cada uno?*
 - *¿Cómo mi entrega, específicamente, resuelve el concepto de este reto? Cito mis propios archivos.*
 - *¿Qué error o malentendido tuve en el camino y cómo lo corregí?*
-- *¿Qué hice yo y qué hice con ayuda de IA?*
 
 ## 🎯 Con tu evaluador
 

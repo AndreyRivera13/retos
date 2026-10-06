@@ -24,6 +24,35 @@ Código + tiempo estimado de tu solución en notación Big O para n transaccione
 
 La elección de estructura de datos depende de la operación dominante: `Map` da acceso por clave en O(1) amortizado, mientras que buscar en una `List` recorriéndola es O(n). Agrupar por cliente con `merge()`/`getOrDefault()` sobre un `Map` evita procesar la lista más de una vez por cada búsqueda, evitando la complejidad cuadrática que aparecería si se buscara el cliente recorriendo la lista en cada iteración.
 
+<!-- ENTITLEMENT:4:START -->
+## Ejemplo fácil de explicar
+
+Buscar un permiso en una lista de 10.000 es recorrerla; en un `Set` es un salto directo:
+
+```java
+List<String> permisos = ...;      permisos.contains("PAGAR");   // O(n)
+Set<String>  permisos = new HashSet<>(...); permisos.contains("PAGAR"); // O(1) promedio
+Map<String, List<Permiso>> porRol = permisos.stream().collect(groupingBy(Permiso::rol)); // agrupar sin doble for
+```
+Cuándo NO: con 5 elementos la diferencia es invisible; legibilidad primero.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **`Map` como catálogo cargado al arranque:** `StateConfig` y `PrivilegeConfig` (`ms_admin_authorization`, `r2dbc-postgresql/.../config`) hacen `collect(Collectors.toMap(StateData::getNameState, d -> d))` una sola vez. Ojo: usan `.block()`, aceptable solo en el arranque.
+- **`Set` para pertenencia O(1):** `ValidateActorRoleCapabilitiesUseCase` (`Set` de claves `id|tipo`), `RoleCode` (`Set.of("TIT","TRE","REP","TAD","TAR")`) y `PermissionsUseCase` (`Set.of(...)` de privilegios válidos).
+- **`toMap` con merge function** para deduplicar: `ValidateProductGroupUseCase` (`(first, dup) -> first`), reemplazando un `findFirst` lineal.
+- **`groupingBy` en lógica real:** `OwnerFlowUseCase` (`Monetary_Limits_MR/ms_limit_orchestration_services`) agrupa `ChannelLimits` por `getClientLimitsId` y hace el "join en memoria" con `containsKey/get`; también `ThirdCustomerFlowUseCase`, `UpdateRoleByFeatureLogUseCase`.
+- **Concurrencia:** `ConcurrentHashMap` en `CurrenciesAdapter` (`ms_limit_create`) y un caché de `Mono` en `RetrieveObjectRoleUseCase` (`ms_limit_clone_processor`). `TreeMap` en `ReverseReason`/`CurrencyValues`, `LinkedHashMap` en `FunctionalLogPayload`.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- `PriorityQueue`, `Deque` y `EnumMap` no aparecen en los micros.
+
+**Cómo contarlo en la entrevista:** La historia más fuerte: el refactor de `ValidateActorRoleCapabilitiesUseCase` de lista a `Set` y por qué (Big O).
+<!-- ENTITLEMENT:4:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 *Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*

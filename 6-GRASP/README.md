@@ -24,6 +24,33 @@ El código ajustado + comentarios señalando exactamente la línea donde aplicas
 
 Experto en Información asigna una responsabilidad a la clase que tiene los datos necesarios para cumplirla: si el doctor conoce sus propias citas, es el doctor quien calcula su duración total, no un Service externo que le pide los datos uno por uno. Creador determina quién debería instanciar un objeto — normalmente la clase que lo agrega, contiene o usa de cerca. Ambos patrones evitan clases que solo mueven datos sin tener responsabilidad real sobre ellos.
 
+<!-- ENTITLEMENT:6:START -->
+## Ejemplo fácil de explicar
+
+¿Quién calcula el total de una factura? Quien tiene los datos: la propia `Factura` (**Experto**). ¿Quién construye los `Item`? Quien los contiene o los usa de cerca: `Factura.agregar(...)` (**Creador**). Un `FacturaController` solo recibe la petición y delega (**Controlador**).
+
+```java
+class Factura { List<Item> items; double total() { return items.stream().mapToDouble(Item::subtotal).sum(); } }
+```
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Experto:** `CreateNaturalPerson` (`ms_actors`) tiene el `aid` y valida con `isValidAid()` / `isValidType(...)`; `RelationshipCreator.isPrivDirect()`.
+- **Creador:** `@Builder(toBuilder = true)` en los modelos y `BuildCreateExceptionRule.buildEventData(...)` (`@UtilityClass`) que arma el evento a partir del comando.
+- **Controlador:** los `*Handler` de `reactive-web` (ej. `RetrieveUserHandler`) validan headers y delegan a `UseCase`; un caso de uso orquestador como `MonetaryLimitCreator`.
+- **Bajo acoplamiento / Polimorfismo:** casos de uso que dependen solo de `*Gateway`; `SyncEventHandler<T>` y `CommandHandler<T>` resueltos por tipo.
+- **Fabricación pura:** `ValueValidator`, `ExceptionResponse`, `MapperFactory`, `CommandHandlersRegistry` (clases sin concepto de negocio, creadas por cohesión).
+- **Indirección:** `ReactiveEventsGateway` entre los casos de uso y el `DomainEventBus`.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Protected Variations como patrón nombrado no aparece, aunque los gateways cumplen ese rol.
+
+**Cómo contarlo en la entrevista:** Elige 3: Experto (`CreateNaturalPerson`), Fabricación pura (`ValueValidator`) e Indirección (`ReactiveEventsGateway`). Con ejemplo propio cada una.
+<!-- ENTITLEMENT:6:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 Apliqué Experto en Información dejando que `Cita` calcule su propia `duracionEnMinutos()` con los datos que ya tiene (`horaInicio`, `horaFin`), en vez de sacarle esos datos a un Service externo para que él haga la cuenta. Apliqué Creador dejando que `AgendaDoctor` sea quien construye las instancias de `Cita` con su método `crearCita()`, porque es quien agrupa y mantiene las citas de un doctor —tiene más contexto que nadie más para crearlas.

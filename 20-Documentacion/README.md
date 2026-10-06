@@ -62,6 +62,36 @@ Cuándo NO: un diagrama de cada clase "por si acaso" (se desactualiza el mismo d
 
 Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o por escrito, las preguntas de repaso de este tema en `REPASO_MASTER.md` (están sin respuesta; las respuestas modelo están al final del archivo). Si te cuesta más que escribir el entregable, el hueco está en el concepto.
 
+<!-- ENTITLEMENT:20:START -->
+## Ejemplo fácil de explicar
+
+Un mapa sirve a distintas personas con distinto zoom: el país (C4 nivel 1, contexto), la ciudad (nivel 2, contenedores), la calle (nivel 3, componentes) y la casa (nivel 4, código). Y un ADR es el acta de **por qué** se eligió ese camino:
+
+```
+# ADR-0001: Usar RabbitMQ para notificar recordatorios
+Contexto → Decisión → Alternativas (Kafka, SQS) → Consecuencias (+desacople, -consistencia eventual)
+```
+Cuándo NO: no documentes lo que el código ya dice solo; documenta decisiones y fronteras.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Contratos de API:** OpenAPI 3.1 en `ms_actors/deployment/ApiDoc/entitlement_service_actors-documentacion.yml`, `ms_entitlement/resources/api-doc/…documentation.yaml`, `permitions_entitlement_ms/API-definition.yaml`, `ms_limit_clone_*/deployment/ApiDoc/specification/*.yaml`.
+- **Contratos de eventos:** AsyncAPI en `ms_actors/deployment/ApiDoc/{External_Events,Internal_Events}`.
+- **Catálogo:** `catalog-info.yaml` (Backstage) en cada micro con `sonarqube.org/project-key`; `mkdocs.yml` (techdocs) existe pero con contenido de plantilla sin editar.
+- **Diagramas:** `Library_MR/ecs_logs/docs/` (componentes + 2 de secuencia), capturas ER en `bd/*.png`. (El pipeline cita un `Arquitectura.png` en `sonar.exclusions`, pero ese archivo no está en el árbol revisado: confírmalo antes de mencionarlo.)
+- **Documentación de reglas del equipo:** la skill `java-code-review` (`Library_MR/cursor-sources`) describe estructura y principios.
+- **README:** la mayoría son plantilla del scaffold (checklist de HPA, pools, tolerancia a fallos); `Library_MR/ecs_logs/README.md` es la excepción con módulos y diagramas.
+- **Incidentes:** `incidentes/` son volcados de logs/consultas, sin estructura de postmortem.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- ADR, C4 y diagramas de código (PlantUML/Mermaid): NO ENCONTRADO. Es tu brecha más clara: el reto 20 la cierra.
+
+**Cómo contarlo en la entrevista:** "Documentamos contratos (OpenAPI/AsyncAPI) y catálogo (Backstage); lo que faltaba eran ADR y C4, que son lo que trabajo en el reto 20".
+<!-- ENTITLEMENT:20:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 *Completo esto yo mismo cuando termine el reto, no antes. Con lo que ya entregué, respondo aquí:*
@@ -69,7 +99,6 @@ Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o 
 - *¿Qué archivos y decisiones concretas produje y qué responsabilidad tiene cada uno?*
 - *¿Cómo mi entrega, específicamente, resuelve el concepto de este reto? Cito mis propios archivos.*
 - *¿Qué error o malentendido tuve en el camino y cómo lo corregí?*
-- *¿Qué hice yo y qué hice con ayuda de IA?*
 
 ## SDD — Spec-Driven Development
 

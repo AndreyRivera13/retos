@@ -24,6 +24,35 @@ Código + explicación de por qué `Dinero` es Value Object y no Entidad.
 
 El Aggregate Root es el único punto de entrada para modificar el estado de un agregado, lo que garantiza que las invariantes del dominio (no retirar más saldo del disponible, por ejemplo) se cumplan siempre. Un Value Object se identifica por sus atributos, no por una identidad propia — dos instancias con los mismos valores son intercambiables — y por eso se modela inmutable: un setter público rompería esa garantía de igualdad por valor.
 
+<!-- ENTITLEMENT:19:START -->
+## Ejemplo fácil de explicar
+
+Dinero no es un `double` suelto: es un objeto que se define por su valor, es inmutable y se valida al nacer.
+
+```java
+record Dinero(BigDecimal monto, String moneda) {
+  Dinero { if (monto.signum() < 0) throw new IllegalArgumentException("monto negativo"); }
+}
+```
+(Ojo: `BigDecimal.equals` compara escala; usa `compareTo` para valor.) Cuándo NO: un CRUD sin reglas no necesita DDD completo.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Value Objects con invariantes:** carpeta `.../model/shared/common/value/` de `ms_actors` (`Email`, `MessageId`, `IdRelationship`, `IdRole`, `MdmCode`, `DocumentType`, `DocumentNumber`, `ProductNumber`, `FullName`, `MobilePhone`…). `Email` es un `record` que valida en el constructor compacto; `FlowStatus` (`ms_authorization_flows`) restringe a `ACTIVO/INACTIVO/ELIMINADO`.
+- **Eventos de dominio:** `DomainEvent<T>` (id, source, type, subject, time, data) y `CreateDelegateEvent`, `CreateOwnerEvent`, `UpdateStatusRelationshipEvent`, `CreateExceptionRuleEvent` (`ms_actors`); `CreatedFlowEvent`, `UpdateFlowEvent`, `FlowStatusChanged` (`ms_authorization_flows`).
+- **Lenguaje ubicuo:** Owner, Delegate, Relationship, Functionality, Privilege, Role, GranularGroup, ProductGroup, ExceptionRule, AuthorizationFlow, Approver, Limit.
+- **Bounded contexts = repos** (`Entitlement_Service`, `Monetary_Transactions`, `Monetary_Limits`, `Entitlement_MASAM`).
+- **Agregados:** no hay clases `*Aggregate`; son implícitos (modelos por caso de uso como `CreateFlowV2`, `CreateDelegate`, `ChangeRelationshipStatus`), y `CreateFlowRangeValidation` protege invariantes (rangos, último rango infinito).
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Clases `AggregateRoot`/`*Aggregate` explícitas: NO ENCONTRADO.
+
+**Cómo contarlo en la entrevista:** Value objects (`Email`, `RoleCode`) + eventos de dominio + bounded contexts por repo. Si te preguntan agregados, explica que son implícitos y qué invariante protege cada uno.
+<!-- ENTITLEMENT:19:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 `CuentaBancaria` es el Aggregate Root: es la única puerta para cambiar el saldo y protege sus propias reglas. `depositar()` y `retirar()` rechazan operar con la cuenta `BLOQUEADA` (`IllegalStateException`), con monto nulo o cero (`IllegalArgumentException`) o con otra moneda (lo detecta `Dinero`). `retirar()` además lanza `IllegalStateException` si el monto excede el saldo, y solo después de validar todo resta el saldo y agrega un `RetiroRealizado` a la lista de eventos; si el retiro falla, ni cambia el saldo ni emite el evento. Permitir retirar exactamente el saldo (`esMayorQue` es estricto) fue una decisión deliberada y está probada. Agregué `bloquear()`/`desbloquear()` porque el esqueleto no tenía forma de llegar al estado `BLOQUEADA`, y una interfaz marcadora `EventoDominio` para tipar los eventos en vez de `List<Object>`; `extraerEventos()` entrega los pendientes y los limpia, y `getEventos()` devuelve una vista no modificable para que desde afuera nadie pueda saltarse el agregado.

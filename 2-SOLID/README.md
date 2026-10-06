@@ -24,6 +24,35 @@ Código antes/después (aunque sea el "antes" resumido) + tabla de 3 columnas: p
 
 SRP establece que una clase debe tener una sola razón para cambiar. Un método que valida, loguea y notifica en un solo bloque tiene tres razones para cambiar, no una — por eso se separa en una regla por responsabilidad (`ReglaEdad`, `ReglaIngresos`, `ReglaHistorial`). OCP se cumple porque el punto de extensión es la lista de reglas: agregar una regla nueva es agregar una clase, no modificar `ValidadorSolicitud`. El riesgo típico en la entrevista es quedarse en la definición del principio sin poder señalar, en código real, cuál se rompió y por qué el rediseño lo corrige.
 
+<!-- ENTITLEMENT:2:START -->
+## Ejemplo fácil de explicar
+
+Un `if/else` por tipo de descuento crece cada vez que el negocio inventa uno nuevo (viola OCP). Con Strategy cada regla es una clase y el código que decide no cambia:
+
+```java
+interface Descuento { boolean aplica(Pedido p); double calcular(Pedido p); }
+// Spring inyecta List<Descuento>; para agregar uno nuevo solo creas otra clase
+descuentos.stream().filter(d -> d.aplica(pedido)).findFirst().map(d -> d.calcular(pedido)).orElse(0.0);
+```
+Cuándo NO: con 2 casos estables un `if` es más simple (KISS/YAGNI).
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **SRP:** un caso de uso por clase con un método público. `CreateRuleExceptionUseCase` (`ms_actors`) solo orquesta (cambia estado → grupo granular → crea la excepción); el rollback es un método privado aparte (`onErrorResume(error -> rollbackGranularProduct(...))`).
+- **DIP:** el dominio define el puerto `CreateRuleExceptionGateway`; la implementación `CreateRuleExceptionAdapter` (`@Repository`, `@Transactional("coreTransactionManager")`) vive en `driven-adapters/r2dbc-postgresql`. El caso de uso nunca ve R2DBC.
+- **OCP bien aplicado:** `DestinationStrategy`/`OriginStrategy` con `supports(...)` y las implementaciones `DestinationRoleStrategy`, `DestinationThirdPartyStrategy`, `DestinationCustomerStrategy`, `DestinationDelegateStrategy` (`Monetary_Limits_MR/ms_limit_clone_processor`). Lo mismo con `CommandHandlersRegistry` en `ms_limit_create`.
+- **OCP mal aplicado (úsalo como autocrítica):** `MonetaryLimitCreator.performActionValidationAndPersistence` (`ms_limit_create`) decide con `if/else if` sobre `ActionToPerform`. Es el candidato natural a Strategy.
+- **DRY/KISS:** `ValidateActorRoleCapabilitiesUseCase` (`ms_admin_authorization`) indexa los productos en un `Set` de claves `id|tipo` en vez de recorrer la lista por cada producto solicitado (de O(n·m) a O(n+m)).
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Strategy como `Map<String, XStrategy>` no aparece; el proyecto usa `List<Strategy>` + `supports()`.
+
+**Cómo contarlo en la entrevista:** Muestra el contraste: `DestinationStrategy` (OCP cumplido) vs `MonetaryLimitCreator` (el `if/else` que refactorizarías). Reconocer el defecto vale más que fingir que todo es perfecto.
+<!-- ENTITLEMENT:2:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 Ya implementé el patrón completo. Mi `ValidadorSolicitud.validar()` recorre la lista de `ReglaValidacion` que recibe por constructor, corta apenas encuentra una regla que no aprueba (`if (!resultado.isAprobada()) return resultado;`) y solo si todas pasan devuelve el resultado aprobado. La regla de negocio nunca vive en el orquestador — cada `ReglaXxx` valida un solo dato de `Solicitud` (edad, ingresos o historial) y no sabe nada de las otras dos.

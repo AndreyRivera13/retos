@@ -24,6 +24,35 @@ Código + log de una corrida donde se vea el circuito pasando por los 3 estados.
 
 Retry reintenta una operación que falla por una causa transitoria. CircuitBreaker detiene los intentos cuando la tasa de fallos supera un umbral, evitando insistir sobre una dependencia ya caída. Bulkhead limita la concurrencia hacia una dependencia para que su lentitud no consuma todos los recursos del sistema. Fallback define una respuesta alternativa cuando lo anterior no evita la falla. Son complementarios porque cada uno actúa en un momento distinto: antes, durante y después de que la falla ocurre.
 
+<!-- ENTITLEMENT:13:START -->
+## Ejemplo fácil de explicar
+
+Un fusible: si la plancha falla una y otra vez, el fusible corta para no quemar la casa; pasado un rato prueba si ya se puede volver a conectar.
+
+```java
+// Retry con backoff solo para errores transitorios (5xx), nunca para 4xx
+.retryWhen(Retry.backoff(3, Duration.ofMillis(200)).filter(e -> e instanceof WebClientResponseException w && w.getStatusCode().is5xxServerError()))
+```
+Cuándo NO: reintentar operaciones no idempotentes (cobros) sin llave de idempotencia; reintentar sin límite empeora una caída.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Retry con backoff reactivo filtrado:** `RetrieveClientLimitService` (`Monetary_Limits_MR/ms_limit_orchestration_services`): `Retry.backoff(MAX_ATTEMPTS, ...).filter(this::isRetryable)`, solo errores 5xx.
+- **Retry de failover de BD:** `AuroraFailoverRetrySupport` (`Monetary_Transactions_MR/operational_transaction_management_ms`, `r2dbc-aurora-support`): `Retry.backoff(...).maxBackoff(...).filter(this::isFailoverError)`; lo usa `SaveInitTransactionAdapter`. Y el validador de rol del cluster (`AuroraConnectionRoleValidator`, espera `WRITER`).
+- **Timeouts:** `RestConsumerConfig` (Netty `ConnectTimeout`, `ReadTimeoutHandler`, `WriteTimeoutHandler`); `ReactiveEventsGateway.emit` con `.timeout(Duration.ofSeconds(t)).retry(n)`.
+- **Dead Letter Queue y reintentos del broker:** `AsyncProps.withDLQRetry(true).retryDelay(...).maxRetries(...)` en `RabbitMQConfiguration` (`ms_products`).
+- **Infraestructura:** HPA, PodDisruptionBudget (`ms_retrieve_role`), readiness/liveness/startup probes, canary con `DestinationRule` (Istio).
+- **Resilience4j:** declarado (`resilience4j-spring-boot3/4`, YAML con `circuitbreaker.instances.testGet/testPost`), pero **sin uso**: no hay `@CircuitBreaker`, `@Retry` ni `@Bulkhead` en el código de producción; las instancias son la plantilla del scaffold.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- CircuitBreaker, Bulkhead y RateLimiter en código de producción: NO ENCONTRADO. No digas que usas Resilience4j en producción.
+
+**Cómo contarlo en la entrevista:** Habla de lo real (retry con filtro 5xx, failover de Aurora, timeouts, DLQ). Los 3 estados del CircuitBreaker los defiendes con el reto 13, diciendo que ahí lo implementaste.
+<!-- ENTITLEMENT:13:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 Dejé `RealizarPagoUseCase` "tonto" a propósito: solo delega en el puerto `ProcesarPagoPort`. La resiliencia vive en el adaptador `PasarelaPagosAdapter`, que lleva las tres anotaciones de Resilience4j sobre `procesar()`. La pasarela simulada decide si falla a través de `FallaSimulada` (`FallaAleatoria` en producción, con 40% configurable en `pasarela.probabilidad-fallo`), lo que me permite controlarla en los tests. El `application.yaml` tiene los valores del reto: Retry de 3 intentos con backoff exponencial (x2), CircuitBreaker que abre con 50% de fallos en ventana de 10, y Bulkhead de 5 llamadas concurrentes.

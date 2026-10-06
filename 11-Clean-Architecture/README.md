@@ -24,6 +24,33 @@ Código organizado en paquetes `dominio`/`aplicacion`/`infraestructura` + la pru
 
 La regla de dependencia de Clean Architecture establece que las capas internas (dominio) no pueden depender de las externas (infraestructura) — la dependencia siempre apunta hacia adentro. Esto se logra con puertos (interfaces definidas por el dominio) y adaptadores (implementaciones concretas en infraestructura). La prueba práctica de que se cumple es que el módulo de dominio debe seguir compilando aunque se elimine el módulo de infraestructura.
 
+<!-- ENTITLEMENT:11:START -->
+## Ejemplo fácil de explicar
+
+El enchufe de la pared (puerto) no sabe si del otro lado hay una lámpara o una licuadora (adaptador). El negocio define el enchufe; la tecnología se conecta.
+
+```java
+interface PagosGateway { Mono<Recibo> cobrar(Pedido p); }          // dominio
+class PagosPseAdapter implements PagosGateway { ... }              // infraestructura
+```
+La dependencia apunta hacia adentro: infraestructura conoce al dominio, nunca al revés.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- Plugin `co.com.bancolombia.cleanArchitecture` (v3.20.15) en todos los micros: módulos `:model` (`domain/model`), `:usecase` (`domain/usecase`), `:reactive-web`, `:async-event-handler`, `:redis`, `:r2dbc-*`, `:dynamo-db`, `:async-event-bus`, `:rest-consumer`, `:app-service`.
+- **Puerto → caso de uso → adaptador:** `GetSchemeClientGateway` (`domain/model/.../schemeclient/search/gateway`) → `GetSchemeClientUseCase` (`@RequiredArgsConstructor`, dependencias `final`) → adaptadores en `driven-adapters`; otro ejemplo: `RetrieveRoleLimitAdapter implements RetrieveRoleLimitGateway` (`Monetary_Limits_MR/ms_limit_orchestration_services`, `r2dbc-postgresql`).
+- **Reglas verificadas por ArchUnit** (`ArchitectureTest`): clases de dominio sin sufijos de tecnología, UseCases solo con atributos `final`, flujos reactivos con clientes AWS asíncronos.
+- **CQRS ligero en el modelo:** `Query<P,C>` y `Command<P,C>` como records, con `@UseCase`.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Nada relevante: el tema está cubierto.
+
+**Cómo contarlo en la entrevista:** Dibuja un caso real: `RouterFunction` → `UseCase` → `Gateway` → `Adapter` y señala que `ArchitectureTest` rompe el build si el dominio importa infraestructura.
+<!-- ENTITLEMENT:11:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 *Completo esto yo mismo cuando termine el reto — no antes. Con mi código real ya escrito, respondo acá (no sobre el enunciado, sobre mi implementación):*

@@ -24,6 +24,37 @@ Código + pruebas JUnit pasando.
 
 Una excepción checked obliga a quien llama a manejar explícitamente una falla esperable del negocio (saldo insuficiente, monto inválido); una unchecked representa un error de programación que no tiene sentido forzar a capturar en cada punto de llamada. Encadenar la causa original en el constructor conserva el stacktrace real para depuración. `try-with-resources` garantiza el cierre del recurso incluso si el bloque lanza una excepción, porque el cierre ocurre en un `finally` implícito generado por el compilador.
 
+<!-- ENTITLEMENT:3:START -->
+## Ejemplo fácil de explicar
+
+```java
+// unchecked: error de negocio, el llamador no puede "arreglarlo" en el momento
+if (saldo < monto) throw new SaldoInsuficienteException(saldo, monto);
+
+// checked: I/O que SÍ puede fallar y el llamador debe decidir
+try (var in = Files.newInputStream(ruta)) { ... }          // try-with-resources cierra solo
+catch (IOException e) { throw new ReporteException("no pude leer " + ruta, e); }   // chaining: conserva la causa (e)
+```
+Regla: una excepción por **qué falló en el negocio**, no por quién la lanzó; y siempre pasa la causa original.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Jerarquía propia:** `BusinessException` y `AppException`, ambas `extends BusinessExceptionECS` (librería ECS), y el enum `ConstantBusinessException` que trae HTTP status, mensaje, código de negocio, mensaje interno y código de log por cada error (`ms_actors/domain/model/.../exception`). Solo en `ms_actors` hay ~137 `new BusinessException(...)`.
+- **Manejo global WebFlux:** `ExceptionResponse` (`@Order(-2)`, `extends AbstractErrorWebExceptionHandler`) en `ms_actors`: traduce `BusinessException` → `AppException` → error desconocido 500, y manda log a SQS. Equivalente: `GlobalWebExceptionHandler implements WebExceptionHandler` en `ms_limit_clone_processor`.
+- **Manejo global MVC:** `CustomExceptionHandler` con `@ControllerAdvice` en `ms_masam` (el único micro MVC).
+- **Traducción/wrapping:** en `ExecTrxCreateDelegateUseCase`, `.onErrorMap(t -> t instanceof AppException || t instanceof BusinessException ? t : new AppException(UNKNOWN_FINISH_CREATE_DELEGATE, messageId))`.
+- **Compensación:** `onErrorResume(error -> rollback(...).then(Mono.error(error)))` en `CreateRuleExceptionUseCase`.
+- **try-with-resources:** solo 2 usos reales, en `GetConsumerServiceAdapter` y `GenerateAndSendOtpAdapter` (`ms_masam`), sobre la respuesta HTTP.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Debilidad real: `BusinessException(ConstantBusinessException, Throwable)` solo propaga `getMessage()`, no el `cause`. El exception chaining queda débil — mencionarlo y decir cómo lo arreglarías es un buen punto.
+
+**Cómo contarlo en la entrevista:** Enum de errores centralizado + handler global que convierte excepción → HTTP. Cierra con la mejora del `cause`.
+<!-- ENTITLEMENT:3:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 Implementé `ProcesadorPagos.procesar()` con `try-with-resources` sobre `RegistroTransaccion` (que implementa `AutoCloseable`), y las dos excepciones checked —`PagoInvalidoException` y `SaldoInsuficienteException`— con constructor que acepta causa encadenada. Cubrí los tres casos con JUnit: pago válido, saldo insuficiente y monto inválido, los tres pasan.

@@ -24,6 +24,33 @@ Código + diagrama de texto (ASCII) mostrando qué capa llama a cuál.
 
 La separación en capas asigna una responsabilidad exclusiva a cada una: el Controller adapta entrada/salida, el Service contiene la regla de negocio, el Repository solo persiste. La regla "no dos citas en el mismo horario para el mismo doctor" vive en el Service porque es lógica de negocio, no un detalle de transporte ni de almacenamiento — ubicarla en cualquiera de esos dos la acopla a un detalle técnico y la vuelve difícil de testear sin levantar esa capa.
 
+<!-- ENTITLEMENT:5:START -->
+## Ejemplo fácil de explicar
+
+Un restaurante: el **mesero** (controller) toma el pedido y no cocina; el **cocinero** (use case/service) aplica la receta; la **despensa** (repository) guarda los ingredientes. Si el mesero abre la despensa directo, cambiar de proveedor obliga a reentrenar al mesero.
+
+```
+Controller → UseCase → Gateway (interfaz) ← Adapter (BD/REST)
+```
+Cuándo NO: en un script de 50 líneas, tres capas son sobreingeniería.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- Todos los micros Java tienen el mismo esqueleto del plugin `co.com.bancolombia.cleanArchitecture`: `applications/app-service`, `domain/model`, `domain/usecase`, `infrastructure/entry-points/{reactive-web, async-event-handler}`, `infrastructure/driven-adapters/{r2dbc-postgresql, dynamo-db, redis, rest-consumer, async-event-bus}`, `infrastructure/helpers`.
+- **La estructura se hace cumplir:** `compileJava.dependsOn validateStructure` y `ArchitectureTest` (ArchUnit, viene del scaffold) rompen el build si violas capas.
+- **Recorrido real (WebFlux funcional):** `UpdateExceptionRoute` (RouterFunction `route(POST(...), handler::updateException)`) → `UpdateExceptionHandler` → caso de uso → `*Gateway` → `*Adapter` (`ms_actors`).
+- **Otras entradas:** `@RestController` MVC en `ms_masam` (`GetAuthorizationFlowController`), GraphQL en `permitions_entitlement_ms` (`GetByChannelGraphqlController`), consumidores de eventos en `async-event-handler`.
+- Dentro de cada capa se separa `info|management` (consulta vs comando) y `main|sub` proceso; las reglas están en la skill de revisión de `Library_MR/cursor-sources`.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Los README de los micros son plantilla del scaffold; no describen la arquitectura propia (ver tema 20).
+
+**Cómo contarlo en la entrevista:** "Controller no habla con la BD porque el build me lo prohíbe": menciona `validateStructure` + ArchUnit. Es evidencia, no opinión.
+<!-- ENTITLEMENT:5:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 Separé la solución en tres piezas: `CitaController` solo recibe la petición y llama a `CitaService.reservar()`; `CitaService` tiene la única regla de negocio —que no haya dos citas en el mismo horario para el mismo doctor— y lanza `IllegalStateException` si se viola; `CitaRepositoryEnMemoria` solo guarda y busca, sin decidir nada.

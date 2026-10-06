@@ -58,6 +58,33 @@ Cuándo NO: no escojas microservicios porque "es lo moderno" con un equipo de se
 
 Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o por escrito, las preguntas de repaso de este tema en `REPASO_MASTER.md` (están sin respuesta; las respuestas modelo están al final del archivo). Si te cuesta más que escribir el entregable, el hueco está en el concepto.
 
+<!-- ENTITLEMENT:24:START -->
+## Ejemplo fácil de explicar
+
+Diseñar arquitectura es elegir qué sacrificas. Cada atributo de calidad (latencia, disponibilidad, seguridad, costo) se escribe como un escenario medible: *"Si llegan 500 consultas/s de permisos, p95 < 200 ms"*. Un *utility tree* ordena cuáles importan más y cada decisión se contrasta con un trade-off. Una *fitness function* es un test que vigila que la arquitectura no se degrade (por ejemplo, que el dominio no importe infraestructura).
+
+Monolito modular vs microservicios: el segundo ganó independencia de despliegue a cambio de operación y consistencia más difíciles.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Microservicios por bounded context**, un repo por contexto (`NU<código>_<Dominio>_MR`): `Entitlement_Service`, `Monetary_Transactions`, `Monetary_Limits` (nueve `ms_limit_*`), `Entitlement_MASAM`, más `InternalServices`, `EntitlementAnalitica`, `Library`.
+- **CQRS físico (lectura/escritura):** pools R2DBC separados `core-read/core-write` y `transactions-read/transactions-write`; en Elixir `RepoRead` (`read_only: true`) y `RepoWrite`; `ms_query_transactions` (consulta) vs `ms_admin_entitlement_trx` (administración); Redis con réplica de lectura. Atributo: **rendimiento y escalabilidad de lectura**.
+- **Event-driven con RabbitMQ y event sourcing** para desacoplar contextos. Atributo: **desacoplamiento y disponibilidad**; costo: consistencia eventual.
+- **Caché multinivel** (Caffeine + Redis). Atributo: **latencia**.
+- **Políglota:** Elixir para consultas de baja latencia (`ms_retrieve_role`), Java/WebFlux para el resto.
+- **Tácticas de disponibilidad:** HPA, PDB, probes, canary; trabajo pesado a AWS Batch/Glue.
+- **Fitness functions reales:** `ArchitectureTest` (ArchUnit) y `validateStructure` del scaffold; calidad con Sonar quality gate y Pitest.
+- **Atributos de calidad escritos:** solo en la plantilla del README (escalabilidad, performance, tolerancia a fallos, seguridad); no hay utility tree ni ADR.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Utility tree, escenarios de calidad y ADR propios: NO ENCONTRADO. El reto 24 es hacerlos sobre Entitlement.
+
+**Cómo contarlo en la entrevista:** Elige 2 decisiones (CQRS físico y RabbitMQ) y para cada una di atributo ganado, atributo sacrificado y cómo lo mitigan. Eso es lo que significa "trade-off".
+<!-- ENTITLEMENT:24:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 *Completo esto yo mismo cuando termine el reto, no antes. Con lo que ya entregué, respondo aquí:*
@@ -65,7 +92,6 @@ Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o 
 - *¿Qué archivos y decisiones concretas produje y qué responsabilidad tiene cada uno?*
 - *¿Cómo mi entrega, específicamente, resuelve el concepto de este reto? Cito mis propios archivos.*
 - *¿Qué error o malentendido tuve en el camino y cómo lo corregí?*
-- *¿Qué hice yo y qué hice con ayuda de IA?*
 
 ## 🎯 Con tu evaluador
 

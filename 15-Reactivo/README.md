@@ -24,6 +24,37 @@ Código + explicación de qué pasa con la suscripción si nadie llama `.subscri
 
 La programación reactiva declara qué hacer cuando un dato esté disponible (`Mono`, `Flux`) en vez de bloquear un hilo esperando ese dato, lo que permite manejar más operaciones de I/O concurrentes con menos hilos. No es una mejora universal: para lógica sin I/O significativo, el modelo imperativo es más simple de leer y depurar. La decisión de migrar depende de si el cuello de botella real es la espera por I/O, no de preferencia estilística.
 
+<!-- ENTITLEMENT:15:START -->
+## Ejemplo fácil de explicar
+
+En una pizzería con un solo mesero, el imperativo es esperar parado en el mostrador hasta que salga la pizza. Reactivo es dejar el pedido y atender a otro cliente; cuando la pizza esté, te avisan.
+
+```java
+Mono<Cliente> c = repo.buscar(id)                 // nada se ejecuta todavía (lazy)
+    .switchIfEmpty(Mono.error(new NoExiste()))
+    .timeout(Duration.ofSeconds(2));
+c.subscribe(...);                                  // aquí arranca
+```
+Cuándo NO: CRUD simple con poca concurrencia y librerías bloqueantes (JDBC): reactivo + `.block()` es peor que MVC.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Todo el stack nuevo es WebFlux** (Spring Boot 4.1.x en `client_parameters_ms`, `ms_actors`, `ms_admin_authorization`, `ms_products`, los nueve `ms_limit_*`, `ms_authorization_flows`…; Boot 3.5.x en `masam_*`, `products_information_ms`, `permitions_entitlement_ms`). Solo `ms_masam` es MVC.
+- **WebFlux funcional:** `AvailableLimitRouter` (`route(POST(...), handler::availableLimit)`) y `ValidateClientLimitHandlerRequest` con `Mono.zip(modelMono, contextMono).map(t -> new Command<>(t.getT1(), t.getT2()))`.
+- **Operadores reales:** `switchIfEmpty(Mono.defer(() -> Mono.error(...)))` en `GetSchemeClientUseCase`; `flatMap` anidados, `onErrorMap`, `onErrorResume`; `Flux.fromIterable(...).flatMap(...).collectList()` en `OwnerFlowUseCase`.
+- **Persistencia reactiva:** R2DBC (`ReactiveCrudRepository` + `@Query`), `TransactionalOperator` (`SaveInitTransactionAdapter`), DynamoDB/S3 asíncronos.
+- **Lotes:** `.buffer(BUFFER_SIZE).flatMap(...)` en `SaveEventPublicationInfoAdapter`; `subscribeOn(Schedulers.boundedElastic())` al envolver llamadas bloqueantes.
+- **Cuidados:** `.subscribe()` fire-and-forget para logs funcionales (en `GetSchemeClientUseCase`) y `.block()` al arranque en `StateConfig`/`PrivilegeConfig`.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- `limitRate` y `onBackpressure*` explícitos: NO ENCONTRADO (el backpressure es el implícito de Reactor/R2DBC/Netty).
+
+**Cómo contarlo en la entrevista:** Es tu tema fuerte: cuenta el flujo `Mono.zip` → caso de uso → R2DBC con `TransactionalOperator`, y explica cuándo `subscribeOn(boundedElastic)` y por qué `.block()` en el arranque no es lo mismo que en una petición.
+<!-- ENTITLEMENT:15:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 Dejé el caso de uso de citas en reactivo: `reservar` devuelve `Mono<Cita>` y `citasDelDia` devuelve `Flux<Cita>`. La validación de entrada (doctor o fecha nulos) la envuelvo en `Mono.defer` y respondo con `Mono.error(IllegalArgumentException)`: un dato inválido es un error, no un resultado vacío. Vacío lo reservo para "consulté y no hay nada", que es una respuesta válida del negocio. Como `Mono`/`Flux` son perezosos, nada se ejecuta hasta que alguien se suscribe: si nadie llama `.subscribe()` o `.block()`, el origen ni siquiera se consulta y el error de validación ni siquiera se emite.

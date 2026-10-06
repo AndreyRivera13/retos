@@ -24,6 +24,32 @@ Código del servidor + captura o log mostrando el broadcast y el mensaje privado
 
 WebSocket mantiene una conexión persistente y con estado, a diferencia de REST, donde cada petición es independiente y sin estado. Esto habilita que el servidor inicie el envío de datos (broadcast, mensajes privados) sin que el cliente pregunte primero, pero introduce dos problemas que REST no tiene: acceso concurrente a la lista de sesiones conectadas, y desconexiones abruptas que no disparan `onClose` y pueden dejar sesiones huérfanas si no se manejan explícitamente.
 
+<!-- ENTITLEMENT:9:START -->
+## Ejemplo fácil de explicar
+
+REST es preguntar y esperar respuesta (como mandar un WhatsApp y volver a mirar si contestaron). WebSocket es una llamada abierta: el servidor te avisa cuando hay novedad.
+
+```java
+// REST: el cliente consulta cada 5 s si el flujo ya fue aprobado (polling)
+// WebSocket: una conexión abierta; el servidor empuja "flujo aprobado" cuando ocurre
+```
+Cuándo NO: para consultas puntuales REST es más simple, cacheable y fácil de escalar.
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **WebSocket, SOAP, gRPC, RSocket y MQTT no aparecen** en los `build.gradle` de los micros. No lo afirmes como experiencia del proyecto.
+- **Sí hay otros protocolos:** **GraphQL** en `EntitlementAnalitica_MR/permitions_entitlement_ms` (`spring-boot-starter-graphql`, `schema.graphqls`, `GetByChannelGraphqlController` con `@QueryMapping`, `GlobalGraphQLExceptionHandler`) y **AMQP/RabbitMQ** con `reactive-commons` (`async-commons-rabbit-starter`) en casi todos los micros, más contratos **AsyncAPI** en `ms_actors/deployment/ApiDoc`.
+- Dónde aplicaría WebSocket (idea, no existente): notificar al aprobador en tiempo real que tiene un flujo pendiente (hoy sería consulta REST o evento).
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- WebSocket / gRPC / SOAP: NO ENCONTRADO.
+
+**Cómo contarlo en la entrevista:** Habla de GraphQL y AMQP como tu experiencia real, y del reto 9 como la práctica de WebSocket, diciendo explícitamente que en Entitlement no se usa.
+<!-- ENTITLEMENT:9:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 Implementé `SesionesRegistro` con un `CopyOnWriteArraySet<Session>` para que el acceso concurrente a la lista de sesiones no necesite sincronización manual — está pensado para muchas lecturas (broadcast) y pocas escrituras (conectar/desconectar), que es justo el patrón de este reto. En `NotificacionesEndpoint`, `onOpen` registra la sesión y manda el mensaje de bienvenida; `onMessage` distingue "alerta" (broadcast a todos menos el remitente) de "privado" (busca la sesión por `session.getId()` y le manda solo a esa).

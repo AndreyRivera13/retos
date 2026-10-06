@@ -24,6 +24,37 @@ Tablas finales con PK/FK marcadas + una frase por cada paso (1FN, 2FN, 3FN) dici
 
 Una dependencia funcional parcial —un atributo que depende solo de parte de una clave primaria compuesta, no de la clave completa— rompe 2FN. Si `curso1_profesor` depende únicamente de `curso1_nombre` y no de `id_matricula`, separarla en su propia tabla elimina la redundancia y el riesgo de que el mismo dato quede inconsistente en filas distintas (el mismo profesor escrito de dos formas distintas, por ejemplo).
 
+<!-- ENTITLEMENT:7:START -->
+## Ejemplo fácil de explicar
+
+Tabla `pedido(id, cliente_nombre, cliente_ciudad, producto, precio)`: el cliente se repite en cada fila. Normalizar es partir en `cliente`, `producto` y `pedido_producto` (tabla puente con PK compuesta):
+
+```sql
+CREATE TABLE pedido_producto (
+  pedido_id INT, producto_id INT, cantidad INT,
+  PRIMARY KEY (pedido_id, producto_id),
+  FOREIGN KEY (pedido_id)   REFERENCES pedido(id),
+  FOREIGN KEY (producto_id) REFERENCES producto(id));
+```
+Cuándo NO: en reportes/lecturas masivas a veces se desnormaliza a propósito (trade-off consciente).
+
+## Cómo lo trabajamos en Entitlement (micros)
+
+Evidencia del código real de los micros (rutas relativas a `Bancolombia/Micros/`). Es lo que hace el equipo; cuenta qué parte hiciste tú y cuál es del equipo.
+
+- **Convención del esquema:** `tbl_core_*` (relationship, role, state, functionality, privilege, schema), tablas puente `*_vs_*` (`tbl_core_role_vs_functionality`, `tbl_core_schema_vs_client`, `tbl_core_gp_granular_vs_product`), temporales `tbl_temp_*`, columnas con prefijo `pk_` / `fk_`.
+- **Tabla puente con PK compuesta y FK con `ON DELETE CASCADE`:** `tbl_temp_flow_func_vs_product` (repo `ENTITLEMENT_ENTNT_SQL`, `sql_code/ddl/09_14082026_CREATE_TABLE_...`).
+- **Catálogo vs hechos:** `tbl_exception_attribute` (catálogo) y `tbl_exception_core` (hechos) en `ENTITLEMENT_ENTMG_SQL/sql_code/ddl`.
+- **Cambios versionados con Liquibase**, `--changeset <usuario>:<HU> context:REF,QA,PDN`, nombre `NN_DDMMAAAA_ACCION_tabla.sql`.
+- **Autocrítica (buena para entrevista):** en `tbl_exception_core` solo se declara la PK (las `fk_*` no tienen constraint) y repite `attr_code`, `data_type`, `attr_units` que ya viven en `tbl_exception_attribute`: eso rompe 3FN. Se puede defender como decisión de rendimiento/legado, pero dilo tú antes de que te lo pregunten.
+
+**No encontrado en los micros (no lo afirmes como experiencia del proyecto):**
+
+- Las normas 1FN/2FN/3FN no están documentadas en el repo; el esquema las sigue en lo general.
+
+**Cómo contarlo en la entrevista:** Tabla puente + catálogo y luego la excepción consciente (`tbl_exception_core`) con su trade-off.
+<!-- ENTITLEMENT:7:END -->
+
 ## Cómo cerré esta brecha (mi implementación)
 
 Normalicé `Matriculas` en tres pasos. En 1FN eliminé los grupos repetidos `curso1_*`/`curso2_*`, moviendo cada curso matriculado a su propia fila en `MatriculaCursos`. En 2FN separé `Cursos` porque `profesor_nombre` dependía solo de `curso_nombre` —parte de la clave compuesta— y no de la matrícula completa. En 3FN separé `Profesores` de `Cursos` porque los datos del profesor dependían del profesor mismo, no directamente del curso.
