@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Almacenamiento de citas y rol de la función con permisos mínimos (equivalente al Terraform del reto 21)
+
+Parameters:
+  NombreTabla:
+    Type: String
+    Default: citas
+
+# TODO: Resources
+#  - Tabla DynamoDB (u otro almacenamiento) con cifrado en reposo y recuperación a un punto en el tiempo
+#  - Rol IAM de la función con solo las acciones necesarias y sobre el ARN exacto
+# Resources:
+
+# TODO: Outputs (ARN de la tabla y del rol)

@@ -37,6 +37,17 @@ evaluador" — no hace falta volver a esta tabla para consultarlo. Marcá el
 | 17 | `17-IaC` | solo .tf/.yml (sin Gradle) | ✅ Cerrado — verificado el 2026-10-03 |
 | 18 | `18-OWASP` | model + rest-documentos + memory-documentos | ✅ Cerrado — verificado el 2026-10-03 |
 | 19 | `19-DDD` | model + app-service | ✅ Cerrado — verificado el 2026-10-03 |
+| 20 | `20-Documentacion` | solo docs (Mermaid, ADR) | 🔲 TODO |
+| 21 | `21-Cloud-Infraestructura` | solo .tf (sin Gradle) | 🔲 TODO |
+| 22 | `22-DevOps-IaC` | CloudFormation + k6 + pipeline + script de IA | 🔲 TODO |
+| 23 | `23-Seguridad-Arquitectura` | copia de 18-OWASP (Gradle) + docs | 🔲 TODO |
+| 24 | `24-Diseno-Arquitectura` | solo docs + fitness function | 🔲 TODO |
+| 25 | `25-Observabilidad` | copia de 13-Resiliencia (Gradle) + Prometheus/Grafana | 🔲 TODO |
+| 26 | `26-Arquitectura-Datos` | solo SQL + docs (Postgres) | 🔲 TODO |
+
+## Nivel Master (retos 20 al 26)
+
+Los retos 20 al 26 corresponden al nivel Master de la escala Pragma (después de Senior): documentación de arquitectura, infraestructura en la nube, DevOps/IaC, seguridad en la arquitectura, diseño de arquitectura, observabilidad y arquitectura de datos. Son más de diseño y evidencia que de código: varias entregas son documentos, IaC o scripts, no un proyecto Gradle. Los retos 23 y 25 traen una copia de `18-OWASP` y `13-Resiliencia` en su subcarpeta `app/` para trabajar sobre ella sin tocar los originales. El estudio de los conceptos está en `REPASO_MASTER.md` y los enunciados completos, con ejemplo en otro dominio, en `Retos_Assessment_Andrey.md` (sección MASTER).
 
 ## Cómo trabajar cada reto
 

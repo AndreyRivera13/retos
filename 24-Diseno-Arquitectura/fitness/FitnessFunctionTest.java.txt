@@ -1,0 +1,18 @@
+package pragma;
+
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.core.domain.JavaClasses;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+class FitnessFunctionTest {
+
+    private final JavaClasses clases = new ClassFileImporter().importPackages("pragma");
+
+    @Test
+    @Disabled("TODO: quita esto cuando escribas la regla")
+    void elDominioNoDependeDeLaInfraestructura() {
+        // TODO: regla ArchUnit que proteja un atributo que priorizaste (modificabilidad, por ejemplo).
+        // Luego rómpela a propósito y comprueba que la prueba falla.
+    }
+}

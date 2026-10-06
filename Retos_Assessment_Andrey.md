@@ -685,6 +685,222 @@ class Carrito { // Aggregate Root
 
 ---
 
+# MASTER
+
+> Los temas de Master los tomé de la hoja de competencias que me pasaste. Aquí cada reto es más de diseño y evidencia que de código: en varios la entrega son documentos, IaC o scripts, no un proyecto Gradle. No tengo evidencia de quién te evaluará en Master ni de su experiencia; si es el mismo evaluador, los apartes "🎯" de los temas 23, 24 y 26 te sirven; si no, ignóralos.
+
+---
+
+## 20. Documentación — Documentación de arquitectura (C4 / 4+1 / ADR)
+**Reto:** Documenta el sistema de citas médicas que ya construiste (retos 5, 11, 15 y 16: API de reservas, evento `CitaReservada` en Kafka, consumidor de recordatorios, base de datos). Entrega: (1) tres vistas C4 — Contexto (nivel 1, para negocio: personas y sistemas, sin tecnología), Contenedores (nivel 2, para líder técnico y equipo de infraestructura) y Componentes del contenedor "API de citas" (nivel 3, para desarrolladores); (2) un ADR en formato MADR (contexto, decisión, alternativas consideradas, consecuencias) para "¿por qué EDA con Kafka para los recordatorios?"; (3) un diagrama de secuencia de "reservar cita" con el flujo feliz y el de horario ocupado, un diagrama de clases del dominio y un diagrama entidad-relación; (4) una clase tuya refactorizada para que se explique sola (nombres, métodos pequeños, sin comentarios) con el antes y el después; (5) una guía de una página para el equipo: cuándo se escribe un ADR y qué vista se usa para qué público.
+
+**Entrega:** Carpeta `docs/` con los archivos de la estructura, todo como código (Mermaid o PlantUML) versionado en el repo, más `GUIA-DEL-EQUIPO.md`.
+
+**Demuestra dominio si:** Si le muestras el diagrama de contenedores al gerente de negocio, ¿qué sobra? Y si le muestras el de contexto al equipo de infraestructura, ¿qué le falta? Además: ¿por qué un diagrama que "nadie actualiza" es peor que no tener diagrama, y qué haces para que se mantenga vivo?
+
+**Ejemplo (dominio: tienda en línea, vista de Contenedores en Mermaid + un ADR corto):**
+```mermaid
+flowchart LR
+    cliente([Cliente]) -->|HTTPS| web[Tienda web<br/>React]
+    web -->|HTTPS/JSON| api[API de pedidos<br/>Spring Boot]
+    api -->|JDBC| bd[(Base de datos<br/>Postgres)]
+    api -->|evento PedidoCreado| broker[[Broker<br/>Kafka]]
+    broker --> facturacion[Servicio de facturación]
+```
+```markdown
+# ADR 0003: Facturación por eventos y no por llamada directa
+Contexto: facturación se cae en picos y bloquea el pago.
+Decisión: la API publica PedidoCreado; facturación lo consume a su ritmo.
+Alternativas: llamada síncrona (descartada: acopla disponibilidad), cola simple (descartada: no hay reproducción de eventos).
+Consecuencias: (+) pago no depende de facturación. (-) consistencia eventual, hay que manejar duplicados (idempotencia).
+```
+**Cómo se traduce:** misma forma para citas: Paciente → API de citas → Postgres y broker → consumidor de recordatorios. Lo que defiendes es qué público ve cada nivel y por qué el ADR lista una consecuencia negativa.
+
+---
+
+## 21. Cloud — Infraestructura mínima de una solución
+**Reto:** Declara como código la infraestructura mínima del servicio de citas en una cuenta AWS: un componente de enrutamiento (API Gateway o balanceador de carga), al menos una instancia de cómputo (Lambda, ECS/Fargate o EC2) y al menos un almacenamiento (DynamoDB, RDS/Aurora o S3). Además de los recursos, entrega la justificación de cada decisión: por qué ese cómputo y no los otros dos, por qué ese almacenamiento, y qué atributo de calidad (costo, escalabilidad, operación, latencia) favorece cada elección. Debe poder verificarse sin una cuenta de pago: `terraform validate` y `terraform plan` como mínimo, y de forma opcional un despliegue real en LocalStack o en una cuenta sandbox.
+
+**Entrega:** `iac/` con el Terraform (provider, recursos, variables y outputs), `docs/decisiones-infra.md` con la tabla decisión, componente y atributo, y el diagrama de contenedores del reto 20 actualizado con los nombres reales de los recursos.
+
+**Demuestra dominio si:** ¿Por qué el cómputo va detrás del enrutamiento y no expuesto directo? ¿Qué cambia en tu diseño si el tráfico pasa de 10 a 10.000 solicitudes por segundo, y qué componente se vuelve el cuello de botella primero?
+
+**Ejemplo (dominio: generador de reportes, enrutamiento + cómputo + almacenamiento en Terraform, recortado):**
+```hcl
+resource "aws_s3_bucket" "reportes" { bucket = "empresa-reportes" }
+
+resource "aws_lambda_function" "generador" {
+  function_name = "generador-reportes"
+  role          = aws_iam_role.generador.arn   # rol con s3:PutObject solo sobre este bucket
+  runtime       = "python3.12"
+  handler       = "handler.handler"
+  filename      = "build/handler.zip"
+}
+
+resource "aws_apigatewayv2_api" "entrada" {
+  name          = "reportes-api"
+  protocol_type = "HTTP"
+}
+# + integración, ruta POST /reportes y permiso para que la API invoque la Lambda
+```
+**Cómo se traduce:** `reportes` pasa a ser tu tabla de citas, el generador a ser tu función o servicio de reservas. Lo que se evalúa es la tabla de decisiones: por qué Lambda y no ECS (o al revés) y qué sacrificas.
+
+---
+
+## 22. DevOps / IaC — IaC con dos herramientas, zero trust, rendimiento e IA en DevSecOps
+**Reto:** Toma la infraestructura del reto 21 y entrega: (1) una segunda tecnología de IaC distinta de Terraform (CloudFormation, CDK o SAM) que declare el rol IAM y el almacenamiento con el mismo resultado, y una nota de cuándo escogerías cada herramienta; (2) controles zero trust automatizados como código y validados en el pipeline: sin acceso público (bloqueo de acceso público en S3, sin `0.0.0.0/0`), API con autorizador, un rol por función con permisos mínimos, cifrado en tránsito y en reposo, validados con tfsec/checkov (Terraform) y cfn-lint/cfn_nag o checkov (CloudFormation); (3) una prueba de rendimiento con k6 (o Gatling) con umbrales —por ejemplo p95 menor a 500 ms y tasa de error menor a 1%— que haga fallar el pipeline si no se cumplen; (4) un paso de IA en DevSecOps: un script que toma el JSON de hallazgos de checkov/tfsec, quita cualquier dato sensible, le pide a un modelo que priorice y explique cada hallazgo y deja el resultado como borrador para revisión humana; documenta qué decidió la IA y qué decidió una persona.
+
+**Entrega:** `terraform/` (o el del reto 21), `cloudformation/`, `pipeline.yml`, `k6/citas.js`, `triage-ia/` y `docs/zero-trust.md` (tabla: principio zero trust, control, archivo donde está, cómo se verifica).
+
+**Demuestra dominio si:** ¿Qué parte de zero trust automatizaste que una revisión manual se saltaría? ¿Qué NO le delegarías a la IA en el triage de hallazgos y por qué? ¿Por qué un umbral de rendimiento en el pipeline protege más que una prueba de carga que corres a mano antes de salir?
+
+**Ejemplo (dominio: bucket de reportes en CloudFormation + umbrales de k6):**
+```yaml
+Resources:
+  Reportes:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: { SSEAlgorithm: aws:kms }
+```
+```javascript
+export const options = {
+  thresholds: {
+    http_req_duration: ['p(95)<500'],   // si se rompe, k6 sale con código distinto de 0
+    http_req_failed: ['rate<0.01'],
+  },
+};
+```
+**Cómo se traduce:** el mismo almacenamiento y rol del reto 21, ahora en la segunda herramienta, con los controles zero trust como propiedades del template y con los umbrales conectados al pipeline.
+
+---
+
+## 23. Seguridad — tácticas de arquitectura contra ataques
+**Reto:** Trabaja sobre la copia de `18-OWASP` que está en `app/`. Aplica al menos dos tácticas de seguridad de categorías distintas —una de resistir ataques y una de detectar ataques, idealmente una tercera de reaccionar— para proteger el endpoint `/usuarios/{id}/documentos` del ataque de enumeración de identificadores. Ejemplos: resistir (limitar tasa de solicitudes por usuario, cabeceras de seguridad, validación de entrada), detectar (registro de auditoría de cada acceso denegado con quién, qué recurso y cuándo, y una alerta tras N denegaciones en una ventana de tiempo), reaccionar (bloqueo temporal del usuario). Demuestra el ataque antes y bloqueado después con una prueba automática que enumera identificadores del 1 al 1000.
+
+**Entrega:** Código en `app/`, la prueba de ataque (copiada desde `pruebas/` a `src/test`) en verde, y `docs/tacticas.md` con la tabla amenaza STRIDE, táctica, categoría, dónde está en el código y cómo se prueba.
+
+**Demuestra dominio si:** ¿Qué táctica es de detectar y cuál de resistir, y por qué una no reemplaza a la otra? ¿Qué amenaza STRIDE cubre cada una? ¿Por qué el rate limiting no corrige el IDOR y qué corrige entonces?
+
+**🎯 Con tu evaluador (si es Rudyard):** Su experiencia con JWT es real, así que puede preguntarte por la trampa de siempre: que un token válido (autenticación) no resuelve el acceso al recurso (autorización). Si el evaluador de Master es otra persona, esta parte se mantiene igual, pero ya no tengo evidencia de por dónde te va a preguntar.
+
+**Ejemplo (dominio: API de pedidos, resistir con límite de tasa por usuario y detectar con auditoría; boceto):**
+```java
+@Component
+class LimiteDeTasaFilter extends OncePerRequestFilter {
+    private final Map<String, Deque<Instant>> solicitudes = new ConcurrentHashMap<>();
+    private static final int MAXIMO = 20;                      // por minuto y por usuario
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+            throws ServletException, IOException {
+        String usuario = req.getUserPrincipal() == null ? "anonimo" : req.getUserPrincipal().getName();
+        Deque<Instant> ventana = solicitudes.computeIfAbsent(usuario, u -> new ArrayDeque<>());
+        synchronized (ventana) {
+            Instant corte = Instant.now().minusSeconds(60);
+            while (!ventana.isEmpty() && ventana.peekFirst().isBefore(corte)) ventana.pollFirst();
+            if (ventana.size() >= MAXIMO) { res.setStatus(429); return; }
+            ventana.addLast(Instant.now());
+        }
+        chain.doFilter(req, res);
+    }
+}
+```
+**Cómo se traduce:** el mismo filtro delante de `/usuarios/{id}/documentos`, más un evento de auditoría (quién, qué recurso, cuándo; nunca el contenido) cada vez que ocurre un 403. Ojo con este boceto: guarda estado por usuario en memoria, no sirve con varias instancias; en producción el contador va en Redis o en el API Gateway. Esa limitación es parte de lo que debes saber decir.
+
+---
+
+## 24. Diseño de arquitectura — atributos de calidad y trade-offs
+**Reto:** Con los requisitos de `docs/requerimientos.md` (sistema de citas con picos fuertes, disponibilidad del 99,9%, datos de salud sensibles, reglas de agenda que cambian cada semana, equipo de 6 personas y presupuesto limitado): (1) identifica los 3 a 5 atributos de calidad más importantes y priorízalos en un árbol de utilidad; (2) escribe tres escenarios de calidad en el formato de seis partes (fuente, estímulo, artefacto, entorno, respuesta, medida de respuesta); (3) propone dos arquitecturas candidatas —por ejemplo un monolito modular hexagonal y microservicios con EDA— y compáralas con un análisis tipo ATAM ligero (puntos de sensibilidad, trade-offs, riesgos); (4) decide y registra la decisión en un ADR; (5) escribe una fitness function ejecutable (una prueba ArchUnit o de carga) que proteja uno de los atributos escogidos.
+
+**Entrega:** Los archivos de `docs/` completos y la fitness function funcionando en un proyecto Gradle tuyo (por ejemplo copiada al reto 11).
+
+**Demuestra dominio si:** ¿Qué atributo sacrificaste para favorecer cuál? ¿Con qué número o prueba sabes que la decisión funcionó? ¿Cuándo cambiarías de opinión (qué dato te haría migrar a la otra arquitectura)?
+
+**🎯 Con tu evaluador (si es Rudyard):** Lideró la reestructuración de arquitectura hacia microservicios en dos empresas, así que es terreno donde ya se equivocó y aprendió. Si es tu evaluador, espera que te pregunte por qué microservicios (o por qué no) sin aceptar "escalabilidad" como respuesta: pídete a ti mismo un dato concreto (tráfico, tamaño del equipo, frecuencia de despliegue) que justifique la decisión.
+
+**Ejemplo (dominio: tienda en Black Friday, un escenario de calidad de seis partes):**
+- **Fuente:** clientes finales.
+- **Estímulo:** 3.000 solicitudes de compra por segundo durante 30 minutos.
+- **Artefacto:** servicio de checkout.
+- **Entorno:** operación normal con pico previsto.
+- **Respuesta:** cada compra se confirma y se encola la facturación.
+- **Medida:** p95 menor a 1 s, menos del 0,5% de errores, sin pérdida de pedidos.
+
+Una fitness function que protege la modificabilidad:
+```java
+noClasses().that().resideInAPackage("..domain..")
+    .should().dependOnClassesThat().resideInAnyPackage("org.springframework..", "jakarta.persistence..")
+    .check(clases);
+```
+**Cómo se traduce:** tus escenarios de citas (pico del lunes a las 7 a. m.) con su medida numérica, y la comparación monolito modular contra microservicios hecha contra esos escenarios, no contra gustos.
+
+---
+
+## 25. Observabilidad — métricas, logs y trazas con sentido de negocio
+**Reto:** Trabaja sobre la copia de `13-Resiliencia` que está en `app/` (la pasarela de pagos con CircuitBreaker). Instrumenta: (1) métricas con Actuator, Micrometer y Prometheus: las de la JVM, las del circuito de Resilience4j y una métrica de negocio propia (un contador `pagos_total` con la etiqueta `estado` y un temporizador de la latencia de la pasarela); (2) logs estructurados en JSON con un `correlationId` por solicitud (MDC); (3) una traza con un span en la llamada a la pasarela (OpenTelemetry / Micrometer Tracing); (4) una consulta o tablero que muestre la tasa de pagos `EN_PROCESO` y una regla de alerta (por ejemplo circuito abierto por más de un minuto, o más del 30% de pagos en proceso en cinco minutos) con su runbook corto; (5) una tabla que clasifique cada señal en una de las categorías: monitoreo de infraestructura, gestión de logs, APM, RUM, sintético, seguridad, auditoría transaccional o costos.
+
+**Entrega:** El código instrumentado en `app/`, `observabilidad/` funcionando con `docker compose up` (Prometheus y Grafana), capturas o consultas PromQL, `docs/clasificacion-de-senales.md` y `docs/runbook-alerta.md`.
+
+**Demuestra dominio si:** ¿Cómo distinguirías con tus señales entre "la pasarela está lenta" y "mi servicio está lento"? ¿Cuál de tus métricas es de negocio y cuál de infraestructura, y por qué importa la diferencia al decidir a quién despertar de madrugada? ¿Por qué una alerta basada en un síntoma (pagos en proceso) suele ser mejor que una basada en una causa (CPU alta)?
+
+**Ejemplo (dominio: pedidos, métrica de negocio con Micrometer):**
+```java
+Counter pedidos = Counter.builder("pedidos_total")
+        .tag("estado", estado)                 // pocas etiquetas, de baja cardinalidad
+        .register(meterRegistry);
+pedidos.increment();
+
+Timer.Sample muestra = Timer.start(meterRegistry);
+// ... llamada al medio de pago ...
+muestra.stop(Timer.builder("medio_pago_latencia").register(meterRegistry));
+```
+```yaml
+- alert: PedidosRechazadosAltos
+  expr: sum(rate(pedidos_total{estado="RECHAZADO"}[5m])) / sum(rate(pedidos_total[5m])) > 0.3
+  for: 5m
+  annotations:
+    summary: "Más del 30% de los pedidos se rechaza"
+```
+**Cómo se traduce:** `pedidos_total` pasa a ser `pagos_total{estado}` en tu pasarela. Fíjate que la alerta es sobre un síntoma (el porcentaje que el negocio siente) y no sobre una causa (CPU).
+
+---
+
+## 26. Arquitectura de Datos — ciclo de vida de la información
+**Reto:** Define el ciclo de vida de los datos del sistema de citas médicas siguiendo las cinco fases: (1) Captura: qué campos se capturan, por qué (minimización), con qué consentimiento y qué validación en el borde; (2) Almacenamiento: dónde viven los datos activos y los históricos, y por cuánto tiempo (justifica los plazos); (3) Gestión: quién accede, con qué rol y desde qué recursos, qué datos se enmascaran o seudonimizan y cómo se garantiza calidad; (4) Publicación: cómo se presenta información a negocio sin exponer datos personales (una vista de citas agregadas por especialidad y mes); (5) Disposición: el procedimiento para depurar o anonimizar datos vencidos, con evidencia de lo eliminado. Implementa lo implementable en Postgres: el esquema, los roles con GRANT, la vista de publicación y el script de depuración, y pruébalos con datos de ejemplo.
+
+**Entrega:** `docs/ciclo-de-vida.md` con la tabla de cinco fases, `docs/clasificacion-datos.md`, y los scripts `sql/01_schema.sql`, `sql/02_roles_y_vistas.sql` y `sql/03_depuracion.sql` ejecutados contra el Postgres del `docker-compose.yml`, con la salida que demuestra el resultado.
+
+**Demuestra dominio si:** Si un paciente pide que borren sus datos pero existe una obligación legal de conservar parte de ellos, ¿qué haces en cada fase del ciclo? ¿Por qué la vista para negocio no debe leer la tabla transaccional directamente? ¿Cómo demuestras ante un auditor que un dato se depuró?
+
+**🎯 Con tu evaluador (si es Rudyard):** Trabajó con SQL Server, MySQL y Postgres y modelado de datos, así que puede ir a lo concreto (retención, índices, particionado). Si es tu evaluador, prepara un ejemplo propio de Entitlement en vez de uno de salud.
+
+**Ejemplo (dominio: pedidos de e-commerce, vista de publicación y depuración con evidencia en Postgres):**
+```sql
+CREATE VIEW v_ventas_por_mes AS
+SELECT date_trunc('month', creado_en) AS mes, categoria, count(*) AS pedidos, sum(total) AS ventas
+FROM pedidos GROUP BY 1, 2;                          -- sin nombre ni documento del cliente
+
+GRANT SELECT ON v_ventas_por_mes TO analista_negocio;  -- y NADA sobre la tabla pedidos
+
+WITH anonimizados AS (
+  UPDATE pedidos SET cliente_nombre = NULL, cliente_documento = NULL
+  WHERE creado_en < now() - interval '5 years' AND anonimizado = false
+  RETURNING id
+)
+INSERT INTO auditoria_depuracion(regla, registros, ejecutado_en)
+SELECT 'anonimizar-pedidos-5-anios', count(*), now() FROM anonimizados;
+```
+**Cómo se traduce:** pedidos pasa a ser citas, y el plazo de 5 años pasa a ser el que tú justifiques. La parte que defiendes es la evidencia (la tabla de auditoría) y por qué el analista lee la vista y no la tabla.
+
+---
+
 ## Cómo autoevaluarte
 
 Para cada reto que resuelvas, grábate (audio o escrito) respondiendo en menos de 2 minutos: qué problema resolviste, qué principio/patrón aplicaste y por qué ese y no otro, y qué pasaría si no lo hubieras aplicado. Si te cuesta responder eso más que escribir el código, el hueco no está en la implementación — está en el concepto, y ahí es donde vuelves al documento de conceptos.

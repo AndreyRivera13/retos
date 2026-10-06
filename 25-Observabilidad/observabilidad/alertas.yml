@@ -1,0 +1,7 @@
+groups:
+  - name: pasarela-pagos
+    rules:
+      # TODO: alerta por síntoma de negocio (porcentaje de pagos EN_PROCESO en 5 minutos)
+      # TODO: alerta por circuito abierto más de un minuto (usa la métrica de Resilience4j)
+      # Cada regla lleva: expr, for, labels.severity y annotations.summary + runbook
+      []

@@ -1,0 +1,2 @@
+-- TODO: procedimiento de depuración (anonimizar o mover lo vencido), repetible,
+-- que deje evidencia en la tabla de auditoría.

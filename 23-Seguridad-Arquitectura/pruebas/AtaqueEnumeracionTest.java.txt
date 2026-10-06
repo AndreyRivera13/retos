@@ -1,0 +1,32 @@
+package pragma;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class AtaqueEnumeracionTest {
+
+    @LocalServerPort
+    int puerto;
+
+    @Test
+    @Disabled("TODO: quita esto cuando escribas la prueba")
+    void unAtacanteAutenticadoQueEnumeraIdsRecibe429DespuesDelUmbral() {
+        // TODO: autenticado como el usuario 1, pide /usuarios/{id}/documentos para id = 2..1000.
+        // Esperado: 403 las primeras veces (autorización) y 429 al pasar el umbral (resistir).
+    }
+
+    @Test
+    @Disabled("TODO")
+    void lasDenegacionesQuedanAuditadasConQuienQueYCuando() {
+        // TODO: verifica que se registró el evento de auditoría (sin el contenido de los documentos).
+    }
+
+    @Test
+    @Disabled("TODO")
+    void unUsuarioLegitimoQueUsaSuRecursoNormalmenteNuncaRecibe429() {
+        // TODO: el control no debe castigar el uso normal.
+    }
+}

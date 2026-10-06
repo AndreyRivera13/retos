@@ -1,0 +1,44 @@
+##Spring Configuration
+server:
+  port: 8080
+spring:
+  application:
+    name: 25-Observabilidad
+  devtools:
+    add-properties: false
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  profiles:
+    include:
+
+pasarela:
+  probabilidad-fallo: 0.4
+
+resilience4j:
+  retry:
+    instances:
+      pasarelaPagos:
+        max-attempts: 3
+        wait-duration: 100ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        ignore-exceptions:
+          - io.github.resilience4j.circuitbreaker.CallNotPermittedException
+          - io.github.resilience4j.bulkhead.BulkheadFullException
+  circuitbreaker:
+    instances:
+      pasarelaPagos:
+        failure-rate-threshold: 50
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        minimum-number-of-calls: 10
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+  bulkhead:
+    instances:
+      pasarelaPagos:
+        max-concurrent-calls: 5
+        max-wait-duration: 0

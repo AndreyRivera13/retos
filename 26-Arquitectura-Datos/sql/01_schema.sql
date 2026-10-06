@@ -1,0 +1,2 @@
+-- TODO: tabla de citas activas, tabla de citas históricas y tabla de auditoría de depuración
+-- (qué se depuró, cuántos registros, cuándo y bajo qué regla).

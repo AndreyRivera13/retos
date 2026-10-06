@@ -1,0 +1,3 @@
+-- TODO: roles app_citas y analista_negocio con GRANT mínimo.
+-- TODO: vista v_citas_por_especialidad_mes con agregados y SIN datos personales.
+-- TODO: comprueba con SET ROLE analista_negocio que no puede leer la tabla base.

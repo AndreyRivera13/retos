@@ -1,6 +1,6 @@
-# Guía de entrevista — los 19 retos de un vistazo
+# Guía de entrevista — los 26 retos de un vistazo
 
-Para usar ANTES de abrir el código: busca el número del reto, di la frase de apertura ("de qué trata") y después muestra los archivos que indica. Cada reto tiene su carpeta con el mismo número (`1-POO`, `2-SOLID`, ..., `19-DDD`) dentro de `retos/`.
+Para usar ANTES de abrir el código: busca el número del reto, di la frase de apertura ("de qué trata") y después muestra los archivos que indica. Cada reto tiene su carpeta con el mismo número (`1-POO`, `2-SOLID`, ..., `26-Arquitectura-Datos`) dentro de `retos/`.
 
 ## Mapa rápido
 
@@ -25,12 +25,19 @@ Para usar ANTES de abrir el código: busca el número del reto, di la frase de a
 | 17 | `17-IaC` | Terraform con IAM de mínimo privilegio + pipeline de escaneo | ✅ Cerrado |
 | 18 | `18-OWASP` | Encontrar y corregir un control de acceso roto | ✅ Cerrado |
 | 19 | `19-DDD` | Cuenta bancaria: Aggregate Root, Value Object y evento de dominio | ✅ Cerrado |
+| 20 | `20-Documentacion` | Documentación de arquitectura: C4, ADR y diagramas de secuencia, clases y ER | 🔲 Pendiente |
+| 21 | `21-Cloud-Infraestructura` | Infraestructura mínima en AWS como código: enrutamiento, cómputo y almacenamiento | 🔲 Pendiente |
+| 22 | `22-DevOps-IaC` | IaC con dos herramientas, zero trust, pruebas de rendimiento e IA en DevSecOps | 🔲 Pendiente |
+| 23 | `23-Seguridad-Arquitectura` | Tácticas de seguridad (resistir y detectar) contra la enumeración de ids | 🔲 Pendiente |
+| 24 | `24-Diseno-Arquitectura` | Atributos de calidad, escenarios, comparación de arquitecturas y ADR | 🔲 Pendiente |
+| 25 | `25-Observabilidad` | Métricas, logs y trazas de la pasarela, con alerta y runbook | 🔲 Pendiente |
+| 26 | `26-Arquitectura-Datos` | Ciclo de vida de los datos de citas: captura a disposición | 🔲 Pendiente |
 
 **Hilo conductor para contarlo:** los retos 5, 6, 11, 14, 15 y 16 son el MISMO sistema de citas médicas visto desde ángulos distintos: primero en capas (5), luego asignando responsabilidades (6), luego en hexagonal (11), después probado con BDD (14), reactivo (15) y publicando eventos (16). Si el entrevistador pregunta "¿cómo se conectan?", ahí está la respuesta.
 
-**Agrupados por tema:** fundamentos (1, 2, 3, 4) · arquitectura y diseño (5, 6, 11, 19, 12) · datos y caché (7, 10) · comunicación (9, 16) · resiliencia y calidad (13, 14) · paradigma reactivo (15) · seguridad e infraestructura (17, 18) · IA (8).
+**Agrupados por tema:** fundamentos (1, 2, 3, 4) · arquitectura y diseño (5, 6, 11, 19, 12) · datos y caché (7, 10) · comunicación (9, 16) · resiliencia y calidad (13, 14) · paradigma reactivo (15) · seguridad e infraestructura (17, 18) · IA (8) · nivel Master (20 al 26): documentación (20), cloud e IaC (21, 22), seguridad (23), diseño de arquitectura (24), observabilidad (25), datos (26).
 
-> Los retos 13 al 19 aún no están implementados: sus frases de apertura salen del enunciado y los "archivos a mostrar" son los del scaffold. Cuando los cierres, actualiza el estado y agrega aquí lo que realmente decidiste.
+> Los retos 1 al 19 están cerrados. Los retos 20 al 26 (nivel Master) están pendientes: sus frases de apertura salen del enunciado y los "archivos a mostrar" son los de la carpeta de arranque. Cuando los cierres, actualiza el estado y agrega aquí lo que realmente decidiste.
 
 ---
 
@@ -213,3 +220,59 @@ Para usar ANTES de abrir el código: busca el número del reto, di la frase de a
 **Para contar:** `Dinero` es VO porque no tiene identidad (100 COP son intercambiables con otros 100 COP); `CuentaBancaria` es Entidad porque sigue siendo la misma aunque cambie su saldo. Si un retiro falla no cambia el saldo ni se emite el evento. `equals()` usa `compareTo` porque `BigDecimal.equals` distingue 100 de 100.00, y `hashCode()` con `stripTrailingZeros`. Agregué `bloquear()` porque el esqueleto no tenía cómo llegar a `BLOQUEADA`.
 
 **Pregunta probable:** ¿qué garantía del dominio se rompería si `Dinero` tuviera un `setMonto()` público?
+
+## Reto 20 — Documentación (`20-Documentacion`) — pendiente
+
+**Antes de abrir el código, di:** "La documentación de arquitectura del sistema de citas: tres vistas C4 pensadas para públicos distintos, un ADR sobre por qué usé eventos con Kafka, y los diagramas de secuencia, clases y entidad-relación, todo versionado como código."
+
+**Archivos a mostrar:** `docs/01…03` (C4), `docs/adr/0001…`, `docs/GUIA-DEL-EQUIPO.md`.
+
+**Pregunta probable:** ¿qué sobra en el diagrama de contenedores para el gerente de negocio?
+
+## Reto 21 — Cloud (`21-Cloud-Infraestructura`) — pendiente
+
+**Antes de abrir el código, di:** "La infraestructura mínima del servicio de citas en AWS como código: enrutamiento, cómputo y almacenamiento, con la justificación de cada elección y qué atributo de calidad favorece."
+
+**Archivos a mostrar:** `iac/main.tf`, `docs/decisiones-infra.md`.
+
+**Pregunta probable:** ¿por qué ese cómputo y no los otros dos, y qué se rompe primero a 10.000 solicitudes por segundo?
+
+## Reto 22 — DevOps / IaC (`22-DevOps-IaC`) — pendiente
+
+**Antes de abrir el código, di:** "La misma infraestructura en una segunda herramienta de IaC, con controles zero trust verificados en el pipeline, una prueba de rendimiento con umbrales y un paso de IA para priorizar hallazgos con revisión humana."
+
+**Archivos a mostrar:** `cloudformation/`, `pipeline.yml`, `k6/citas.js`, `triage-ia/`, `docs/zero-trust.md`.
+
+**Pregunta probable:** ¿qué NO le delegarías a la IA en el triage de hallazgos?
+
+## Reto 23 — Seguridad (`23-Seguridad-Arquitectura`) — pendiente
+
+**Antes de abrir el código, di:** "Tácticas de seguridad aplicadas a la API de documentos: limitar la tasa y auditar denegaciones, demostradas con una prueba de enumeración de identificadores antes y después."
+
+**Archivos a mostrar:** `app/` (filtro de límite y auditoría), `AtaqueEnumeracionTest`, `docs/tacticas.md`.
+
+**Pregunta probable:** ¿por qué el rate limiting no corrige el IDOR y qué corrige entonces?
+
+## Reto 24 — Diseño de arquitectura (`24-Diseno-Arquitectura`) — pendiente
+
+**Antes de abrir el código, di:** "El diseño de la arquitectura del sistema de citas a partir de atributos de calidad: árbol de utilidad, tres escenarios medibles, comparación de dos arquitecturas y un ADR con la decisión, protegida por una fitness function."
+
+**Archivos a mostrar:** `docs/01…03`, `docs/adr/0001…`, `fitness/`.
+
+**Pregunta probable:** ¿qué atributo sacrificaste para favorecer cuál y con qué dato sabes que funcionó?
+
+## Reto 25 — Observabilidad (`25-Observabilidad`) — pendiente
+
+**Antes de abrir el código, di:** "Observabilidad de la pasarela de pagos: métricas técnicas y de negocio, logs JSON con correlationId, una traza, una alerta por síntoma con su runbook y la clasificación de cada señal."
+
+**Archivos a mostrar:** `app/` (métricas y MDC), `observabilidad/`, `docs/clasificacion-de-senales.md`, `docs/runbook-alerta.md`.
+
+**Pregunta probable:** ¿cómo distingues con tus señales que la pasarela está lenta de que tu servicio está lento?
+
+## Reto 26 — Arquitectura de Datos (`26-Arquitectura-Datos`) — pendiente
+
+**Antes de abrir el código, di:** "El ciclo de vida de los datos de citas médicas: captura, almacenamiento, gestión, publicación y disposición, con roles, una vista sin datos personales y una depuración con evidencia, probados en Postgres."
+
+**Archivos a mostrar:** `docs/ciclo-de-vida.md`, `sql/01…03`.
+
+**Pregunta probable:** Si un paciente pide borrar sus datos pero hay obligación legal de conservar parte, ¿qué haces en cada fase?

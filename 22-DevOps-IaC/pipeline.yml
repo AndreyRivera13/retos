@@ -1,0 +1,40 @@
+name: infra-citas-devsecops
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  secretos:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TODO gitleaks"
+
+  iac-policy-as-code:
+    needs: secretos
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TODO tfsec + checkov (Terraform) y cfn-lint + checkov (CloudFormation)"
+
+  rendimiento:
+    needs: secretos
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TODO k6 run k6/citas.js (falla si un umbral se rompe)"
+
+  triage-ia:
+    needs: iac-policy-as-code
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TODO python triage-ia/triage.py -> borrador para revisión humana"
+
+  deploy:
+    needs: [secretos, iac-policy-as-code, rendimiento]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TODO apply (con OIDC, sin llaves estáticas)"
