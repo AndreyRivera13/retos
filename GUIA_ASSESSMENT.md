@@ -54,10 +54,6 @@ Cada reto tiene siempre las mismas seis partes, en el mismo orden:
 
 **Agrupados por tema:** fundamentos (1, 2, 3, 4) · arquitectura y diseño (5, 6, 11, 19, 12) · datos y caché (7, 10) · comunicación (9, 16) · resiliencia y calidad (13, 14) · paradigma reactivo (15) · seguridad e infraestructura (17, 18) · IA (8) · nivel Master (20 al 26): documentación (20), cloud e IaC (21, 22), seguridad (23), diseño de arquitectura (24), observabilidad (25), datos (26).
 
-## Tu evaluador real: Rudyard Fuji Vásquez Izquierdo
-
-8 años como Technical Leader / Back End Developer (Mercania y Chazki, Perú), antes Analista de Soluciones y Back End en core bancario. Esto importa porque un evaluador pregunta más profundo en los temas donde **él mismo tiene cicatrices reales** — ahí es donde te va a repreguntar "¿y si...?" hasta encontrar el límite de tu entendimiento. En los temas donde no tiene experiencia directa, suele quedarse en la pregunta de concepto.
-
 | Probabilidad | Temas | Por qué (evidencia en su CV) |
 |---|---|---|
 | 🔴 Alta | 15-Reactivo, 10-Cache, 11-Clean-Architecture, 2-SOLID, 12-GoF, 9-Protocolo, 18-OWASP | Lideró la **migración de POO a programación funcional con Spring WebFlux** (Mercania) — es la coincidencia más directa de todo el CV. Además: Redis explícito, arquitectura de microservicios en dos empresas, "SOLID, Patrones de Diseño, Clean Code" listado en AMBOS trabajos, SOAP en core bancario + APIs REST para B2B, JWT en ambos roles. |
