@@ -49,7 +49,7 @@ Cuándo NO: limitar la tasa de forma muy agresiva rompe a usuarios legítimos (u
 
 ## Autoevaluación
 
-Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o por escrito, las preguntas de repaso de este tema en `REPASO_MASTER.md` (están sin respuesta; las respuestas modelo están al final del archivo). Si te cuesta más que escribir el entregable, el hueco está en el concepto.
+Antes de marcar el reto como ✅, responde en menos de 2 minutos, en voz alta o por escrito, las preguntas de repaso de este tema en `GUIA_ASSESSMENT.md` (reto 23, sección "Preguntas para practicar"; las respuestas modelo están plegadas debajo de las preguntas). Si te cuesta más que escribir el entregable, el hueco está en el concepto.
 
 <!-- ENTITLEMENT:23:START -->
 ## Ejemplo fácil de explicar
